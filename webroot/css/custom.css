@@ -1,0 +1,71 @@
+.actions {
+	width: 30%;
+}
+
+.event {
+	
+	border: 1px solid #dee2e6;
+	border-radius: .25rem;
+	margin: 2px;
+	padding: 2px;
+	*/
+	margin-bottom: 3px;
+	font-size: 0.8rem;
+}
+
+.event-day-number {
+	font-weight: bold;
+}
+.event-activity {
+	background-color: #ffd9b3;
+}
+
+.event-lesson-edition {
+	background-color: #c2f0c2;
+}
+
+.event-day-link, .event-day-link:hover {
+	font-size: 1.4rem;
+	color: #fff;
+}
+
+.calendar {
+	border: 2px solid #dee2e6;
+}
+
+.calendar td {
+	border: 2px solid #dee2e6;
+	width: 14.28%;
+	margin: 2px;
+	padding: 2px;
+}
+
+.lesson-edition-booked {
+	background-color: green;
+	color: #fff;
+}
+
+.lesson-edition-scheduled {
+	background-color: orange;
+	color: #fff;
+}
+
+.lesson-edition-completed {
+	background-color: blue;
+	color: #fff;
+}
+
+.lesson-edition-cancelled-athlete {
+	background-color: red;
+	color: #fff;
+}
+
+.lesson-edition-cancelled-staff {
+	background-color: red;
+	color: #fff;
+}
+
+.navbar-nav .active {
+	background-color: black;
+}
+
