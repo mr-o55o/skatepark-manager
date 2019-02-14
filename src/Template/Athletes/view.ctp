@@ -19,7 +19,8 @@ if ($athlete->asi_subscription_date->modify('+1 Year') < Time::now()) {
     <div class="text-right">
         <?= $this->Html->link( __('Athletes'), ['action' => 'index'], ['class' => ['btn', 'btn-primary']]); ?>
         <?= $this->Html->link( __('Edit this Athlete'), ['action' => 'edit', $athlete->id], ['class' => ['btn', 'btn-primary']]); ?>
-        <?=$this->Html->link(_('Book a Lesson Edition for this athlete'), ['controller' => 'LessonEditions', 'action' => 'add', $athlete->id ], ['class' => 'btn btn-primary']); ?>
+        <?= $this->Html->link(_('Book a Lesson Edition for this athlete'), ['controller' => 'LessonEditions', 'action' => 'add', $athlete->id ], ['class' => 'btn btn-primary']); ?>
+        <?= ($countValidLessonEditionsBundles == 0 ? $this->Html->link(_('Buy a Lesson Editions Bundle for this athlete'), ['controller' => 'PurchasedLessonEditionsBundles', 'action' => 'buyFor', $athlete->id ], ['class' => 'btn btn-primary']): '') ?>
     </div>
     <hr>
     <table class="table table-striped">
@@ -71,8 +72,9 @@ if ($athlete->asi_subscription_date->modify('+1 Year') < Time::now()) {
     <table class="table">
         <thead>
             <tr>
-                <th class="text-center"><?= __('Booked') ?></th>
-                <th class="text-center"><?= __('Completed') ?></th>
+                <th class="text-center" style="width: 20%;"><?= __('Booked') ?></th>
+                <th class="text-center" style="width: 20%;"><?= __('Completed') ?></th>
+                <th class="text-center" style="width: 20%;"><?= __('Cancelled by athlete request') ?></th>
                 <th></th>
             </tr>
         </thead>
@@ -80,6 +82,7 @@ if ($athlete->asi_subscription_date->modify('+1 Year') < Time::now()) {
             <tr>
                 <td class="text-right"><?= $this->Number->format($countBookedLessonEditions) ?></td>
                 <td class="text-right"><?= $this->Number->format($countCompletedLessonEditions) ?></td>
+                <td class="text-right"><?= $this->Number->format($countCancelledLessonEditions) ?></td>
                 <td class="text-center"><?= $this->Html->link(__('View all lesson editions involving this athlete'), ['controller' => 'LessonEditions', 'action' => 'indexForAthlete', $athlete->id]) ?></td>
             </tr>
         </tbody>
@@ -90,8 +93,8 @@ if ($athlete->asi_subscription_date->modify('+1 Year') < Time::now()) {
     <table class="table">
         <thead>
             <tr>
-                <th><?= __('Valid') ?></th>
-                <th><?= __('Purchased') ?></th>
+                <th class="text-center" style="width: 25%;"><?= __('Valid') ?></th>
+                <th class="text-center" style="width: 25%;"><?= __('Purchased') ?></th>
                 <th></th>
             </tr>
         </thead>

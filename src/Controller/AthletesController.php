@@ -143,6 +143,7 @@ class AthletesController extends AppController
 
         $countBookedLessonEditions = $this->Athletes->LessonEditions->find('bookedByAthlete', ['athlete_id' => $id ])->count();
         $countCompletedLessonEditions = $this->Athletes->LessonEditions->find('completedByAthlete', ['athlete_id' => $id ])->count();
+        $countCancelledLessonEditions = $this->Athletes->LessonEditions->find('cancelledByAthlete', ['athlete_id' => $id ])->count();
         $countValidLessonEditionsBundles = $this->Athletes->PurchasedLessonEditionsBundles->find('valid')->where(['athlete_id' => $athlete->id])->count();
         $countPurchasedLessonEditionsBundles = $this->Athletes->PurchasedLessonEditionsBundles->find('all')->where(['athlete_id' => $athlete->id])->count();
 
@@ -150,6 +151,7 @@ class AthletesController extends AppController
         $this->set('athlete', $athlete);
         $this->set('countBookedLessonEditions', $countBookedLessonEditions);
         $this->set('countCompletedLessonEditions', $countCompletedLessonEditions);
+        $this->set('countCancelledLessonEditions', $countCancelledLessonEditions);
         $this->set('countValidLessonEditionsBundles', $countValidLessonEditionsBundles);
         $this->set('countPurchasedLessonEditionsBundles', $countPurchasedLessonEditionsBundles);
 

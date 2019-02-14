@@ -137,9 +137,15 @@ class LessonEditionsTable extends Table
         return $query;
     }
 
-    public function findBookedByAthlete($query, $options)
+    public function findCancelledByAthlete($query, $options)
     {
         $query->where(['lesson_edition_status_id' => Configure::read('lesson_edition_statuses')['booked'], 'athlete_id' => $options['athlete_id']]);
+        return $query;
+    }
+
+    public function findBookedByAthlete($query, $options)
+    {
+        $query->where(['lesson_edition_status_id' => Configure::read('lesson_edition_statuses')['cancelled-athlete'], 'athlete_id' => $options['athlete_id']]);
         return $query;
     }
 

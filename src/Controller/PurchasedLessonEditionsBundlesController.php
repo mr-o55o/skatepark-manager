@@ -23,9 +23,9 @@ class PurchasedLessonEditionsBundlesController extends AppController
         $this->paginate = [
             'contain' => ['Athletes', 'LessonEditionsBundles']
         ];
-        $purchasedLessonEditionsBundles = $this->paginate($this->PurchasedLessonEditionsBundles);
-
-        $this->set(compact('purchasedLessonEditionsBundles'));
+        //$purchasedLessonEditionsBundles = $this->paginate($this->PurchasedLessonEditionsBundles);
+        $query = $this->PurchasedLessonEditionsBundles->find('search', ['search' => $this->request->getQueryParams()]);
+        $this->set('purchasedLessonEditionsBundles', $this->paginate($query));
     }
 
     /**
