@@ -23,7 +23,7 @@
                 <th scope="col"><?= $this->Paginator->sort('id') ?></th>
                 <th scope="col"><?= $this->Paginator->sort('athlete_id') ?></th>
                 <th scope="col"><?= $this->Paginator->sort('lesson_editions_bundle_id') ?></th>
-                <th scope="col"><?= $this->Paginator->sort('is_activated') ?></th>
+                <th scope="col"><?=__('status') ?></th>
                 <th scope="col"><?= $this->Paginator->sort('start_date') ?></th>
                 <th scope="col"><?= $this->Paginator->sort('end_date') ?></th>
                 <th scope="col"><?= __('Remaining Lesson Editions') ?></th>
@@ -36,7 +36,7 @@
                 <td><?= $this->Number->format($purchasedLessonEditionsBundle->id) ?></td>
                 <td><?= $purchasedLessonEditionsBundle->has('athlete') ? $this->Html->link($purchasedLessonEditionsBundle->athlete->name . ' ' . $purchasedLessonEditionsBundle->athlete->surname, ['controller' => 'Athletes', 'action' => 'view', $purchasedLessonEditionsBundle->athlete->id]) : '' ?></td>
                 <td><?= $purchasedLessonEditionsBundle->has('lesson_editions_bundle') ? $this->Html->link($purchasedLessonEditionsBundle->lesson_editions_bundle->name, ['controller' => 'LessonEditionsBundles', 'action' => 'view', $purchasedLessonEditionsBundle->lesson_editions_bundle->id]) : '' ?></td>
-                <td><?= h($purchasedLessonEditionsBundle->is_activated) ?></td>
+                <td><?= $this->element('PurchasedLessonEditionsBundleStatuses/status-badge', ['statusId' => $purchasedLessonEditionsBundle->status]); ?></td>
                 <td><?= h($purchasedLessonEditionsBundle->start_date) ?></td>
                 <td><?= h($purchasedLessonEditionsBundle->end_date) ?></td>
                 <td><?= $this->Number->format($purchasedLessonEditionsBundle->count) ?></td>

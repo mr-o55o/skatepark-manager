@@ -4,48 +4,75 @@ return [
 	'private-layout' => 'private',
 
 	//main navigation
-	//controllers are grouped by area
+	
 	'main_nav' => [
-		//pages belongs to Home area
-		'Pages' => [
-			'area' => 'Home',
+
+		//controllers are grouped by area
+		'controllers' => [
+			//pages belongs to Home area
+			'Pages' => [
+				'topic' => 'Home',
+			],
+			//events belongs to Events area
+			'Events' => [
+				'topic' => 'Events',
+			],
+			//users and roles belong to UsersManagement area
+			'Users' => [
+				'topic' => 'UsersManagement',
+			],
+			'Roles' => [
+				'topic' => 'UsersManagement',
+			],
+			//Athletes and Responsible Persons belong to AthletesManagement area
+			'Athletes' => [
+				'topic' => 'AthletesManagement',
+			],
+			'ResponsiblePersons' => [
+				'topic' => 'AthletesManagement',
+			],
+			//Lessons, LessonsEditions, LessonsEditionsBundles and PurchasedLessonsEditionBundles belong to LessonsManagement Area
+			'Lessons' => [
+				'topic' => 'LessonsManagement',
+			], 
+			'LessonEditions' => [
+				'topic' => 'LessonsManagement',
+			],
+			'LessonEditionsBundles' => [
+				'topic' => 'LessonsManagement',
+			],
+			'PurchasedLessonEditionsBundles' => [
+				'topic' => 'LessonsManagement',
+			],
+			//Activities belongs to ActivitiesManagement Area
+			'Activities' => [
+				'topic' => 'ActivitiesManagement'
+			]
 		],
-		//events belongs to Events area
-		'Events' => [
-			'area' => 'Events',
-		],
-		//users and roles belong to UsersManagement area
-		'Users' => [
-			'area' => 'UsersManagement',
-		],
-		'Roles' => [
-			'area' => 'UsersManagement',
-		],
-		//Athletes and Responsible Persons belong to AthletesManagement area
-		'Athletes' => [
-			'area' => 'AthletesManagement',
-		],
-		'ResponsiblePersons' => [
-			'area' => 'AthletesManagement',
-		],
-		//Lessons, LessonsEditions, LessonsEditionsBundles and PurchasedLessonsEditionBundles belong to LessonsManagement Area
-		'Lessons' => [
-			'area' => 'LessonsManagement',
-		], 
-		'LessonEditions' => [
-			'area' => 'LessonsManagement',
-		],
-		'LessonEditionsBundles' => [
-			'area' => 'LessonsManagement',
-		],
-		'PurchasedLessonEditionsBundles' => [
-			'area' => 'LessonsManagement',
-		],
-		//Activities belongs to ActivitiesManagement Area
-		'Activities' => [
-			'area' => 'ActivitiesManagement'
-		]
+
+		'topics' => [
+			'Pages' => [
+
+			],
+			'Events' => [
+
+			],
+			'UsersManagement' => [
+
+			],
+			'AthletesManagement' => [
+
+			],
+			'LessonsManagement' => [
+
+			],
+			'ActivitiesManagement' => [
+
+			],
+		] 
 	],
+
+
 
 	//standard roles defined,
 	'roles' => [
@@ -62,6 +89,13 @@ return [
 		'cancelled-staff' => 5,
 		'cancelled-athlete'=> 6,
 		'accounted' => 7,
+	],
+	'purchased_lesson_editions_bundle_statuses' => [
+		'purchased' => 1,
+		'activated' => 2,
+		'exhausted' => 3,
+		'expired' => 4,
+		'revoked' => 5
 	],
 	'Athletes' => [
 		'birthdate_minYear' => 1968,

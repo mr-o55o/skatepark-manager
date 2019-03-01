@@ -32,21 +32,19 @@ class PurchasedLessonEditionsBundle extends Entity
     protected $_accessible = [
         'athlete_id' => true,
         'lesson_editions_bundle_id' => true,
-        'is_activated' => true,
         'start_date' => true,
         'end_date' => true,
         'athlete' => true,
-        'lesson_editions_bundle' => true
+        'lesson_editions_bundle' => true,
+        'status' => true
     ];
 
     //bundle is valid if is activated, his end date is not passed yet
     public function isValid() {
         $now = Time::now();
-        if ($this->is_activated) {
-            if ($this->end_date < $now && $this->end_date == null) {
-                return false;
-            }
+        if ($this->status <= 2 ) {
+            return true;
         }
-        return true;
+        return false;
     }
 }

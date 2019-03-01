@@ -46,8 +46,10 @@ class PurchasedLessonEditionsBundlesController extends AppController
             $purchasedLessonEditionsBundle->athlete_id = $athlete->id;
             $purchasedLessonEditionsBundle->is_activated = false;
             $bundle = $this->PurchasedLessonEditionsBundles->LessonEditionsBundles->get($purchasedLessonEditionsBundle->lesson_editions_bundle_id);
+            //set count with bundle type value
             $purchasedLessonEditionsBundle->count = $bundle->lesson_edition_count;
-            
+            //set status to 'purchaed'
+            $purchasedLessonEditionsBundle->status = Configure::read('purchased_lesson_editions_bundle_statuses')['purchased'];
             if ($this->PurchasedLessonEditionsBundles->save($purchasedLessonEditionsBundle)) {
                 $this->Flash->success('Lesson Edition Bundle assigned to athlete {0}', $athlete_id);
                 $this->redirect(['action' => 'index']);

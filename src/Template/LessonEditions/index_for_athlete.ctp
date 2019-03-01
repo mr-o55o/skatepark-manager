@@ -27,7 +27,7 @@
                     <td><?= $this->Html->link($lessonEdition->id, ['action' => 'view', $lessonEdition->id]) ?></td>
                     <td><?= $this->Html->link($lessonEdition->lesson->name, ['controller' => 'Lessons', 'action' => 'view', $lessonEdition->lesson->id]) ?></td>
                     <td><?= $lessonEdition->has('event') ? h($lessonEdition->event->start_date->i18nFormat("dd/MM/Y H:mm")) : '' ?></td>
-                    <td><?= $lessonEdition->lesson_edition_status->name ?></td>
+                    <td><?= $this->element('LessonEditionStatuses/status-badge', ['statusId' => $lessonEdition->lesson_edition_status_id]); ?></td>
                     <td><?= $lessonEdition->has('user') ? $this->Html->link($lessonEdition->user->name . ' ' . $lessonEdition->user->surname, ['controller' => 'Athletes', 'action' => 'view', $lessonEdition->user->id]) : '' ?></td>
                 </tr>
                 <?php endforeach; ?>

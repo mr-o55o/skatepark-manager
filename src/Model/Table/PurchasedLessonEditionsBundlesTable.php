@@ -7,6 +7,7 @@ use Cake\ORM\Table;
 use Cake\Validation\Validator;
 use Cake\ORM\TableRegistry;
 use Cake\I18n\Time;
+use Cake\Core\Configure;
 
 /**
  * PurchasedLessonEditionsBundles Model
@@ -46,6 +47,11 @@ class PurchasedLessonEditionsBundlesTable extends Table
         ]);
         $this->belongsTo('LessonEditionsBundles', [
             'foreignKey' => 'lesson_editions_bundle_id',
+            'joinType' => 'INNER'
+        ]);
+
+        $this->belongsTo('PurchasedLessonEditionsBundlesStatuses', [
+            'foreignKey' => 'status',
             'joinType' => 'INNER'
         ]);
 
@@ -94,6 +100,11 @@ class PurchasedLessonEditionsBundlesTable extends Table
             //->requirePresence('end_date', 'create')
             //->notEmpty('end_date');
 
+        $validator
+            ->integer('status')
+            ->requirePresence('status', 'create')
+            ->notEmpty('status');
+
         return $validator;
     }
 
@@ -123,9 +134,9 @@ class PurchasedLessonEditionsBundlesTable extends Table
 
     public function findValid(Query $query) {
         $now = Time::now();
-
-        $query->where(['is_activated' => true], ['end_date <' => $now, ]);
-        $query->orWhere(['is_activated' => false]);
+        //to-do map status in configuration
+        $query->where(['status' => Configure::read('purchased_lesson_editions_bundle_statuses')['activated']], ['end_date <' => $now, ]);
+        $query->orWhere(['status' => Configure::read('purchased_lesson_editions_bundle_statuses')['activated']]);
 
         return $query;
     }

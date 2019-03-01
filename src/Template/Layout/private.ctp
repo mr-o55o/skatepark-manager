@@ -20,9 +20,9 @@ $this->start('navbar');
 $this->end();
 
 $this->start('sidebar');
-    $area = Configure::read('main_nav')[$this->request->controller]['area'];
-    if ($this->elementExists('Sidebar/' . $area )) {
-        echo $this->element('Sidebar/'. $area );  
+    $topic = Configure::read('main_nav')['controllers'][$this->request->controller]['topic'];
+    if ($this->elementExists('Sidebar/' . $topic )) {
+        echo $this->element('Sidebar/'. $topic );  
     }
 $this->end();
 

@@ -82,12 +82,14 @@ class LessonEditionsTable extends Table
         //$this->hasOne('Events');
 
     }
-
+/*
     public function beforeMarshal(Event $event, ArrayObject $data, ArrayObject $options)
     {
-
-    }    
-
+        //debug('BeforeMarshal');
+        //debug($data);
+    }  
+ 
+*/
 
 
 /*
@@ -139,13 +141,13 @@ class LessonEditionsTable extends Table
 
     public function findCancelledByAthlete($query, $options)
     {
-        $query->where(['lesson_edition_status_id' => Configure::read('lesson_edition_statuses')['booked'], 'athlete_id' => $options['athlete_id']]);
+        $query->where(['lesson_edition_status_id' => Configure::read('lesson_edition_statuses')['cancelled-athlete'], 'athlete_id' => $options['athlete_id']]);
         return $query;
     }
 
     public function findBookedByAthlete($query, $options)
     {
-        $query->where(['lesson_edition_status_id' => Configure::read('lesson_edition_statuses')['cancelled-athlete'], 'athlete_id' => $options['athlete_id']]);
+        $query->where(['lesson_edition_status_id' => Configure::read('lesson_edition_statuses')['booked'], 'athlete_id' => $options['athlete_id']]);
         return $query;
     }
 
@@ -181,36 +183,6 @@ class LessonEditionsTable extends Table
 
         return $validator;
     }
-
-    /**
-     * Scheduling validation rules.
-     *
-     * @param \Cake\Validation\Validator $validator Validator instance.
-     * @return \Cake\Validation\Validator
-     */
-    public function validationScheduling(Validator $validator)
-    {
-        
-    
-        //$validator = $this->validationDefault($validator);
-
-        return $validator;
-    }
-
-    /**
-     * Booking validation rules.
-     *
-     * @param \Cake\Validation\Validator $validator Validator instance.
-     * @return \Cake\Validation\Validator
-     */
-    public function validationBooking(Validator $validator)
-    {
-
-        //$validator = $this->validationDefault($validator);
-
-        return $validator;
-    }
-
 
     /**
      * Returns a rules checker object that will be used for validating

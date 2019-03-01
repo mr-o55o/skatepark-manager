@@ -13,22 +13,22 @@ use Cake\Core\Configure;
   	<!-- Navbar Links -->
   	<div class="collapse navbar-collapse text-right" id="'navbarSupportedContent">
 		<ul class="navbar-nav mr-auto">
-	  		<li class="nav-item <?= (Configure::read('main_nav')[$this->request->controller]['area'] == 'Home' ? 'active' : '') ?>">
+	  		<li class="nav-item <?= (Configure::read('main_nav')['controllers'][$this->request->controller]['topic'] == 'Home' ? 'active' : '') ?>">
 	  			<?= $this->Html->link(__('Home'), '/pages/welcome', ['class' => 'nav-link text-white '])?>
 	  		</li>
-		 	<li class="nav-item <?= (Configure::read('main_nav')[$this->request->controller]['area'] == 'Events' ? 'active' : '') ?>">
+		 	<li class="nav-item <?= (Configure::read('main_nav')['controllers'][$this->request->controller]['topic'] == 'Events' ? 'active' : '') ?>">
 		 		<?= $this->Html->link(__('Events'), ['controller' => 'Events', 'action' => 'calendar'], ['class' => 'nav-link text-white'])?>
 		 	</li>
-		  	<li class="nav-item <?= (Configure::read('main_nav')[$this->request->controller]['area'] == 'UsersManagement' ? 'active' : '') ?>">
+		  	<li class="nav-item <?= (Configure::read('main_nav')['controllers'][$this->request->controller]['topic'] == 'UsersManagement' ? 'active' : '') ?>">
 		  		<?= $this->Html->link(__('Users Management'), ['controller' => 'Users', 'action' => 'index'], ['class' => 'nav-link text-white'])?>
 		  	</li>
-		  	<li class="nav-item <?= (Configure::read('main_nav')[$this->request->controller]['area'] == 'AthletesManagement' ? 'active' : '') ?>">
+		  	<li class="nav-item <?= (Configure::read('main_nav')['controllers'][$this->request->controller]['topic'] == 'AthletesManagement' ? 'active' : '') ?>">
 		  		<?= $this->Html->link(__('Athletes Management'), ['controller' => 'Athletes', 'action' => 'index'], ['class' => 'nav-link text-white'])?>
 		  	</li>
-		  	<li class="nav-item <?= (Configure::read('main_nav')[$this->request->controller]['area'] == 'LessonsManagement' ? 'active' : '') ?>">
+		  	<li class="nav-item <?= (Configure::read('main_nav')['controllers'][$this->request->controller]['topic'] == 'LessonsManagement' ? 'active' : '') ?>">
 		  		<?= $this->Html->link(__('Lessons Management'), ['controller' => 'Lessons', 'action' => 'index'], ['class' => 'nav-link text-white'])?>
 		  	</li>
-		  	<li class="nav-item <?= (Configure::read('main_nav')[$this->request->controller]['area'] == 'ActivitiesManagement' ? 'active' : '') ?>">
+		  	<li class="nav-item <?= (Configure::read('main_nav')['controllers'][$this->request->controller]['topic'] == 'ActivitiesManagement' ? 'active' : '') ?>">
 		  		<?= $this->Html->link(__('Activities Management'), ['controller' => 'Activities', 'action' => 'index'], ['class' => 'nav-link text-white'])?>
 		  	</li>
 	  	</ul>

@@ -64,8 +64,14 @@ class AthletesTable extends Table
         ]);
 
         $this->hasMany('LessonEditions');
+
         $this->hasMany('PurchasedLessonEditionsBundles');
 
+        $this->hasOne('ValidPurchasedLessonEditionsBundles', [
+                'className' => 'PurchasedLessonEditionsBundles'
+            ])
+            ->setConditions(['status <=' => 2])
+            ->setProperty('valid_purchased_lesson_editions_bundle');
         /* Active lesson Editions association
             - A lesson edition is active when starts in the future
         */

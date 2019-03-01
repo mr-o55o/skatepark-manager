@@ -4,6 +4,7 @@ namespace App\Controller;
 use App\Controller\AppController;
 use Cake\Core\Configure;
 use Cake\ORM\TableRegistry;
+use Cake\I18n\Time;
 
 /**
  * LessonEditions Controller
@@ -233,23 +234,61 @@ class LessonEditionsController extends AppController
      */
     public function complete($id = null) {
         $lesson_edition = $this->LessonEditions->get($id, [
-            'contain' => ['Lessons', 'LessonEditionStatuses', 'Users', 'Athletes', 'Events']
+            'contain' => ['Lessons', 'LessonEditionStatuses', 'Users', 'Events', 'Athletes.PurchasedLessonEditionsBundles'],
+            'associated' => ['Athletes.PurchasedLessonEditionsBunldes']
         ]);
+
          //ensure that lesson edition is booked
         if ($lesson_edition->lesson_edition_status_id <> Configure::read('lesson_edition_statuses')['booked']) {
             $this->Flash->error(__('This edition is not booked, operation not permitted.'));
             return $this->redirect($this->referer());
-        }        
+        }  
+
         if ($this->request->is(['patch', 'post', 'put'])) {         
-            $lesson_edition = $this->LessonEditions->patchEntity($lesson_edition, $this->request->getData());
+            $lesson_edition = $this->LessonEditions->patchEntity($lesson_edition, $this->request->getData(), ['associated' => ['Athletes.PurchasedLessonEditionsBundles']]);
             // force status to completed
             $lesson_edition->lesson_edition_status_id = Configure::read('lesson_edition_statuses')['completed'];
-            if ($this->LessonEditions->save($lesson_edition)) {
+            
+            if ($lesson_edition->athlete->purchased_lesson_editions_bundles[0]) {
+
+                //debug('Managing purchased bundle');
+                switch ($lesson_edition->athlete->purchased_lesson_editions_bundles[0]->status) {
+                        case 1:
+                            //set status to activated 2, decrease counter and set dates
+                            $lesson_edition->athlete->purchased_lesson_editions_bundles[0]->count = $lesson_edition->athlete->purchased_lesson_editions_bundles[0]->count -1;
+                            $lesson_edition->athlete->purchased_lesson_editions_bundles[0]->status = 2;
+                        break;
+
+                        case 2:
+                            //decrease counter, if becomes 0, set status as exhausted
+                            $lesson_edition->athlete->purchased_lesson_editions_bundles[0]->count = $lesson_edition->athlete->purchased_lesson_editions_bundles[0]->count -1;
+                            if ($lesson_edition->athlete->purchased_lesson_editions_bundles[0]->count == 0) {
+                                $lesson_edition->athlete->purchased_lesson_editions_bundles[0]->status = 3;
+                            }
+                        break;
+
+                }
+                // TO DO FIX END TIME CALCULATION
+                //$bundlesTable = $this->loadModel('LessonEditionsBundles');
+                //$bundle = $bundlesTable->get($lesson_edition->athlete->purchaased_lesson_editions_bundles[0]->lesson_editions_bundle_id);
+                $now = Time::now();
+                $lesson_edition->athlete->purchased_lesson_editions_bundles[0]->start_date = $now;
+                $lesson_edition->athlete->purchased_lesson_editions_bundles[0]->end_date = $now;
+            }
+            
+            //debug($lesson_edition->athlete->purchased_lesson_editions_bundles);
+            //debug($lesson_edition->athlete->valid_purchased_lesson_editions_bundle);
+            
+            if ($this->LessonEditions->save($lesson_edition, ['associated' => ['Athletes.PurchasedLessonEditionsBundles']])) {
                 $this->Flash->success(__('The lesson edition has been marked as completed.'));
                 return $this->redirect(['controller' => 'Events', 'action' => 'calendar']);
             }
-            $this->Flash->error(__('The lesson edition could not be updated. Please, try again.'));
-            $this->set('errors', $lesson_edition->getErrors());
+            
+            
+
+            //$this->Flash->error(__('The lesson edition could not be updated. Please, try again.'));
+            //$this->set('errors', $lesson_edition->getErrors()); 
+                     
         }
         //return $this->redirect($this->referer());
         $this->set('lesson_edition', $lesson_edition);

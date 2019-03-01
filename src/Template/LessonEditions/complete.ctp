@@ -28,11 +28,19 @@
         </tr>
         <tr>
             <th scope="row"><?= __('Athlete') ?></th>
-            <td><?= $lesson_edition->has('athlete') ? $this->Html->link($lesson_edition->athlete->name, ['controller' => 'Athletes', 'action' => 'view', $lesson_edition->athlete->id]) : '' ?></td>
+            <td><?= $lesson_edition->has('athlete') ? $this->Html->link($lesson_edition->athlete->name. ' '.$lesson_edition->athlete->surname , ['controller' => 'Athletes', 'action' => 'view', $lesson_edition->athlete->id]) : '' ?>
+                
+                <?php if ($lesson_edition->athlete->has('purchased_lesson_editions_bundles')) : ?>
+                    <div class="alert alert-info">
+                        <?= __('Athlete has a valid Lesson Editions Bundle with {0} editions remaining. 1 charge will be removed.', $lesson_edition->athlete->purchased_lesson_editions_bundles[0]->count ) ?>
+                    </div>
+                    <?= $this->Form->hidden('athlete.purchased_lesson_editions_bundles.0.id', ['value' => $lesson_edition->athlete->purchased_lesson_editions_bundles[0]->id] ); ?>
+                <?php endif; ?>
+            </td>
         </tr>
         <tr>
             <th scope="row"><?= __('Trainer') ?></th>
-            <td><?= $lesson_edition->has('user') ? $this->Html->link($lesson_edition->user->name, ['controller' => 'Users', 'action' => 'view', $lesson_edition->user->id]) : '' ?></td>
+            <td><?= $lesson_edition->has('user') ? $this->Html->link($lesson_edition->user->username, ['controller' => 'Users', 'action' => 'view', $lesson_edition->user->id]) : '' ?></td>
         </tr>
         <tr>
             <th scope="row"><?= __('Notes') ?></th>
