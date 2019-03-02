@@ -30,11 +30,11 @@
             <th scope="row"><?= __('Athlete') ?></th>
             <td><?= $lesson_edition->has('athlete') ? $this->Html->link($lesson_edition->athlete->name. ' '.$lesson_edition->athlete->surname , ['controller' => 'Athletes', 'action' => 'view', $lesson_edition->athlete->id]) : '' ?>
                 
-                <?php if ($lesson_edition->athlete->has('purchased_lesson_editions_bundles')) : ?>
+                <?php if (!empty($lesson_edition->athlete->valid_purchased_lesson_editions_bundles)) : ?>
                     <div class="alert alert-info">
-                        <?= __('Athlete has a valid Lesson Editions Bundle with {0} editions remaining. 1 charge will be removed.', $lesson_edition->athlete->purchased_lesson_editions_bundles[0]->count ) ?>
+                        <?= __('Athlete has a valid Lesson Editions Bundle with {0} editions remaining. 1 charge will be removed.', $lesson_edition->athlete->valid_purchased_lesson_editions_bundles[0]->count ) ?>
                     </div>
-                    <?= $this->Form->hidden('athlete.purchased_lesson_editions_bundles.0.id', ['value' => $lesson_edition->athlete->purchased_lesson_editions_bundles[0]->id] ); ?>
+                    <?= $this->Form->hidden('athlete.valid_purchased_lesson_editions_bundles.0.id', ['value' => $lesson_edition->athlete->valid_purchased_lesson_editions_bundles[0]->id] ); ?>
                 <?php endif; ?>
             </td>
         </tr>

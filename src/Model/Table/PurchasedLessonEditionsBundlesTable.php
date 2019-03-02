@@ -135,7 +135,7 @@ class PurchasedLessonEditionsBundlesTable extends Table
     public function findValid(Query $query) {
         $now = Time::now();
         //to-do map status in configuration
-        $query->where(['status' => Configure::read('purchased_lesson_editions_bundle_statuses')['activated']], ['end_date <' => $now, ]);
+        $query->where(['status' => Configure::read('purchased_lesson_editions_bundle_statuses')['purchased']], ['end_date <' => $now, ]);
         $query->orWhere(['status' => Configure::read('purchased_lesson_editions_bundle_statuses')['activated']]);
 
         return $query;

@@ -42,7 +42,7 @@ class PurchasedLessonEditionsBundle extends Entity
     //bundle is valid if is activated, his end date is not passed yet
     public function isValid() {
         $now = Time::now();
-        if ($this->status <= 2 ) {
+        if ($this->status == 1 || ($this->status == 2 && $this->end_date > $now)) {
             return true;
         }
         return false;

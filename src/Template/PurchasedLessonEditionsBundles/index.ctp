@@ -3,6 +3,8 @@
  * @var \App\View\AppView $this
  * @var \App\Model\Entity\PurchasedLessonEditionsBundle[]|\Cake\Collection\CollectionInterface $purchasedLessonEditionsBundles
  */
+
+use Cake\I18n\Time;
 ?>
 <div class="purchasedLessonEditionsBundles content">
     <h3><?= __('Purchased Lesson Editions Bundles') ?></h3>
@@ -43,6 +45,9 @@
                 <td class="actions">
                     <?= $this->Html->link(__('View'), ['action' => 'view', $purchasedLessonEditionsBundle->id], ['class' => 'btn btn-primary']) ?>
                     <?= $this->Html->link(__('Edit'), ['action' => 'edit', $purchasedLessonEditionsBundle->id], ['class' => 'btn btn-primary']) ?>
+                    <?php if ($purchasedLessonEditionsBundle->end_date < Time::now() && $purchasedLessonEditionsBundle->status == 2) : ?>
+                        <?= $this->Form->postLink(__('Expire'), ['action' => 'expire', $purchasedLessonEditionsBundle->id], ['confirm' => __('Are you sure you want to mark bundle # {0} as expired?', $purchasedLessonEditionsBundle->id), 'class' => 'btn btn-danger']) ?>
+                    <?php endif; ?>
                 </td>
             </tr>
             <?php endforeach; ?>

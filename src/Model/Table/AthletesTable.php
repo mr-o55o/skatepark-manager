@@ -67,11 +67,16 @@ class AthletesTable extends Table
 
         $this->hasMany('PurchasedLessonEditionsBundles');
 
-        $this->hasOne('ValidPurchasedLessonEditionsBundles', [
+        // i can't understand why entities are not saved with hasOne association
+        $this->hasMany('ValidPurchasedLessonEditionsBundles', [
                 'className' => 'PurchasedLessonEditionsBundles'
             ])
-            ->setConditions(['status <=' => 2])
-            ->setProperty('valid_purchased_lesson_editions_bundle');
+            ->setConditions(
+                ['OR' => [['status <=' => 2, 'end_date >' => Time::now()],['status' => 1]]]
+                )
+            ->setProperty('valid_purchased_lesson_editions_bundles');
+        
+
         /* Active lesson Editions association
             - A lesson edition is active when starts in the future
         */

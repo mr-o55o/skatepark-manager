@@ -38,7 +38,7 @@ class Athlete extends Entity
         'asi_subscription_date' => true,
         'responsible_person' => true,
         'purchased_lesson_editions_bundles' => true,
-        'valid_purchased_lesson_editions_bundle' => true
+        'valid_purchased_lesson_editions_bundles' => true
     ];
 
     public function hasActiveSubscription() {

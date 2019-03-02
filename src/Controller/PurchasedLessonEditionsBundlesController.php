@@ -2,6 +2,8 @@
 namespace App\Controller;
 
 use App\Controller\AppController;
+use Cake\Core\Configure;
+use Cake\I18n\Time;
 
 /**
  * PurchasedLessonEditionsBundles Controller
@@ -51,8 +53,8 @@ class PurchasedLessonEditionsBundlesController extends AppController
             //set status to 'purchaed'
             $purchasedLessonEditionsBundle->status = Configure::read('purchased_lesson_editions_bundle_statuses')['purchased'];
             if ($this->PurchasedLessonEditionsBundles->save($purchasedLessonEditionsBundle)) {
-                $this->Flash->success('Lesson Edition Bundle assigned to athlete {0}', $athlete_id);
-                $this->redirect(['action' => 'index']);
+                $this->Flash->success('Lesson Edition Bundle assigned to athlete ${0}', $athlete_id);
+                $this->redirect(['controller' => 'Athletes', 'action' => 'view', $athlete_id]);
             } else {
                 $this->set('errors', $purchasedLessonEditionsBundle->errors());
             }
@@ -130,6 +132,26 @@ class PurchasedLessonEditionsBundlesController extends AppController
     }
 
     /**
+     * Expire method
+     *
+     * @param string|null $id Purchased Lesson Editions Bundle id.
+     * @return \Cake\Http\Response|null Redirects to index.
+     * @throws \Cake\Datasource\Exception\RecordNotFoundException When record not found.
+     */    
+    public function expire($id = null)
+    {
+        $this->request->allowMethod(['post']);
+        $purchasedLessonEditionsBundle = $this->PurchasedLessonEditionsBundles->get($id);
+        $purchasedLessonEditionsBundle->status = Configure::read('purchased_lesson_editions_bundle_statuses')['expired'];
+        if ($this->PurchasedLessonEditionsBundles->save($purchasedLessonEditionsBundle)) {
+            $this->Flash->success(__('The purchased lesson editions bundle has been marked as expired.'));
+        } else {
+            $this->Flash->error(__('The purchased lesson editions bundle could not edited. Please, try again.'));
+        }
+
+        return $this->redirect(['action' => 'index']);        
+    }
+    /**
      * Delete method
      *
      * @param string|null $id Purchased Lesson Editions Bundle id.
@@ -140,6 +162,10 @@ class PurchasedLessonEditionsBundlesController extends AppController
     {
         $this->request->allowMethod(['post', 'delete']);
         $purchasedLessonEditionsBundle = $this->PurchasedLessonEditionsBundles->get($id);
+        if ($purchasedLessonEditionsBundle->end_date > Time::now()) {
+            $this->Flash->error(__('This bundle has not expired yet!'));
+            return $this->redirect(['action' => 'index']);
+        }
         if ($this->PurchasedLessonEditionsBundles->delete($purchasedLessonEditionsBundle)) {
             $this->Flash->success(__('The purchased lesson editions bundle has been deleted.'));
         } else {
@@ -148,4 +174,6 @@ class PurchasedLessonEditionsBundlesController extends AppController
 
         return $this->redirect(['action' => 'index']);
     }
+
+
 }

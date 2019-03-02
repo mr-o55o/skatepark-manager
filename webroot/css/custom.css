@@ -40,6 +40,8 @@
 	padding: 2px;
 }
 
+
+
 .lesson-edition-booked {
 	background-color: green;
 	color: #fff;
@@ -62,6 +64,31 @@
 
 .lesson-edition-cancelled-staff {
 	background-color: red;
+	color: #fff;
+}
+
+.purchased-lesson-editions-bundle-purchased {
+	background-color: green;
+	color: #fff;
+}
+
+.purchased-lesson-editions-bundle-activated {
+	background-color: blue;
+	color: #fff;
+}
+
+.purchased-lesson-editions-bundle-expired {
+	background-color: red;
+	color: #fff;
+}
+
+.purchased-lesson-editions-bundle-exhausted {
+	background-color: gray;
+	color: #fff;
+}
+
+.lesson-edition-cancelled-revoked {
+	background-color: orange;
 	color: #fff;
 }
 
