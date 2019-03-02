@@ -241,7 +241,7 @@ class LessonEditionsController extends AppController
      */
     public function complete($id = null) {
         $lesson_edition = $this->LessonEditions->get($id, [
-            'contain' => ['Lessons', 'LessonEditionStatuses', 'Users', 'Events', 'Athletes.ValidPurchasedLessonEditionsBundles'],
+            'contain' => ['Lessons', 'LessonEditionStatuses', 'Users', 'Events', 'Athletes.ValidPurchasedLessonEditionsBundles.LessonEditionsBundles'],
 
             'associated' => ['Athletes.ValidPurchasedLessonEditionsBunldes']
         ]);
@@ -253,39 +253,52 @@ class LessonEditionsController extends AppController
             return $this->redirect($this->referer());
         }  
 
+        foreach ($lesson_edition->athlete->valid_purchased_lesson_editions_bundles as $validBundle) {
+            if ($validBundle->lesson_editions_bundle->lesson_id == $lesson_edition->lesson_id) {
+                $validBundleIndex = key($validBundle);
+                $this->set('validBundleIndex', $validBundleIndex);
+            }
+        }
+
 
         if ($this->request->is(['patch', 'post', 'put'])) {         
             $lesson_edition = $this->LessonEditions->patchEntity($lesson_edition, $this->request->getData(), ['associated' => ['Athletes.ValidPurchasedLessonEditionsBundles']]);
             // force status to completed
             $lesson_edition->lesson_edition_status_id = Configure::read('lesson_edition_statuses')['completed'];
             
+
+            // to-do make a better check, must verify also that id of the bundle matches id of thelesson
             if (!empty($lesson_edition->athlete->valid_purchased_lesson_editions_bundles)) {
 
-                //debug('Managing purchased bundle');
-
-             
-                switch ($lesson_edition->athlete->valid_purchased_lesson_editions_bundles[0]->status) {
-                        case 1:
-                            //set status to activated 2, decrease counter and set dates
-                            $lesson_edition->athlete->valid_purchased_lesson_editions_bundles[0]->count = $lesson_edition->athlete->valid_purchased_lesson_editions_bundles[0]->count -1;
-                            $lesson_edition->athlete->valid_purchased_lesson_editions_bundles[0]->status = Configure::read('purchased_lesson_editions_bundle_statuses')['activated'];
-                            $bundlesTable = $this->loadModel('LessonEditionsBundles');
-                            $bundle = $bundlesTable->get($lesson_edition->athlete->valid_purchased_lesson_editions_bundles[0]->lesson_editions_bundle_id);
-                            $now = Time::now();
-                            $lesson_edition->athlete->valid_purchased_lesson_editions_bundles[0]->start_date = $now;
-                            $lesson_edition->athlete->valid_purchased_lesson_editions_bundles[0]->end_date = $now->modify('+ '.$bundle->duration.' days');
-                        break;
-
-                        case 2:
-                            //decrease counter, if becomes 0, set status as exhausted
-                            $lesson_edition->athlete->valid_purchased_lesson_editions_bundles[0]->count = $lesson_edition->athlete->valid_purchased_lesson_editions_bundles[0]->count -1;
-                            if ($lesson_edition->athlete->valid_purchased_lesson_editions_bundles[0]->count == 0) {
-                                $lesson_edition->athlete->valid_purchased_lesson_editions_bundles[0]->status = Configure::read('purchased_lesson_editions_bundle_statuses')['exhausted'];
-                            }
-                        break;
-
+                foreach ($lesson_edition->athlete->valid_purchased_lesson_editions_bundles as $validBundle) {
+                    if ($validBundle->lesson_editions_bundle->lesson_id == $lesson_edition->lesson_id) {
+                        $validBundleIndex = key($validBundle);
+                    }
                 }
-                
+
+                if (isset($validBundleIndex)) {
+                    switch ($lesson_edition->athlete->valid_purchased_lesson_editions_bundles[$validBundleIndex]->status) {
+                            case 1:
+                                //set status to activated 2, decrease counter and set dates
+                                $lesson_edition->athlete->valid_purchased_lesson_editions_bundles[$validBundleIndex]->count = $lesson_edition->athlete->valid_purchased_lesson_editions_bundles[$validBundleIndex]->count -1;
+                                $lesson_edition->athlete->valid_purchased_lesson_editions_bundles[$validBundleIndex]->status = Configure::read('purchased_lesson_editions_bundle_statuses')['activated'];
+                                $bundlesTable = $this->loadModel('LessonEditionsBundles');
+                                $bundle = $bundlesTable->get($lesson_edition->athlete->valid_purchased_lesson_editions_bundles[$validBundleIndex]->lesson_editions_bundle_id);
+                                $now = Time::now();
+                                $lesson_edition->athlete->valid_purchased_lesson_editions_bundles[$validBundleIndex]->start_date = $now;
+                                $lesson_edition->athlete->valid_purchased_lesson_editions_bundles[$validBundleIndex]->end_date = $now->modify('+ '.$bundle->duration.' days');
+                            break;
+
+                            case 2:
+                                //decrease counter, if becomes 0, set status as exhausted
+                                $lesson_edition->athlete->valid_purchased_lesson_editions_bundles[$validBundleIndex]->count = $lesson_edition->athlete->valid_purchased_lesson_editions_bundles[$validBundleIndex]->count -1;
+                                if ($lesson_edition->athlete->valid_purchased_lesson_editions_bundles[$validBundleIndex]->count == 0) {
+                                    $lesson_edition->athlete->valid_purchased_lesson_editions_bundles[$validBundleIndex]->status = Configure::read('purchased_lesson_editions_bundle_statuses')['exhausted'];
+                                }
+                            break;
+
+                    }
+                }   
             }
             
             //debug($lesson_edition->athlete->purchased_lesson_editions_bundles);
