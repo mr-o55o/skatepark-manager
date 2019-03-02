@@ -252,12 +252,13 @@ class LessonEditionsController extends AppController
             $this->Flash->error(__('This edition is not booked, operation not permitted.'));
             return $this->redirect($this->referer());
         }  
-
+        $idx = 0;
         foreach ($lesson_edition->athlete->valid_purchased_lesson_editions_bundles as $validBundle) {
             if ($validBundle->lesson_editions_bundle->lesson_id == $lesson_edition->lesson_id) {
-                $validBundleIndex = key($validBundle);
+                $validBundleIndex = $idx;
                 $this->set('validBundleIndex', $validBundleIndex);
             }
+            $idx++;
         }
 
 
@@ -269,11 +270,12 @@ class LessonEditionsController extends AppController
 
             // to-do make a better check, must verify also that id of the bundle matches id of thelesson
             if (!empty($lesson_edition->athlete->valid_purchased_lesson_editions_bundles)) {
-
+                $idx = 0;
                 foreach ($lesson_edition->athlete->valid_purchased_lesson_editions_bundles as $validBundle) {
                     if ($validBundle->lesson_editions_bundle->lesson_id == $lesson_edition->lesson_id) {
-                        $validBundleIndex = key($validBundle);
+                        $validBundleIndex = $idx;
                     }
+                    $idx++;
                 }
 
                 if (isset($validBundleIndex)) {
