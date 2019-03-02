@@ -102,7 +102,7 @@ if ($athlete->asi_subscription_date->modify('+1 Year') < Time::now()) {
             <tr>
                 <td class="text-right"><?= $this->Number->format($countValidLessonEditionsBundles) ?></td>
                 <td class="text-right"><?= $this->Number->format($countPurchasedLessonEditionsBundles) ?></td>
-                <td class="text-center"><?= $this->Html->link(__('View all Lesson Editions Bundles purchased by this athlete'), ['action' => 'lessonEditionsBundlesLog']) ?></td>
+                <td class="text-center"><?= $this->Html->link(__('View all Lesson Editions Bundles purchased by this athlete'), ['controller' => 'PurchasedLessonEditionsBundles', 'action' => 'indexForAthlete', $athlete->id]) ?></td>
             </tr>
         </tbody>
     </table>

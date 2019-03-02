@@ -108,6 +108,7 @@ class LessonEditionsController extends AppController
      *
      * @return \Cake\Http\Response|null Redirects on successful add, renders view otherwise.
      */
+    /*
     public function edit($id = null)
     {
         $lesson_edition = $this->LessonEditions->get($id);
@@ -132,6 +133,7 @@ class LessonEditionsController extends AppController
         $this->set('lessons', $lessons); 
         $this->set('lesson_edition', $lesson_edition);
     }
+    */
 
     public function populate() {
         //set referer for back button
@@ -180,9 +182,14 @@ class LessonEditionsController extends AppController
                 $this->redirect(['controller' => 'events', 'action' => 'calendar']);
             }
             */
+            $this->getRequest()->getSession()->write('LessonEdition', $lesson_edition);
+
             if (!$lesson_edition->errors()) {
-                $this->getRequest()->getSession()->write('LessonEdition', $lesson_edition);
+                
                 $this->redirect(['action' => 'review']);
+
+            } else {
+                $this->set('errors', $lesson_edition->errors());
             }
         }
         $exclude = null;
@@ -207,7 +214,7 @@ class LessonEditionsController extends AppController
             return $this->redirect($this->request->referer());
         }
 
-        if ($lesson_edition->athlete->isBusy($lesson_edition->event->start_date, $lesson_edition->event->end_date, $lesson_edition->event_id)) {
+        if (!empty($lesson_edition->athlete) && $lesson_edition->athlete->isBusy($lesson_edition->event->start_date, $lesson_edition->event->end_date, $lesson_edition->event_id)) {
             $this->set('busy_athlete_warning', true);
         }
         if ($this->request->is(['patch', 'post', 'put'])) {

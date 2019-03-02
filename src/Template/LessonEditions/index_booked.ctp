@@ -1,25 +1,23 @@
 <?php
-
+use Cake\Core\Configure;
 ?>
 <div class="lessonEditions index content">
     <h3>
         <?= __('Lesson Management') ?> - <?= __('All booked lesson editions') ?>
     </h3>
-    <small><?= __('...') ?></small>
-    <div class="text-right">
-    	<?= $this->Html->link(__('Index'), ['controller' => 'Lessons', 'action' => 'index'], ['class' => 'btn btn-primary']) ?>
-    </div>
+    <small><?= __('All currently booked editions at a glance, from here you can complete or cancel them.') ?></small>
     <hr>
+
     <?php if (count($lessonEditions) > 0) : ?>
         <table class="table table-striped">
             <thead class="thead">
                 <tr>
                     <th scope="col"><?= $this->Paginator->sort('id') ?></th>
-                    <th scope="col"><?= $this->Paginator->sort('lesson_id', __('Lesson type')) ?></th>
-                    <th scope="col"><?= $this->Paginator->sort('Event.start_date', __('Date')) ?></th>
-                    <th scope="col"><?= $this->Paginator->sort('lesson_edition_status_id', __('Status')) ?></th>
-                    <th scope="col"><?= $this->Paginator->sort('user_id', __('Trainer')) ?></th>
-                    <th scope="col"><?= $this->Paginator->sort('atlete_id', __('Athlete')) ?></th>
+                    <th scope="col"><?= __('Lesson type') ?></th>
+                    <th scope="col"><?= __('Start date') ?></th>
+                    <th scope="col"><?= __('Trainer') ?></th>
+                    <th scope="col"><?= __('Athlete') ?></th>
+                    <th scope="col"><?= __('Actions') ?></th>
                 </tr>
             </thead>
             <tbody>
@@ -28,9 +26,12 @@
                     <td><?= $this->Html->link($lessonEdition->id, ['action' => 'view', $lessonEdition->id]) ?></td>
                     <td><?= $this->Html->link($lessonEdition->lesson->name, ['controller' => 'Lessons', 'action' => 'view', $lessonEdition->lesson->id]) ?></td>
                     <td><?= $lessonEdition->has('event') ? h($lessonEdition->event->start_date->i18nFormat("dd/MM/Y H:mm")) : '' ?></td>
-                    <td><?= $lessonEdition->lesson_edition_status->name ?></td>
                     <td><?= $lessonEdition->has('user') ? $this->Html->link($lessonEdition->user->username, ['controller' => 'Users', 'action' => 'view', $lessonEdition->user->id]) : '' ?></td>
                     <td><?= $lessonEdition->has('athlete') ? $this->Html->link($lessonEdition->athlete->name . ' ' . $lessonEdition->athlete->surname, ['controller' => 'Athletes', 'action' => 'view', $lessonEdition->athlete->id]) : '' ?></td>
+                    <td>
+                            <?= $this->Html->link(__('Complete'), ['action' => 'complete', $lessonEdition->id], ['class' => 'btn btn-primary']) ?>
+                            <?= $this->Html->link(__('Cancel'), ['action' => 'cancel', $lessonEdition->id], ['class' => 'btn btn-danger']) ?>
+                    </td>
                 </tr>
                 <?php endforeach; ?>
             </tbody>

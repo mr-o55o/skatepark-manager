@@ -13,7 +13,6 @@ use Cake\Core\Configure;
 <?php endif; ?>
 
 <?php if ($status === Configure::read('lesson_edition_statuses')['booked']) : ?>
-  <li class="nav-item"><?= $this->Html->link('Edit Lesson Edition Event', ['controller' => 'LessonEditions', 'action' => 'edit', $lesson_edition->id], ['class' => 'nav-link'])?></li>
     <li class="nav-item"><?= $this->Html->link('Complete Lesson Edition Event', ['controller' => 'LessonEditions', 'action' => 'complete', $lesson_edition->id], ['class' => 'nav-link'])?></li>
     <li class="nav-item"><?= $this->Html->link('Cancel Lesson Edition Event', ['controller' => 'LessonEditions', 'action' => 'cancel', $lesson_edition->id], ['class' => 'nav-link'])?></li>
 <?php endif; ?> 

@@ -29,26 +29,18 @@ use Cake\I18n\Time;
                 <th scope="col"><?= $this->Paginator->sort('start_date') ?></th>
                 <th scope="col"><?= $this->Paginator->sort('end_date') ?></th>
                 <th scope="col"><?= __('Remaining Lesson Editions') ?></th>
-                <th scope="col" class="actions"><?= __('Actions') ?></th>
             </tr>
         </thead>
         <tbody>
             <?php foreach ($purchasedLessonEditionsBundles as $purchasedLessonEditionsBundle): ?>
             <tr>
-                <td><?= $this->Number->format($purchasedLessonEditionsBundle->id) ?></td>
+                <td><?= $this->Html->link($purchasedLessonEditionsBundle->id, ['action' => 'view', $purchasedLessonEditionsBundle->id]) ?></td>
                 <td><?= $purchasedLessonEditionsBundle->has('athlete') ? $this->Html->link($purchasedLessonEditionsBundle->athlete->name . ' ' . $purchasedLessonEditionsBundle->athlete->surname, ['controller' => 'Athletes', 'action' => 'view', $purchasedLessonEditionsBundle->athlete->id]) : '' ?></td>
                 <td><?= $purchasedLessonEditionsBundle->has('lesson_editions_bundle') ? $this->Html->link($purchasedLessonEditionsBundle->lesson_editions_bundle->name, ['controller' => 'LessonEditionsBundles', 'action' => 'view', $purchasedLessonEditionsBundle->lesson_editions_bundle->id]) : '' ?></td>
                 <td><?= $this->element('PurchasedLessonEditionsBundleStatuses/status-badge', ['statusId' => $purchasedLessonEditionsBundle->status]); ?></td>
                 <td><?= h($purchasedLessonEditionsBundle->start_date) ?></td>
                 <td><?= h($purchasedLessonEditionsBundle->end_date) ?></td>
                 <td><?= $this->Number->format($purchasedLessonEditionsBundle->count) ?></td>
-                <td class="actions">
-                    <?= $this->Html->link(__('View'), ['action' => 'view', $purchasedLessonEditionsBundle->id], ['class' => 'btn btn-primary']) ?>
-                    <?= $this->Html->link(__('Edit'), ['action' => 'edit', $purchasedLessonEditionsBundle->id], ['class' => 'btn btn-primary']) ?>
-                    <?php if ($purchasedLessonEditionsBundle->end_date < Time::now() && $purchasedLessonEditionsBundle->status == 2) : ?>
-                        <?= $this->Form->postLink(__('Expire'), ['action' => 'expire', $purchasedLessonEditionsBundle->id], ['confirm' => __('Are you sure you want to mark bundle # {0} as expired?', $purchasedLessonEditionsBundle->id), 'class' => 'btn btn-danger']) ?>
-                    <?php endif; ?>
-                </td>
             </tr>
             <?php endforeach; ?>
         </tbody>

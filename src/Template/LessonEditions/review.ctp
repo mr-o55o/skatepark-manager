@@ -12,6 +12,8 @@
     <h3>
       <?= __('Lesson Editions Management') ?> - <?= __('Review lesson edition') ?>
     </h3>
+
+    
     <table class="table table-striped">
         <tr>
             <th scope="row"><?= __('Lesson') ?></th>
@@ -25,9 +27,10 @@
             <th scope="row"><?= __('End Date') ?></th>
             <td><?= h($lesson_edition->event->end_date) ?></td>
         </tr>
+        <?php if ($lesson_edition->has('athlete')) : ?>
         <tr>
             <th scope="row"><?= __('Athlete') ?></th>
-            <td><?= $lesson_edition->has('athlete') ? $this->Html->link($lesson_edition->athlete->name.' '.$lesson_edition->athlete->surname, ['controller' => 'Athletes', 'action' => 'view', $lesson_edition->athlete->id]) : '' ?>
+            <td><?= $this->Html->link($lesson_edition->athlete->name.' '.$lesson_edition->athlete->surname, ['controller' => 'Athletes', 'action' => 'view', $lesson_edition->athlete->id]) ?>
                 <?php if ($lesson_edition->athlete->asi_subscription_date->modify('+ 1 year') < $lesson_edition->event->start_date) : ?>
                     <div class="alert alert-warning"><?= __('ASI Subscription expires before the lesson edition') ?></div>
                 <?php endif; ?>
@@ -36,6 +39,7 @@
                 <?php endif; ?>
             </td>
         </tr>
+        <?php endif; ?>
         <tr>
             <th scope="row"><?= __('Trainer') ?></th>
             <td><?= $lesson_edition->has('user') ? $this->Html->link($lesson_edition->user->username, ['controller' => 'Users', 'action' => 'view', $lesson_edition->user->id]) : '' ?></td>

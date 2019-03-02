@@ -11,6 +11,8 @@ $this->Form->unlockField('athlete_id');
 	<p><?= __('End date')?>: <?= $lesson_edition->event->end_date ?></p>
 </div>
 <hr>
+
+
 <?= $this->Form->create($lesson_edition) ?>
 	<?php if ($available_trainers) : ?>
 		<?= $this->Form->control('user_id', ['options' => $available_trainers, 'label' => __('Select a trainer for this lesson')])?>

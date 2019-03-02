@@ -1,6 +1,7 @@
 <?php
 // Skatepark Manager - Athletes Management sidenav element
 ?>
+<h3><?= __('Athletes Management') ?></h3>
 <div class="list-group bg-dark">
 	<!-- Athletes Index Link -->
 	<?= $this->Html->link(__('Athletes'), 

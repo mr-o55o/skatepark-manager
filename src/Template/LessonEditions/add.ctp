@@ -3,6 +3,7 @@
  * @var \App\View\AppView $this
  * @var \App\Model\Entity\LessonEdition $lessonEdition
  */
+use Cake\I18n\Time;
 ?>
 
 <div class="lessonEditions content">
@@ -17,15 +18,18 @@
         <div class="row">
             <div class="col">
                 <span><?= __('Year') ?></span>: <?= $this->Form->year('event.start_date', [
+                    'value' => Time::now(),
                     'minYear' => date('Y'),
                 ]) ;?>
             </div>
             <div class="col">
                  <span><?= __('Month') ?></span>: <?= $this->Form->month('event.start_date', [
+                    'default' => Time::now()
                 ]) ;?>               
             </div>
             <div class="col">
                 <span><?= __('Day') ?></span>: <?= $this->Form->day('event.start_date', [
+                    'default' => Time::now()
                 ]) ;?>               
             </div>
         </div>

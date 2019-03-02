@@ -1,6 +1,7 @@
 <?php
 // Skatepark Manager - UserManagement sidenav element
 ?>
+<h3><?= __('Users Management') ?></h3>
 <div class="list-group bg-dark">
 	<!-- Users Index Link -->
 	<?= $this->Html->link(__('Users'), 

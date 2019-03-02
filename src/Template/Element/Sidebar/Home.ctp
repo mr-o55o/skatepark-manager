@@ -1,6 +1,7 @@
 <?php
 // Skatepark Manager - Pages sidenav element
 ?>
+<h3><?= __('Home') ?></h3>
 <div class="list-group bg-dark">
 	<!-- Welcome Link -->
 	<?= $this->Html->link(__('Welcome'), 

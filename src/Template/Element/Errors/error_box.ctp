@@ -2,12 +2,13 @@
 
 ?>
 <?php if (isset($errors)) : ?>
-    <h3 class="text-danger"><?= __('Errors detected during add operation:') ?></h3>
-    <ul>
+    <h3 class="text-danger"><?= __('Errors detected during operation:') ?></h3>
+    <p>
     <?php foreach($errors as $field): ?>
+    	<?= key($errors) ?>
         <?php foreach($field as $error): ?>
-            <li><?=$error?></li>
+            <p><?=$error?></p>
         <?php endforeach ?>
     <?php endforeach; ?>
-    </ul>
+    </p>
 <?php endif; ?>

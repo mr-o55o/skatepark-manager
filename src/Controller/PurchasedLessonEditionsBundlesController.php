@@ -30,6 +30,26 @@ class PurchasedLessonEditionsBundlesController extends AppController
         $this->set('purchasedLessonEditionsBundles', $this->paginate($query));
     }
 
+    public function indexForAthlete($id = null)
+    {
+        $athlete = $this->PurchasedLessonEditionsBundles->Athletes->get($id, [
+            'contain' => []
+        ]);
+        $purchasedLessonEditionsBundles =$this->PurchasedLessonEditionsBundles->find('withAthlete', ['athlete_id' => $id])->contain(['LessonEditionsBundles', 'PurchasedLessonEditionsBundlesStatuses']);
+        $this->set('purchasedLessonEditionsBundles', $this->paginate($purchasedLessonEditionsBundles)); 
+        $this->set('athlete', $athlete);        
+    }
+
+    public function indexActive()
+    {
+         $this->paginate = [
+            'contain' => ['Athletes', 'LessonEditionsBundles']
+        ];
+        //$purchasedLessonEditionsBundles = $this->paginate($this->PurchasedLessonEditionsBundles);
+        $query = $this->PurchasedLessonEditionsBundles->find('valid')->find('search', ['search' => $this->request->getQueryParams()]);
+        $this->set('purchasedLessonEditionsBundles', $this->paginate($query));       
+    }
+
     /**
      * buyFor method
      *

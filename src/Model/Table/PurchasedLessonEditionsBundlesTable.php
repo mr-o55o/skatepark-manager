@@ -140,4 +140,10 @@ class PurchasedLessonEditionsBundlesTable extends Table
 
         return $query;
     }
+
+    public function findWithAthlete(Query $query, $options)
+    {
+         $query->where(['athlete_id' => $options['athlete_id']]);
+        return $query;       
+    }
 }

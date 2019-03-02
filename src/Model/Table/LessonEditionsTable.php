@@ -175,11 +175,11 @@ class LessonEditionsTable extends Table
         $validator
             ->requirePresence('user_id', 'create')
             ->allowEmpty('user_id', 'create');       
-
+        */
         $validator
             ->requirePresence('athlete_id', 'create')
             ->allowEmpty('athlete_id', 'create');  
-        */   
+           
 
         return $validator;
     }
@@ -210,6 +210,10 @@ class LessonEditionsTable extends Table
         $rules->addCreate(function($entity, $options) use($rules) {
             switch($entity->lesson_edition_status_id) {
                 case Configure::read('lesson_edition_statuses')['draft']:
+                    return true;
+                break;
+
+                case Configure::read('lesson_edition_statuses')['scheduled']:
                     return true;
                 break;
 
