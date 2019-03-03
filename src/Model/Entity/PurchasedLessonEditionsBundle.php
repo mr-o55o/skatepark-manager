@@ -36,7 +36,8 @@ class PurchasedLessonEditionsBundle extends Entity
         'end_date' => true,
         'athlete' => true,
         'lesson_editions_bundle' => true,
-        'status' => true
+        'status' => true,
+        'count' => true
     ];
 
     //bundle is valid if is activated, his end date is not passed yet

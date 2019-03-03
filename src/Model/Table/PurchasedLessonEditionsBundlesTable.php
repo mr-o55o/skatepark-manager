@@ -91,12 +91,12 @@ class PurchasedLessonEditionsBundlesTable extends Table
             ->notEmpty('is_activated');
 
         $validator
-            ->dateTime('start_date');
+            ->date('start_date');
             //->requirePresence('start_date', 'create')
             //->notEmpty('start_date');
 
         $validator
-            ->dateTime('end_date');
+            ->date('end_date');
             //->requirePresence('end_date', 'create')
             //->notEmpty('end_date');
 

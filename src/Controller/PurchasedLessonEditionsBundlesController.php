@@ -96,7 +96,7 @@ class PurchasedLessonEditionsBundlesController extends AppController
     public function view($id = null)
     {
         $purchasedLessonEditionsBundle = $this->PurchasedLessonEditionsBundles->get($id, [
-            'contain' => ['Athletes', 'LessonEditionsBundles']
+            'contain' => ['Athletes', 'LessonEditionsBundles', 'PurchasedLessonEditionsBundlesStatuses']
         ]);
 
         $this->set('purchasedLessonEditionsBundle', $purchasedLessonEditionsBundle);
@@ -162,15 +162,86 @@ class PurchasedLessonEditionsBundlesController extends AppController
     {
         $this->request->allowMethod(['post']);
         $purchasedLessonEditionsBundle = $this->PurchasedLessonEditionsBundles->get($id);
+
+        if ($purchasedLessonEditionsBundle->status > Configure::read('purchased_lesson_editions_bundle_statuses')['activated'] || $purchasedLessonEditionsBundle->end_date < Time::now()) {
+            $this->Flash->error(__('This bundle cannot be marked as expired.'));
+        }
         $purchasedLessonEditionsBundle->status = Configure::read('purchased_lesson_editions_bundle_statuses')['expired'];
         if ($this->PurchasedLessonEditionsBundles->save($purchasedLessonEditionsBundle)) {
-            $this->Flash->success(__('The purchased lesson editions bundle has been marked as expired.'));
+            $this->Flash->success(__('The bundle has been marked as expired.'));
         } else {
-            $this->Flash->error(__('The purchased lesson editions bundle could not edited. Please, try again.'));
+            $this->Flash->error(__('The bundle could not be marked as expired. Please, try again.'));
         }
 
-        return $this->redirect(['action' => 'index']);        
+        return $this->redirect(['action' => 'view', $purchasedLessonEditionsBundle->id]);        
     }
+
+    /**
+     * Extend method
+     *
+     * @param string|null $id Purchased Lesson Editions Bundle id.
+     * @return \Cake\Http\Response|null Redirects to index.
+     * @throws \Cake\Datasource\Exception\RecordNotFoundException When record not found.
+     */ 
+    public function extend($id = null)
+    {
+        $purchasedLessonEditionsBundle = $this->PurchasedLessonEditionsBundles->get($id);
+
+        if ($purchasedLessonEditionsBundle->status > Configure::read('purchased_lesson_editions_bundle_statuses')['activated'] || $purchasedLessonEditionsBundle->end_date > Time::now()) {
+            $this->Flash->error(__('This bundle cannot be extended.'));
+            return $this->redirect(['action' => 'view', $purchasedLessonEditionsBundle->id]);  
+        }
+
+        if ($this->request->is(['patch', 'post', 'put'])) {
+            $purchasedLessonEditionsBundle = $this->PurchasedLessonEditionsBundles->patchEntity($purchasedLessonEditionsBundle ,$this->request->getData());
+        
+            if ($this->PurchasedLessonEditionsBundles->save($purchasedLessonEditionsBundle)) {
+                $this->Flash->success(__('The bundle has been marked as expired.'));
+            } else {
+                $this->Flash->error(__('The bundle could not be extended. Please, try again.'));
+            }
+            
+
+            return $this->redirect(['action' => 'view', $purchasedLessonEditionsBundle->id]);             
+        }
+        $this->set('purchasedLessonEditionsBundle', $purchasedLessonEditionsBundle);
+                      
+    }
+
+    /**
+     * Recharge method
+     *
+     * @param string|null $id Purchased Lesson Editions Bundle id.
+     * @return \Cake\Http\Response|null Redirects to index.
+     * @throws \Cake\Datasource\Exception\RecordNotFoundException When record not found.
+     */
+    public function recharge($id = null)
+    {
+        $purchasedLessonEditionsBundle = $this->PurchasedLessonEditionsBundles->get($id, ['contain' => 'LessonEditionsBundles']);
+        if ($purchasedLessonEditionsBundle->status > Configure::read('purchased_lesson_editions_bundle_statuses')['activated'] || 
+            $purchasedLessonEditionsBundle->end_date < Time::now() ||
+            $purchasedLessonEditionsBundle->lesson_edition_bundle->lesson_edition_count == $purchasedLessonEditionsBundle->count;
+        ) {
+            $this->Flash->error(__('This bundle cannot be recharged.'));
+            return $this->redirect(['action' => 'view', $purchasedLessonEditionsBundle->id]);  
+        }
+
+        if ($this->request->is(['patch', 'post', 'put'])) {
+            $purchasedLessonEditionsBundle = $this->PurchasedLessonEditionsBundles->patchEntity($purchasedLessonEditionsBundle ,$this->request->getData());
+            
+            if ($this->PurchasedLessonEditionsBundles->save($purchasedLessonEditionsBundle)) {
+                $this->Flash->success(__('The bundle has been recharged.'));
+            } else {
+                $this->Flash->error(__('The bundle could not be recharged. Please, try again.'));
+            }
+            
+
+            return $this->redirect(['action' => 'view', $purchasedLessonEditionsBundle->id]);  
+                     
+        }
+        $this->set('purchasedLessonEditionsBundle', $purchasedLessonEditionsBundle);        
+    }
+
     /**
      * Delete method
      *
@@ -178,6 +249,8 @@ class PurchasedLessonEditionsBundlesController extends AppController
      * @return \Cake\Http\Response|null Redirects to index.
      * @throws \Cake\Datasource\Exception\RecordNotFoundException When record not found.
      */
+
+    /*
     public function delete($id = null)
     {
         $this->request->allowMethod(['post', 'delete']);
@@ -194,6 +267,7 @@ class PurchasedLessonEditionsBundlesController extends AppController
 
         return $this->redirect(['action' => 'index']);
     }
+    */
 
 
 }
