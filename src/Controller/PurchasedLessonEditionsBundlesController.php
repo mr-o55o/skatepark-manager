@@ -220,7 +220,7 @@ class PurchasedLessonEditionsBundlesController extends AppController
         $purchasedLessonEditionsBundle = $this->PurchasedLessonEditionsBundles->get($id, ['contain' => 'LessonEditionsBundles']);
         if ($purchasedLessonEditionsBundle->status > Configure::read('purchased_lesson_editions_bundle_statuses')['activated'] || 
             $purchasedLessonEditionsBundle->end_date < Time::now() ||
-            $purchasedLessonEditionsBundle->lesson_edition_bundle->lesson_edition_count == $purchasedLessonEditionsBundle->count;
+            $purchasedLessonEditionsBundle->lesson_edition_bundle->lesson_edition_count == $purchasedLessonEditionsBundle->count
         ) {
             $this->Flash->error(__('This bundle cannot be recharged.'));
             return $this->redirect(['action' => 'view', $purchasedLessonEditionsBundle->id]);  
