@@ -211,7 +211,7 @@ class UsersTable extends Table
         }
         $query->select(['id','username']);
         $query->distinct();
-        $query->where(['role_id' => Configure::read('roles')['trainer']]);
+        $query->where(['role_id' => Configure::read('roles')['trainer'], ['active' => true ]]);
         //load activities
         $query->contain('Activities.Events', function (Query $q) use($periodStart, $periodEnd) {
             $q->where(['OR' => [

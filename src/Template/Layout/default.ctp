@@ -29,9 +29,7 @@ $cakeDescription = 'CakePHP: the rapid development php framework';
     <?= $this->fetch('script') ?>
 </head>
 <body>
-    <nav class="navbar navbar-light bg-light">
-      <a class="navbar-brand" href="/">Skatepark Manager</a>
-    </nav>
+    <h1 class="text-center">Welcome to Skatepark Manager</h1>
     <?= $this->Flash->render() ?>
     <div class="container">
         <?= $this->fetch('content') ?>
