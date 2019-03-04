@@ -1,13 +1,10 @@
 <?php
 use Cake\Core\Configure;
 ?>
-<div class="lessonEditions index content">
-    <h3>
-        <?= __('Lesson Management') ?> - <?= __('All booked lesson editions') ?>
-    </h3>
-    <small><?= __('All currently booked editions at a glance, from here you can complete or cancel them.') ?></small>
-    <hr>
 
+<div class="lessonEditions index content">
+    <h4><?= __('Booked Lesson Editions') ?></h4>
+    <?= $this->Element('Athletes/filter-form'); ?>
     <?php if (count($lessonEditions) > 0) : ?>
         <table class="table table-striped">
             <thead class="thead">

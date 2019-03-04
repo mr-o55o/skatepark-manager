@@ -16,6 +16,17 @@ use Cake\I18n\Time;
 class LessonEditionsController extends AppController
 {
 
+    public function initialize()
+    {
+        parent::initialize();
+
+        $this->loadComponent('Search.Prg', [
+            // This is default config. You can modify "actions" as needed to make
+            // the PRG component work only for specified methods.
+            'actions' => ['index', 'indexBooked']
+        ]);
+    }
+
     /**
      * Index method
      *
@@ -26,7 +37,7 @@ class LessonEditionsController extends AppController
         $this->paginate = [
             'contain' => ['Lessons', 'LessonEditionStatuses', 'Athletes', 'Events', 'Users']
         ];
-        $lessonEditions = $this->paginate($this->LessonEditions->find('All'));
+        $lessonEditions = $this->paginate($this->LessonEditions->find('All')->find('search', ['search' => $this->request->getQueryParams()]));
 
         $this->set(compact('lessonEditions'));
     }
@@ -36,7 +47,7 @@ class LessonEditionsController extends AppController
         $this->paginate = [
             'contain' => ['Lessons', 'LessonEditionStatuses', 'Athletes', 'Events', 'Users']
         ];
-        $lessonEditions = $this->paginate($this->LessonEditions->find('booked'));
+        $lessonEditions = $this->paginate($this->LessonEditions->find('booked')->find('search', ['search' => $this->request->getQueryParams()]));
 
         $this->set(compact('lessonEditions'));
     }

@@ -7,18 +7,8 @@
 use Cake\I18n\Time;
 ?>
 <div class="purchasedLessonEditionsBundles content">
-    <h3><?= __('Purchased Lesson Editions Bundles') ?></h3>
-    <small>...</small>
-    <hr>
-    <?php
-        echo $this->Form->create(null, ['valueSources' => 'query', 'type' => 'get']);
-        // Match the search param in your table configuration
-        echo $this->Form->control('q', ['label' => __('Search text in Athlete name and surname fields')]);
-        echo $this->Form->button('Filter', ['type' => 'submit']);
-        echo $this->Html->link('Reset', ['action' => 'index']);
-        echo $this->Form->end();
-    ?>
-    <hr>
+    <h4><?= __('All Purchased Lesson Editions Bundles') ?></h4>
+    <?= $this->Element('Athletes/filter-form') ?> 
     <table class="table table-striped">
         <thead>
             <tr>

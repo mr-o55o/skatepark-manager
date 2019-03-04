@@ -6,15 +6,7 @@
 ?>
 
 <div class="lessons content">
-    <h3>
-      <?= __('Lessons Management') ?> - <?= __('Add new Lesson') ?>
-    </h3>
-    <small><?= __('A lesson is characterized by a name, an optional description, a duration in minutes, a unit price, etc; lessons cannot be modified if they are already associated to any lesson edition') ?></small>    
-    <hr>
-        <div class="text-right">
-            <?= $this->Html->Link( __('Lessons Index'), ['action' => 'index'], ['class' => ['btn', 'btn-primary']]); ?>
-        </div>
-    <hr>
+    <h4><?= __('Add New Lesson') ?></h4>
     <?= $this->Form->create($lesson) ?>
     <fieldset>
         <?= $this->Form->control('name', ['label' => __('Name')]); ?>

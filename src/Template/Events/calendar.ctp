@@ -4,13 +4,7 @@ $this->loadHelper('Calendar.Calendar');
 
 ?>
 <div class="lessonEditions content">
-    <h3>
-        <?= __('Events Calendar') ?>
-    </h3>
-    <small><?= __('Events calendar displays the activity schedule of the park') ?></small>
-    <hr>
-    <?php echo $this->element('Events/events-menu'); ?>
-    <hr>
+    <h4><?= __('Events Calendar') ?></h4>
 	<?php
 		foreach ($events as $event) {
 			$content = '<strong>'.$event->start_date->i18nFormat('HH:mm').' - '.$event->end_date->i18nFormat('HH:mm').': </strong>';

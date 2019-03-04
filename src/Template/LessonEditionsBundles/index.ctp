@@ -5,15 +5,7 @@
  */
 ?>
 <div class="lessonEditionsBundles content">
-    <h3>
-      <?= __('Lessons Management') ?> - <?= __('Lesson Editions Bundles') ?>
-    </h3>
-    <small><?= __('Bundles are a certain number of lesson offered at a discounted price.') ?></small>  
-    <hr>
-    <div class="text-right">
-      <?= $this->Html->Link( __('Add a new Bundle'), ['action' => 'add'], ['class' => ['btn', 'btn-primary']]); ?>
-    </div>
-    <hr>
+    <h4><?= __('Index') ?></h4>
     <table class="table table-striped">
         <thead>
             <tr>

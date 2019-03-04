@@ -7,23 +7,8 @@
 use Cake\I18n\Time;
 ?>
 <div class="athletes index content">
-    <h3>
-      <?= __('Athletes Management') ?> - <?= __('Athletes') ?>
-    </h3>
-    <small><?= __('With Athletes Management you can register athletes, edit their data, update their asi subscription, give them a bundle, assign them to an existing course.') ?></small>  
-    <div class="text-right">
-      <?= $this->Html->Link( __('Sign Up a new Athlete'), ['action' => 'add'], ['class' => ['btn', 'btn-primary']]); ?>
-    </div>
-    <hr>
-    <?php
-        echo $this->Form->create(null, ['valueSources' => 'query']);
-        // Match the search param in your table configuration
-        echo $this->Form->control('q', ['label' => __('Search text in name, surname fields')]);
-        echo $this->Form->button('Filter', ['type' => 'submit']);
-        echo $this->Html->link('Reset', ['action' => 'index']);
-        echo $this->Form->end();
-    ?>
-    <hr>
+    <h4><?= __('Athletes List') ?></h4>
+    <?= $this->Element('Athletes/filter-form') ?>
     <table  class="table table-striped table-condensed">
         <thead class="thead">
             <tr>

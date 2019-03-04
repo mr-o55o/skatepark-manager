@@ -80,6 +80,22 @@ class LessonEditionsTable extends Table
         ]);
 
         //$this->hasOne('Events');
+        $this->addBehavior('Search.Search');
+        $this->searchManager()
+            ->add('q', 'Search.Like', [
+                'before' => true,
+                'after' => true,
+                'fieldMode' => 'OR',
+                'comparison' => 'iLIKE',
+                'wildcardAny' => '*',
+                'wildcardOne' => '?',
+                'field' => ['Athletes.name', 'Athletes.surname']
+            ])
+            ->add('foo', 'Search.Callback', [
+                'callback' => function ($query, $args, $filter) {
+                    // Modify $query as required
+                }
+            ]);     
 
     }
 /*

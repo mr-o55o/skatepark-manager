@@ -15,6 +15,17 @@ use Cake\I18n\Time;
 class PurchasedLessonEditionsBundlesController extends AppController
 {
 
+    public function initialize()
+    {
+        parent::initialize();
+
+        $this->loadComponent('Search.Prg', [
+            // This is default config. You can modify "actions" as needed to make
+            // the PRG component work only for specified methods.
+            'actions' => ['index', 'indexActive']
+        ]);
+    }
+
     /**
      * Index method
      *
@@ -26,7 +37,7 @@ class PurchasedLessonEditionsBundlesController extends AppController
             'contain' => ['Athletes', 'LessonEditionsBundles']
         ];
         //$purchasedLessonEditionsBundles = $this->paginate($this->PurchasedLessonEditionsBundles);
-        $query = $this->PurchasedLessonEditionsBundles->find('search', ['search' => $this->request->getQueryParams()]);
+        $query = $this->PurchasedLessonEditionsBundles->find('search', ['search' => $this->request->getQueryParams()])->order(['start_date', 'count']);
         $this->set('purchasedLessonEditionsBundles', $this->paginate($query));
     }
 
@@ -46,7 +57,7 @@ class PurchasedLessonEditionsBundlesController extends AppController
             'contain' => ['Athletes', 'LessonEditionsBundles']
         ];
         //$purchasedLessonEditionsBundles = $this->paginate($this->PurchasedLessonEditionsBundles);
-        $query = $this->PurchasedLessonEditionsBundles->find('valid')->find('search', ['search' => $this->request->getQueryParams()]);
+        $query = $this->PurchasedLessonEditionsBundles->find('valid')->find('search', ['search' => $this->request->getQueryParams()])->order(['start_date', 'count']);
         $this->set('purchasedLessonEditionsBundles', $this->paginate($query));       
     }
 
@@ -132,6 +143,7 @@ class PurchasedLessonEditionsBundlesController extends AppController
      * @return \Cake\Http\Response|null Redirects on successful edit, renders view otherwise.
      * @throws \Cake\Network\Exception\NotFoundException When record not found.
      */
+    /*
     public function edit($id = null)
     {
         $purchasedLessonEditionsBundle = $this->PurchasedLessonEditionsBundles->get($id, [
@@ -150,6 +162,7 @@ class PurchasedLessonEditionsBundlesController extends AppController
         $lessonEditionsBundles = $this->PurchasedLessonEditionsBundles->LessonEditionsBundles->find('list', ['limit' => 200]);
         $this->set(compact('purchasedLessonEditionsBundle', 'athletes', 'lessonEditionsBundles'));
     }
+    */
 
     /**
      * Expire method
@@ -220,7 +233,7 @@ class PurchasedLessonEditionsBundlesController extends AppController
         $purchasedLessonEditionsBundle = $this->PurchasedLessonEditionsBundles->get($id, ['contain' => 'LessonEditionsBundles']);
         if ($purchasedLessonEditionsBundle->status > Configure::read('purchased_lesson_editions_bundle_statuses')['activated'] || 
             $purchasedLessonEditionsBundle->end_date < Time::now() ||
-            $purchasedLessonEditionsBundle->lesson_edition_bundle->lesson_edition_count == $purchasedLessonEditionsBundle->count
+            $purchasedLessonEditionsBundle->lesson_editions_bundle->lesson_edition_count == $purchasedLessonEditionsBundle->count
         ) {
             $this->Flash->error(__('This bundle cannot be recharged.'));
             return $this->redirect(['action' => 'view', $purchasedLessonEditionsBundle->id]);  

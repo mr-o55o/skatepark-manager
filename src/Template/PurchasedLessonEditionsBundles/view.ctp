@@ -7,11 +7,7 @@ use Cake\I18n\Time;
 use CAke\Core\Configure;
 ?>
 <div class="purchasedLessonEditionsBundles content">
-    <h3>
-        <?= __('Lesson Management -View purchased lesson editions bundle') ?>
-        <br><span class="small"><?= __('Lesson Editions Bundle details.') ?></span>
-
-    </h3>
+    <h4><?= __('View purchased lesson editions bundle') ?></h4>
     <table class="table">
         <tr>
             <th scope="row"><?= __('Id') ?></th>
@@ -42,10 +38,14 @@ use CAke\Core\Configure;
             <td><?= h($purchasedLessonEditionsBundle->end_date) ?></td>
         </tr>
     </table>
-    <?php if ($purchasedLessonEditionsBundle->end_date < Time::now() && $purchasedLessonEditionsBundle->status <= Configure::read('purchased_lesson_editions_bundle_statuses')['purchased']) : ?>
+    <?php if ($purchasedLessonEditionsBundle->end_date < Time::now() && $purchasedLessonEditionsBundle->status <= Configure::read('purchased_lesson_editions_bundle_statuses')['activated']) : ?>
         <div class="alert alert-warning"><?= __('This Bundle has reached its end date, you can expire or extend it.') ?>:<br>
         <?= $this->Html->Link(__('Expire'), ['action' => 'expire'], ['class' => 'btn btn-danger']) ?> 
         <?= $this->Html->Link(__('Extend'), ['action' => 'extend', $purchasedLessonEditionsBundle->id], ['class' => 'btn btn-primary']) ?>
         </div>
+    <?php endif; ?>
+
+    <?php if ($purchasedLessonEditionsBundle->status <= Configure::read('purchased_lesson_editions_bundle_statuses')['activated'] && $purchasedLessonEditionsBundle->count < $purchasedLessonEditionsBundle->lesson_editions_bundle->lesson_edition_count) : ?>
+        <?= $this->Html->link(__('Recharge'), ['action' => 'recharge'], ['class' => 'btn btn-primary']) ?>
     <?php endif; ?>
 </div>

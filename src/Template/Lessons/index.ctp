@@ -5,15 +5,8 @@
  */
 ?>
 <div class="lessons index content">
-     <h3>
-      <?= __('Lessons Management') ?> - <?= __('Lessons') ?>
-    </h3>
-    <small><?= __('A lesson is characterized by a name, an optional description, a duration in minutes, a unit price, etc; lessons cannot be modified if they are already associated to any lesson edition') ?></small>    
-    <hr>
-    <div class="text-right">
-      <?= $this->Html->Link( __('Add a new Lesson'), ['action' => 'add'], ['class' => ['btn', 'btn-primary']]); ?>
-    </div>
-    <hr>
+    <h4><?= __('Defined Lessons') ?></h4>
+
     <?php if (count($lessons) > 0) : ?>
         <table class="table table-striped">
             <thead class="thead">

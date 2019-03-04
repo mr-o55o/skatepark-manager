@@ -44,20 +44,27 @@ $this->end();
     <script src="/js/jquery,min.js"></script>
 </head>
 <body>
-    <!-- Navbar start -->
+    <!-- Navbar -->
     <?= $this->fetch('navbar'); ?>
-    <!-- Navbar end -->
     <div class="container-fluid">
         <div class="row">
+            <!-- Sidebar -->
             <div class="col-lg-2 bg-dark text-white p-3">
                 <?= $this->fetch('sidebar'); ?>           
             </div>
-            <div class="col-lg-10 p-5 m-0">
-                <?= $this->Flash->render() ?>
+            <!-- Main Area -->
+            <div class="col-lg-10 m-0 p-0">
+                <!-- Controller Based Jumbotron -->
+                <?= $this->Element($this->request->controller . '/jumbotron'); ?> 
+                <!-- Main Container -->
                 <div class="container clearfix">
+                    <!-- Flash messages -->
+                    <?= $this->Flash->render() ?>
+                    <!-- Application Error messages -->
                     <?php if(isset($errors)) : ?>
                         <?= $this->Element('Errors/error_box'); ?>
                     <?php endif; ?>
+                    <!-- Content -->
                     <?= $this->fetch('content') ?>
                 </div>             
             </div>

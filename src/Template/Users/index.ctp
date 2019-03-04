@@ -5,23 +5,8 @@
  */
 ?>
 <div class="users index content">
-    <h3><?= __('Users Management') ?> - <?= __('Users') ?></h3>
-    <small><?= __('Users are all the people that work in the skatepark, they have a role assigned (admin, trainer, staff, etc.) and this role determines the functions they are allowed to use.') ?></small>
-    <hr>
-    <div class="text-right">
-      <?= $this->Html->Link( __('Register a new User'), ['action' => 'add'], ['class' => ['btn', 'btn-primary']]); ?>
-    </div>
-    <hr>
-
-<?php
-    echo $this->Form->create(null, ['valueSources' => 'query']);
-    // Match the search param in your table configuration
-    echo $this->Form->control('q', ['label' => __('Search text in username, name, surname and email fields')]);
-    echo $this->Form->button('Filter', ['type' => 'submit']);
-    echo $this->Html->link('Reset', ['action' => 'index']);
-    echo $this->Form->end();
-?>
-<hr>
+    <h4><?= __('Users List') ?></h4>
+    <?= $this->Element('Users/filter-form') ?>
     <table class="table table-striped table-sm">
         <thead class="thead">
             <tr>
@@ -43,15 +28,20 @@
                 <td><?= $this->Number->format($user->id) ?></td>
                 <td><?= h($user->username) ?></td>
                 <td><?= h($user->email) ?></td>
-                <td><?= $user->has('role') ? $this->Html->link($user->role->role_name, ['controller' => 'Roles', 'action' => 'view', $user->role->id]) : '' ?></td>
+                <td><?= $user->has('role') ? $this->Html->link($user->role->name, ['controller' => 'Roles', 'action' => 'view', $user->role->id]) : '' ?></td>
                 <td><?= h($user->name) ?></td>
                 <td><?= h($user->surname) ?></td>
                 <td><?= h($user->created) ?></td>
                 <td><?= h($user->modified) ?></td>
                 <td><?= h($user->active) ?></td>
                 <td class="actions">
-                    <?= $this->Html->link(__('View'), ['action' => 'view', $user->id]) ?>
-                    <?= $this->Html->link(__('Edit'), ['action' => 'edit', $user->id]) ?>
+                    <?= $this->Html->link(__('View'), ['action' => 'view', $user->id], ['class' => 'btn btn-primary']) ?>
+                    <?= $this->Html->link(__('Edit'), ['action' => 'edit', $user->id], ['class' => 'btn btn-primary']) ?>
+                    <?php if ($user->active) : ?>
+                        <?= $this->Form->postLink('Deactivate', [ 'action' => 'deactivate', $user->id], ['confirm' => __('Deactivating user {0} are you sure?', $user->id), 'class' => 'btn btn-warning']); ?>
+                    <?php else : ?>
+                        <?= $this->Form->postLink('Activate', [ 'action' => 'activate', $user->id], ['confirm' => __('Activating user {0} are you sure?', $user->id), 'class' => 'btn btn-success']); ?>
+                    <?php endif; ?>
                 </td>
             </tr>
             <?php endforeach; ?>

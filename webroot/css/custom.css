@@ -2,6 +2,10 @@
 	width: 30%;
 }
 
+.action-contextual-menu {
+	background-color: black;
+}
+
 .event {
 	
 	border: 1px solid #dee2e6;

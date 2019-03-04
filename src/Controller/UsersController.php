@@ -198,6 +198,54 @@ class UsersController extends AppController
         $this->set(compact('user', 'roles'));
     }
 
+    /**
+     * Activate method
+     *
+     * @param string|null $id User id.
+     * @return \Cake\Http\Response|null Redirects on successful edit, renders view otherwise.
+     * @throws \Cake\Network\Exception\NotFoundException When record not found.
+     */
+    public function activate($id = null)
+    {
+        $this->request->allowMethod(['post']);
+        $user = $this->Users->get($id);
+        if (!$user->active) {
+            $user->active = true;
+            if ($this->Users->save($user)) {
+                $this->Flash->success(__('User has been activated.'));
+                return $this->redirect(['action' => 'view', $id]);
+            }
+            $this->Flash->error('Error detected during user activation.'); 
+        } else {
+            $this->Flash->error('User is already active.');
+        }
+        return $this->redirect(['action' => 'view', $id]);
+    }
+
+    /**
+     * Deactivate method
+     *
+     * @param string|null $id User id.
+     * @return \Cake\Http\Response|null Redirects on successful edit, renders view otherwise.
+     * @throws \Cake\Network\Exception\NotFoundException When record not found.
+     */
+    public function deactivate($id = null)
+    {
+        $this->request->allowMethod(['post']);
+        $user = $this->Users->get($id);
+        if ($user->active) {
+            $user->active = false;
+            if ($this->Users->save($user)) {
+                $this->Flash->success(__('User has been deactivated.'));
+                return $this->redirect(['action' => 'view', $id]);
+            }
+            $this->Flash->error('Error detected during user activation.'); 
+        } else {
+            $this->Flash->error('User is already deactivated.');
+        }
+        return $this->redirect(['action' => 'view', $id]);
+    }
+
     public function login()
     {
         if ($this->request->is('post')) {
