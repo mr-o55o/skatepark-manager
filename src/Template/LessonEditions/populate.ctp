@@ -22,6 +22,7 @@ $this->Form->unlockField('athlete_id');
     <hr>
     <?php if ($lesson_edition->athlete != null) : ?>
         <?= __('Currently selected Athlete') ?>: <?= $lesson_edition->athlete->name . ' ' . $lesson_edition->athlete->surname ?>
+        <?= $this->Form->hidden('athlete_id', ['value' => $lesson_edition->athlete_id]) ?>
     <?php else : ?>
         <div><label><?= __('Search for an athlete') ?></label>
         <?= $this->Form->input('athlete_surname', ['id' => 'athlete-surname']) ?>
@@ -60,7 +61,7 @@ $this->Form->unlockField('athlete_id');
                 $('#target-athlete').append('<label><?=__('Select an athlete')?></label><br>');
                 $.each(response.athletes, function( index, value ) {
                     console.log(index + ": "+ value['name']);
-                    $('#target-athlete').append('<input type="radio" name="athlete_id" value="' + value['id'] + '" /> ' + value['name'] + ' ' + value['surname'] + '<br>');
+                    $('#target-athlete').append('<input type="radio" name="athlete_id" value="' + value['id'] + '" required /> ' + value['name'] + ' ' + value['surname'] + '<br>');
                     //$('#target-athlete').append('<div class="athlete"><a value="'+ value['name'] + value['surname'] +'" id="' + value['id'] +'">' + value['name'] + ' ' + value['surname'] + ' - ' + value['asi_subscription_number'] + ' - ' + value['asi_subscription_date'] + '</a></div>');
                 });                        
             },

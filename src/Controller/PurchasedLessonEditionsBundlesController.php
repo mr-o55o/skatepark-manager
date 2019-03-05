@@ -228,6 +228,7 @@ class PurchasedLessonEditionsBundlesController extends AppController
      * @return \Cake\Http\Response|null Redirects to index.
      * @throws \Cake\Datasource\Exception\RecordNotFoundException When record not found.
      */
+    /*
     public function recharge($id = null)
     {
         $purchasedLessonEditionsBundle = $this->PurchasedLessonEditionsBundles->get($id, ['contain' => 'LessonEditionsBundles']);
@@ -254,6 +255,7 @@ class PurchasedLessonEditionsBundlesController extends AppController
         }
         $this->set('purchasedLessonEditionsBundle', $purchasedLessonEditionsBundle);        
     }
+    */
 
     /**
      * Delete method

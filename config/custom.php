@@ -47,6 +47,9 @@ return [
 			//Activities belongs to ActivitiesManagement Area
 			'Activities' => [
 				'topic' => 'ActivitiesManagement'
+			],
+			'Administration' => [
+				'topic' => 'Administration'
 			]
 		],
 
@@ -69,6 +72,9 @@ return [
 			'ActivitiesManagement' => [
 
 			],
+			'Administration' => [
+
+			],			
 		] 
 	],
 

@@ -5,10 +5,16 @@
  */
 
 use Cake\I18n\Time;
+use Cake\Core\Configure;
 ?>
 <div class="purchasedLessonEditionsBundles content">
     <h4><?= __('Active Lesson Editions Bundles') ?></h4>
     <?= $this->Element('Athletes/filter-form') ?> 
+
+    <p>
+        <?= __('List of currently purchased and activated bundles (active bundles).') ?>
+        <?= __('Bundles that reach their end date, must be expired or extended, in either cases they must be managed.')?>
+    </p>
     <table class="table table-striped">
         <thead>
             <tr>
@@ -33,12 +39,9 @@ use Cake\I18n\Time;
                 <td><?= h($purchasedLessonEditionsBundle->end_date) ?></td>
                 <td><?= $this->Number->format($purchasedLessonEditionsBundle->count) ?></td>
                 <td class="actions">
-                    <?php if ($purchasedLessonEditionsBundle->end_date < Time::now() && $purchasedLessonEditionsBundle->status == 2) : ?>
+                    <?php if ($purchasedLessonEditionsBundle->end_date < Time::now() && $purchasedLessonEditionsBundle->status == Configure::read('purchased_lesson_editions_bundle_statuses')['activated']) : ?>
                         <?= $this->Html->link(__('Extend'), ['action' => 'extend', $purchasedLessonEditionsBundle->id], ['class' => 'btn btn-primary']) ?>
                         <?= $this->Form->postLink(__('Expire'), ['action' => 'expire', $purchasedLessonEditionsBundle->id], ['confirm' => __('Are you sure you want to mark bundle # {0} as expired?', $purchasedLessonEditionsBundle->id), 'class' => 'btn btn-danger']) ?>
-                    <?php endif; ?>
-                    <?php if ($purchasedLessonEditionsBundle->count < $purchasedLessonEditionsBundle->lesson_editions_bundle->lesson_edition_count) : ?>
-                        <?= $this->Html->link(__('Recharge'), ['action' => 'recharge', $purchasedLessonEditionsBundle->id], ['class' => 'btn btn-primary']) ?>
                     <?php endif; ?>
                 </td>
             </tr>

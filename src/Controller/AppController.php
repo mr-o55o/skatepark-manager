@@ -95,6 +95,8 @@ class AppController extends Controller
         {
             $this->layout = Configure::read('private-layout');
             $this->LoggedUser->setLoggedUser($this->Auth->user());
+
+            //$this->set('MainNav', $this->mainNavAclControllerFilter($this->Auth->user('id')));
         } else {
             $this->layout = 'default';
             $this->set('loggedUser', null);
@@ -103,6 +105,24 @@ class AppController extends Controller
         // Enable default locale format parsing.
         Type::build('datetime')->useLocaleParser();
         //Type::build('number')->useLocaleParser();
+
+
+
+    }
+
+    //filter the controller array read from config by role
+    private function mainNavAclControllerFilter($userId) 
+    {
+        $controllers = Configure::read('main_nav')['topics'];
+        debug($controllers);
+        foreach ($controllers as $controller) {
+            debug($controller);
+            /*if (!$this->Acl->check($userId, $controller)) {
+                
+                //unset($controllers[$controller]);
+            }*/
+        }
+        return $controllers;
     }
 
 }

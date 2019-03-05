@@ -19,17 +19,17 @@ use Cake\Core\Configure;
 		 	<li class="nav-item <?= (Configure::read('main_nav')['controllers'][$this->request->controller]['topic'] == 'Events' ? 'active' : '') ?>">
 		 		<?= $this->Html->link(__('Events'), ['controller' => 'Events', 'action' => 'calendar'], ['class' => 'nav-link text-white'])?>
 		 	</li>
-		  	<li class="nav-item <?= (Configure::read('main_nav')['controllers'][$this->request->controller]['topic'] == 'UsersManagement' ? 'active' : '') ?>">
-		  		<?= $this->Html->link(__('Users Management'), ['controller' => 'Users', 'action' => 'index'], ['class' => 'nav-link text-white'])?>
-		  	</li>
 		  	<li class="nav-item <?= (Configure::read('main_nav')['controllers'][$this->request->controller]['topic'] == 'AthletesManagement' ? 'active' : '') ?>">
 		  		<?= $this->Html->link(__('Athletes Management'), ['controller' => 'Athletes', 'action' => 'index'], ['class' => 'nav-link text-white'])?>
 		  	</li>
 		  	<li class="nav-item <?= (Configure::read('main_nav')['controllers'][$this->request->controller]['topic'] == 'LessonsManagement' ? 'active' : '') ?>">
-		  		<?= $this->Html->link(__('Lessons Management'), ['controller' => 'Lessons', 'action' => 'index'], ['class' => 'nav-link text-white'])?>
+		  		<?= $this->Html->link(__('Lessons Management'), ['controller' => 'LessonEditions', 'action' => 'indexBooked'], ['class' => 'nav-link text-white'])?>
 		  	</li>
 		  	<li class="nav-item <?= (Configure::read('main_nav')['controllers'][$this->request->controller]['topic'] == 'ActivitiesManagement' ? 'active' : '') ?>">
 		  		<?= $this->Html->link(__('Activities Management'), ['controller' => 'Activities', 'action' => 'index'], ['class' => 'nav-link text-white'])?>
+		  	</li>
+		  	<li class="nav-item <?= (Configure::read('main_nav')['controllers'][$this->request->controller]['topic'] == 'Administration' ? 'active' : '') ?>">
+		  		<?= $this->Html->link(__('Administration'), ['controller' => 'Administration', 'action' => 'index'], ['class' => 'nav-link text-white'])?>
 		  	</li>
 	  	</ul>
 	  	<!-- Logged user panel -->
