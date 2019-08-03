@@ -146,7 +146,14 @@ class UsersController extends AppController
     public function view($id = null)
     {
         $user = $this->Users->get($id, [
-            'contain' => ['Roles']
+            'contain' => [
+                'Roles', 
+                'BookedLessonEditions' => function ($q) {
+                    return $q->order(['Events.start_date'=>'ASC']);
+                }, 
+                'BookedLessonEditions.Events', 
+                'BookedLessonEditions.Lessons'
+            ]
         ]);
 
         $this->set('user', $user);
@@ -263,5 +270,10 @@ class UsersController extends AppController
     $this->Flash->success('You are now logged out.');
     $this->Auth->setUser(null);
     return $this->redirect($this->Auth->logout());
+    }
+
+    public function sendCredentials()
+    {
+
     }
 }

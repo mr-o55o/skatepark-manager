@@ -1,21 +1,27 @@
 <?php
 $this->Form->unlockField('athlete_id');
 ?>
-<h3>
-  <?= __('Lesson Editions Management') ?> - <?= __('Book a lesson edition') ?>
-</h3>
-<label><?= __('Lesson edition data') ?></label>
-<div>
-	<p><?= __('Lesson') ?>: <?= h($lesson_edition->lesson->name)?></p>
-	<p><?= __('Start date')?>: <?= $lesson_edition->event->start_date ?></p>
-	<p><?= __('End date')?>: <?= $lesson_edition->event->end_date ?></p>
-</div>
+<table class="table table-striped">
+    <tr>
+        <th><?= __('Lesson') ?></th>
+        <td><?= h($lesson_edition->lesson->name)?></td>
+    </tr>
+    <tr>
+        <th><?= __('Lesson Duration') ?></th>
+        <td><?= h($lesson_edition->lesson->duration) ?> <?= __('minutes') ?></td>
+    </tr>
+    <tr>
+        <th><?= __('Lesson starts at') ?></th>
+        <td><?= $lesson_edition->event->start_date->I18nFormat('EEEE d MMMM Y') ?> @ <?= $lesson_edition->event->start_date->I18nFormat('HH:mm') ?></td>
+    </tr>
+</table>
 <hr>
 
 
 <?= $this->Form->create($lesson_edition) ?>
 	<?php if ($available_trainers) : ?>
-		<?= $this->Form->control('user_id', ['options' => $available_trainers, 'label' => __('Select a trainer for this lesson')])?>
+        <label><?= __('Select a Trainer among the free ones') ?> <i class="fas fa-star fa-xs text-danger"></i></label>
+		<?= $this->Form->control('user_id', ['options' => $available_trainers, 'label' => false])?>
 	<?php else : ?>
 		<div class="alert alert-warning"><?= __('No free trainers for the selected timeframe') ?></div>
 	<?php endif; ?>
@@ -24,14 +30,14 @@ $this->Form->unlockField('athlete_id');
         <?= __('Currently selected Athlete') ?>: <?= $lesson_edition->athlete->name . ' ' . $lesson_edition->athlete->surname ?>
         <?= $this->Form->hidden('athlete_id', ['value' => $lesson_edition->athlete_id]) ?>
     <?php else : ?>
-        <div><label><?= __('Search for an athlete') ?></label>
+        <div><label><?= __('Select an athlete by searching for his surname or part of it') ?> <i class="fas fa-star fa-xs text-danger"></i></label>
         <?= $this->Form->input('athlete_surname', ['id' => 'athlete-surname']) ?>
     	<a id="search-athlete-button" class="btn btn-primary">Search Athlete</a>
         <div>
         <div id="target-athlete"></div>
     <?php endif; ?>
-
     <hr>
+    <p><i class="fas fa-star fa-xs text-danger"></i> <?= __('Required field') ?></p>
     <?= $this->Html->link(__('Back'), $ref, ['class' => 'btn btn-primary']) ?>
 	<?= $this->Form->submit('Proceed to final review'); ?>
 <?= $this->Form->end() ?>

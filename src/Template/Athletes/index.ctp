@@ -7,8 +7,10 @@
 use Cake\I18n\Time;
 ?>
 <div class="athletes index content">
-    <h4><?= __('Athletes List') ?></h4>
-    <?= $this->Element('Athletes/filter-form') ?>
+    <?= $this->Element('Athletes/page-header') ?>
+    
+    <?= $this->Element('Athletes/filter-form'); ?>
+
     <table  class="table table-striped table-condensed">
         <thead class="thead">
             <tr>
@@ -42,7 +44,7 @@ use Cake\I18n\Time;
                         <?= $this->Html->link(__('View'), ['action' => 'view', $athlete->id], ['class' => ['btn', 'btn-primary']]) ?> 
                         <?= $this->Html->link(__('Edit'), ['action' => 'edit', $athlete->id], ['class' => ['btn', 'btn-primary']]) ?>
                         <?php if ($subscriptionExpired) : ?>
-                            <?= $this->Html->link(_('Renew ASI Subs.'), ['action' => 'renew_asi_subscription'], ['class' => 'btn btn-primary']) ?>
+                            <?= $this->Html->link(_('Renew ASI Subs.'), ['action' => 'renew_asi_subscription', $athlete->id], ['class' => 'btn btn-primary']) ?>
                         <?php endif; ?> 
                     </td>
                 </tr>

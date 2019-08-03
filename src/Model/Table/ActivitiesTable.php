@@ -50,8 +50,17 @@ class ActivitiesTable extends Table
             'foreignKey' => 'user_id',
             'joinType' => 'LEFT'
         ]);
+
+        $this->hasMany('UserActivities');
+
+
         $this->belongsTo('ActivityTypes', [
             'foreignKey' => 'activity_type_id',
+            'joinType' => 'INNER'
+        ]);
+
+        $this->belongsTo('ActivityStatuses', [
+            'foreignKey' => 'activity_status_id',
             'joinType' => 'INNER'
         ]);
 
@@ -59,15 +68,6 @@ class ActivitiesTable extends Table
             'foreignKey' => 'event_id',
             'joinType' => 'INNER'
         ]);
-    }
-
-
-    public function beforeMarshal(Event $event, ArrayObject $data, ArrayObject $options)
-    {
-
-        
-        //$data['event']['end_date'] = $data['event']['start_date'];
-        //debug($data);
     }
 
     /**

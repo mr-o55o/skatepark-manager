@@ -7,7 +7,7 @@
 use Cake\I18n\Time;
 ?>
 <div class="purchasedLessonEditionsBundles content">
-    <h4><?= __('All Purchased Lesson Editions Bundles') ?></h4>
+    <?= $this->Element('PurchasedLessonEditionsBundles/page-header') ?>
     <?= $this->Element('Athletes/filter-form') ?> 
     <table class="table table-striped">
         <thead>

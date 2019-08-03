@@ -47,7 +47,7 @@ class LessonEditionsController extends AppController
         $this->paginate = [
             'contain' => ['Lessons', 'LessonEditionStatuses', 'Athletes', 'Events', 'Users']
         ];
-        $lessonEditions = $this->paginate($this->LessonEditions->find('booked')->find('search', ['search' => $this->request->getQueryParams()]));
+        $lessonEditions = $this->paginate($this->LessonEditions->find('booked')->find('search', ['search' => $this->request->getQueryParams()])->order('Events.start_date'));
 
         $this->set(compact('lessonEditions'));
     }
@@ -119,32 +119,24 @@ class LessonEditionsController extends AppController
      *
      * @return \Cake\Http\Response|null Redirects on successful add, renders view otherwise.
      */
-    /*
+    
     public function edit($id = null)
     {
-        $lesson_edition = $this->LessonEditions->get($id);
-
-        if ($this->request->is(['patch', 'post', 'put'])) {
-            $lesson_edition = $this->LessonEditions->patchEntity($lesson_edition, $this->request->getData(), ['associated' => ['Lessons', 'Events']]);
-            //set lesson edition status to draft
-            $lesson_edition->lesson_edition_status_id = Configure::read('lesson_edition_statuses')['draft'];
-            //get lesson data for received id
-            $lesson = $this->LessonEditions->Lessons->get($lesson_edition->lesson_id);
-            //attach lesson entity to lesson edition
-            $lesson_edition->lesson = $lesson;
-            //set event title
-            $lesson_edition->event->title = $lesson->name;
-            //set event end date
-            $lesson_edition->event->end_date = $lesson_edition->event->start_date->modify('+ '. $lesson->duration .' minutes');
-            //store lesson edition entity in session
-            $this->getRequest()->getSession()->write('LessonEdition', $lesson_edition);
-            $this->redirect(['action' => 'populate']);
+        $lesson_edition = $this->LessonEditions->get($id, ['contain' => ['Lessons', 'Events', 'Athletes', 'Users']]);
+        if ($lesson_edition->lesson_edition_status_id > Configure::read('lesson_edition_statuses')['booked']) {
+            $this->Flash->error('Edizione non modificabile');
+            $this->redirect($this->referer());
         }
-        $lessons = $this->LessonEditions->Lessons->find('active')->find('list', ['limit' => 200]);
-        $this->set('lessons', $lessons); 
+        if ($this->request->is(['patch', 'post', 'put'])) {
+            $lesson_edition = $this->LessonEditions->patchEntity($lesson_edition, $this->request->getData());
+
+            if ($this->LessonEditions->save($lesson_edition)) {
+                $this->Flash->success(__('Edizione aggiornata correttamente'));
+            }
+        }
         $this->set('lesson_edition', $lesson_edition);
     }
-    */
+    
 
     public function populate() {
         //set referer for back button
@@ -225,9 +217,21 @@ class LessonEditionsController extends AppController
             return $this->redirect($this->request->referer());
         }
 
-        if (!empty($lesson_edition->athlete) && $lesson_edition->athlete->isBusy($lesson_edition->event->start_date, $lesson_edition->event->end_date, $lesson_edition->event_id)) {
-            $this->set('busy_athlete_warning', true);
+        if ($lesson_edition->athlete) {
+
+            //check if athlete is busy and set warning view variable if true
+            if ($lesson_edition->athlete->isBusy($lesson_edition->event->start_date, $lesson_edition->event->end_date, $lesson_edition->event_id)) {
+                $this->set('busy_athlete_warning', true);
+            }    
+
+            //check if athlete has a valid bundle
+            $bundlesTable = $this->loadModel('PurchasedLessonEditionsBundles');
+            $valid_bundle = $bundlesTable->find('valid')->where(['athlete_id' => $lesson_edition->athlete->id])->contain(['PurchasedLessonEditionsBundlesStatuses'])->toArray();
+            if ($valid_bundle) {
+                $this->set('valid_bundle', $valid_bundle);
+            }    
         }
+
         if ($this->request->is(['patch', 'post', 'put'])) {
             $lesson_edition->notes = $this->request->getData('notes');
 
@@ -263,6 +267,9 @@ class LessonEditionsController extends AppController
             $this->Flash->error(__('This edition is not booked, operation not permitted.'));
             return $this->redirect($this->referer());
         }  
+
+        //to do get if any, the currently valid lesson edition buondle for athlete and type of lesson edition
+        
         $idx = 0;
         foreach ($lesson_edition->athlete->valid_purchased_lesson_editions_bundles as $validBundle) {
             if ($validBundle->lesson_editions_bundle->lesson_id == $lesson_edition->lesson_id) {
@@ -272,61 +279,13 @@ class LessonEditionsController extends AppController
             $idx++;
         }
 
-
         if ($this->request->is(['patch', 'post', 'put'])) {         
             $lesson_edition = $this->LessonEditions->patchEntity($lesson_edition, $this->request->getData(), ['associated' => ['Athletes.ValidPurchasedLessonEditionsBundles']]);
-            // force status to completed
-            $lesson_edition->lesson_edition_status_id = Configure::read('lesson_edition_statuses')['completed'];
-            
 
-            // to-do make a better check, must verify also that id of the bundle matches id of thelesson
-            if (!empty($lesson_edition->athlete->valid_purchased_lesson_editions_bundles)) {
-                $idx = 0;
-                foreach ($lesson_edition->athlete->valid_purchased_lesson_editions_bundles as $validBundle) {
-                    if ($validBundle->lesson_editions_bundle->lesson_id == $lesson_edition->lesson_id) {
-                        $validBundleIndex = $idx;
-                    }
-                    $idx++;
-                }
-
-                if (isset($validBundleIndex)) {
-                    switch ($lesson_edition->athlete->valid_purchased_lesson_editions_bundles[$validBundleIndex]->status) {
-                            case 1:
-                                //set status to activated 2, decrease counter and set dates
-                                $lesson_edition->athlete->valid_purchased_lesson_editions_bundles[$validBundleIndex]->count = $lesson_edition->athlete->valid_purchased_lesson_editions_bundles[$validBundleIndex]->count -1;
-                                $lesson_edition->athlete->valid_purchased_lesson_editions_bundles[$validBundleIndex]->status = Configure::read('purchased_lesson_editions_bundle_statuses')['activated'];
-                                $bundlesTable = $this->loadModel('LessonEditionsBundles');
-                                $bundle = $bundlesTable->get($lesson_edition->athlete->valid_purchased_lesson_editions_bundles[$validBundleIndex]->lesson_editions_bundle_id);
-                                $now = Time::now();
-                                $lesson_edition->athlete->valid_purchased_lesson_editions_bundles[$validBundleIndex]->start_date = $now;
-                                $lesson_edition->athlete->valid_purchased_lesson_editions_bundles[$validBundleIndex]->end_date = $now->modify('+ '.$bundle->duration.' days');
-                            break;
-
-                            case 2:
-                                //decrease counter, if becomes 0, set status as exhausted
-                                $lesson_edition->athlete->valid_purchased_lesson_editions_bundles[$validBundleIndex]->count = $lesson_edition->athlete->valid_purchased_lesson_editions_bundles[$validBundleIndex]->count -1;
-                                if ($lesson_edition->athlete->valid_purchased_lesson_editions_bundles[$validBundleIndex]->count == 0) {
-                                    $lesson_edition->athlete->valid_purchased_lesson_editions_bundles[$validBundleIndex]->status = Configure::read('purchased_lesson_editions_bundle_statuses')['exhausted'];
-                                }
-                            break;
-
-                    }
-                }   
-            }
-            
-            //debug($lesson_edition->athlete->purchased_lesson_editions_bundles);
-            //debug($lesson_edition->athlete->valid_purchased_lesson_editions_bundles);
-            
-            if ($this->LessonEditions->save($lesson_edition, ['associated' => ['Athletes.ValidPurchasedLessonEditionsBundles']])) {
+            if ($this->LessonEditions->complete($lesson_edition)) {
                 $this->Flash->success(__('The lesson edition has been marked as completed.'));
                 return $this->redirect(['controller' => 'Events', 'action' => 'calendar']);
             }
-            
-            
-            
-
-            //$this->Flash->error(__('The lesson edition could not be updated. Please, try again.'));
-            //$this->set('errors', $lesson_edition->getErrors()); 
                      
         }
         //return $this->redirect($this->referer());

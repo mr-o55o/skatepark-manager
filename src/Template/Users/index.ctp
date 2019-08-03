@@ -3,10 +3,17 @@
  * @var \App\View\AppView $this
  * @var \App\Model\Entity\User[]|\Cake\Collection\CollectionInterface $users
  */
+
+use Cake\Time\I18n;
 ?>
 <div class="users index content">
-    <h4><?= __('Users List') ?></h4>
-    <?= $this->Element('Users/filter-form') ?>
+    <div class="container">
+        <div class="row">
+            <div class="col"><h4><?= __('Users List') ?></h4></div>
+            <div class="col"><?= $this->Element('Users/filter-form') ?></div>
+        </div>
+    </div>
+    
     <table class="table table-striped table-sm">
         <thead class="thead">
             <tr>
@@ -16,33 +23,23 @@
                 <th scope="col"><?= $this->Paginator->sort('role_id') ?></th>
                 <th scope="col"><?= $this->Paginator->sort('name') ?></th>
                 <th scope="col"><?= $this->Paginator->sort('surname') ?></th>
-                <th scope="col"><?= $this->Paginator->sort('created') ?></th>
-                <th scope="col"><?= $this->Paginator->sort('modified') ?></th>
+                <th scope="col"><?= $this->Paginator->sort('birthdate') ?></th>
+                <th scope="col"><?= $this->Paginator->sort('fiscal_code') ?></th>
                 <th scope="col"><?= $this->Paginator->sort('active') ?></th>
-                <th scope="col" class="actions"><?= __('Actions') ?></th>
             </tr>
         </thead>
         <tbody>
             <?php foreach ($users as $user): ?>
             <tr>
-                <td><?= $this->Number->format($user->id) ?></td>
+                <td><?= $this->Html->link($this->Number->format($user->id), ['action' => 'view', $user->id]) ?></td>
                 <td><?= h($user->username) ?></td>
                 <td><?= h($user->email) ?></td>
                 <td><?= $user->has('role') ? $this->Html->link($user->role->name, ['controller' => 'Roles', 'action' => 'view', $user->role->id]) : '' ?></td>
                 <td><?= h($user->name) ?></td>
                 <td><?= h($user->surname) ?></td>
-                <td><?= h($user->created) ?></td>
-                <td><?= h($user->modified) ?></td>
+                <td><?= $user->birthdate->i18nFormat('dd/M/YYY') ?></td>
+                <td><?= h($user->fiscal_code) ?></td>
                 <td><?= h($user->active) ?></td>
-                <td class="actions">
-                    <?= $this->Html->link(__('View'), ['action' => 'view', $user->id], ['class' => 'btn btn-primary']) ?>
-                    <?= $this->Html->link(__('Edit'), ['action' => 'edit', $user->id], ['class' => 'btn btn-primary']) ?>
-                    <?php if ($user->active) : ?>
-                        <?= $this->Form->postLink('Deactivate', [ 'action' => 'deactivate', $user->id], ['confirm' => __('Deactivating user {0} are you sure?', $user->id), 'class' => 'btn btn-warning']); ?>
-                    <?php else : ?>
-                        <?= $this->Form->postLink('Activate', [ 'action' => 'activate', $user->id], ['confirm' => __('Activating user {0} are you sure?', $user->id), 'class' => 'btn btn-success']); ?>
-                    <?php endif; ?>
-                </td>
             </tr>
             <?php endforeach; ?>
         </tbody>

@@ -9,7 +9,7 @@ $this->loadHelper('Calendar.Calendar');
 		foreach ($events as $event) {
 			$content = '<strong>'.$event->start_date->i18nFormat('HH:mm').' - '.$event->end_date->i18nFormat('HH:mm').': </strong>';
 			if ($event->activity) {
-				$content .= $this->Html->link($event->title, ['action' => 'viewActivityEvent', $event->id]).'<br>';
+				$content .= $this->Html->link($event->title, ['controller' => 'activities', 'action' => 'view', $event->activity->id]).'<br>';
 				$content .= __('Member assigned').': '.($event->activity->user ? $event->activity->user->username : '-');
 				
 				$class = 'event-activity';

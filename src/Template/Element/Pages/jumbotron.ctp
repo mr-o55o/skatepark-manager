@@ -1,5 +1,5 @@
 <?php
-
+use Cake\Core\Configure;
 ?>
 <div class="jumbotron jumbotron-fluid p-3">
     <h3>

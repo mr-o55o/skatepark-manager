@@ -7,7 +7,7 @@
 
 ?>
 
-<div class="events content">
+<div class="lesson_edition content">
     <h3><?= __('View Lesson Edition') ?></h3>
     <table class="table vertical-table table-striped">
         <tr>

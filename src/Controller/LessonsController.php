@@ -20,11 +20,50 @@ class LessonsController extends AppController
      */
     public function index()
     {
-        $lessons = $this->paginate($this->Lessons, ['contain' => 'LessonEditions']);
+        $lessons = $this->paginate($this->Lessons);
 
 
 
         $this->set(compact('lessons'));
+    }
+
+    public function dashboard()
+    {
+        $query = $this->Lessons->find('all');
+        $query->innerJoinWith('LessonEditions');
+        $query->select([
+            //'LessonEditions.LessonEditionStatuses.name',
+            'Lessons.name',
+            'editions_count' => $query->func()->count('LessonEditions.id')
+            ])
+        ->group(['Lessons.name']);
+        
+        $this->set('lessonsCount', $query);
+
+
+        $query = $this->Lessons->find('all');
+        $query->innerJoinWith('LessonEditions.LessonEditionStatuses');
+        $query->innerJoinWith('LessonEditions');
+        $bookedCase = $query->newExpr()
+            ->addCase(
+                $query->newExpr()->add(['LessonEditions.lesson_edition_status_id' => 3]),
+                1,
+                'integer'
+            );
+        $completedCase = $query->newExpr()    
+            ->addCase(
+                $query->newExpr()->add(['LessonEditions.lesson_edition_status_id' => 4]),
+                1,
+                'integer'
+            );
+        $query->group(['Lessons.name', 'LessonEditions.lesson_edition_status_id']);
+        $query->select([
+            $query->func()->distinct(['name' => 'Lessons.name',  'status' => 'LessonEditions.lesson_edition_status_id']),
+            'number_booked' => $query->func()->count($bookedCase),
+            'number_completed' => $query->func()->count($completedCase),
+
+        ]);       
+        $this->set('lessonsEditionsByStatus', $query);
     }
 
     /**

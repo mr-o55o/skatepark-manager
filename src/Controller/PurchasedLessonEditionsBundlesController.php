@@ -61,6 +61,16 @@ class PurchasedLessonEditionsBundlesController extends AppController
         $this->set('purchasedLessonEditionsBundles', $this->paginate($query));       
     }
 
+    public function indexToExpire()
+    {
+         $this->paginate = [
+            'contain' => ['Athletes', 'LessonEditionsBundles']
+        ];
+        //$purchasedLessonEditionsBundles = $this->paginate($this->PurchasedLessonEditionsBundles);
+        $query = $this->PurchasedLessonEditionsBundles->find('toExpire')->find('search', ['search' => $this->request->getQueryParams()])->order(['start_date', 'count']);
+        $this->set('purchasedLessonEditionsBundles', $this->paginate($query));       
+    }
+
     /**
      * buyFor method
      *

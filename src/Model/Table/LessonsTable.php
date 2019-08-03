@@ -88,7 +88,6 @@ class LessonsTable extends Table
         return $validator;
     }
 
-
     public function findActive(Query $query)
     {
         $query->where(['is_active' => true]);

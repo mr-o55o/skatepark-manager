@@ -44,8 +44,4 @@ use CAke\Core\Configure;
         <?= $this->Html->Link(__('Extend'), ['action' => 'extend', $purchasedLessonEditionsBundle->id], ['class' => 'btn btn-primary']) ?>
         </div>
     <?php endif; ?>
-
-    <?php if ($purchasedLessonEditionsBundle->status <= Configure::read('purchased_lesson_editions_bundle_statuses')['activated'] && $purchasedLessonEditionsBundle->count < $purchasedLessonEditionsBundle->lesson_editions_bundle->lesson_edition_count) : ?>
-        <?= $this->Html->link(__('Recharge'), ['action' => 'recharge'], ['class' => 'btn btn-primary']) ?>
-    <?php endif; ?>
 </div>

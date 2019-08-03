@@ -9,8 +9,9 @@ use Cake\I18n\Time;
 
 use Cake\Core\Configure;
 
-use Cake\Event\Event;
 use ArrayObject;
+
+
 
 /**
  * LessonEditions Model
@@ -215,13 +216,14 @@ class LessonEditionsTable extends Table
         $rules->add($rules->existsIn(['athlete_id'], 'Athletes'));
         $rules->add($rules->existsIn(['user_id'], 'Users'));
         //check that lesson is active
-        
+        /*
         $rules->add(function($entity) use($rules) {
             if ($entity->lesson->is_active) {
                 return true;
             }
             return 'Lesson is not active';
         }, 'lessonEdition', ['errorField' => 'N/A']);
+        */
 
         $rules->addCreate(function($entity, $options) use($rules) {
             switch($entity->lesson_edition_status_id) {
@@ -297,11 +299,11 @@ class LessonEditionsTable extends Table
                         return 'Missing trainer for a booked lesson';
                     }
 
-                    if($entity->athlete->isBusy($entity->event->start_date, $entity->event->end_date, $entity->event_id)) {
+                    if(isset($entity->athlete) && $entity->athlete->isBusy($entity->event->start_date, $entity->event->end_date, $entity->event_id)) {
                         return 'Athlete is busy';
                     }
 
-                    if($entity->user->isBusy($entity->event->start_date, $entity->event->end_date, $entity->event_id)) {
+                    if(isset($entity->user) && $entity->user->isBusy($entity->event->start_date, $entity->event->end_date, $entity->event_id)) {
                         return 'Trainer is busy';
                     }
                     return true;
@@ -330,5 +332,41 @@ class LessonEditionsTable extends Table
             'lessonEdtionUpdate', ['errorField' => 'N/A']);
 
         return $rules;
+    }
+
+    //marks lesson as completed, manages  bundle charges and status if any for the user
+    public function complete($lesson_edition) {
+        if ($lesson_edition->lesson_edition_status_id == Configure::read('lesson_edition_statuses')['booked']) {
+            $lesson_edition->lesson_edition_status_id = Configure::read('lesson_edition_statuses')['completed'];
+            //debug('Completing lesson edition: '.$lesson_edition->id);
+
+            if (!empty($lesson_edition->athlete->valid_purchased_lesson_editions_bundles)) {
+
+                //checking for bad things...
+                if ($lesson_edition->athlete->valid_purchased_lesson_editions_bundles[0]->count == 0) {
+                    return 'Il pacchetto di lezioni associato non ha cariche rimanenti, impossibile procedere. (se vedi questo messaggio, segnati bene cosa stavi facendo e chiama admin!)';
+                }
+
+                //Activation
+                if ($lesson_edition->athlete->valid_purchased_lesson_editions_bundles[0]->status == 1) {
+                    $lesson_edition->athlete->valid_purchased_lesson_editions_bundles[0]->status = 2;
+                    $lesson_edition->athlete->valid_purchased_lesson_editions_bundles[0]->count = $lesson_edition->athlete->valid_purchased_lesson_editions_bundles[0]->count - 1;
+                    $lesson_edition->athlete->valid_purchased_lesson_editions_bundles[0]->start_date = Time::now();
+                    $lesson_edition->athlete->valid_purchased_lesson_editions_bundles[0]->end_date = $lesson_edition->athlete->valid_purchased_lesson_editions_bundles[0]->start_date->modify('+'.$lesson_edition->athlete->valid_purchased_lesson_editions_bundles[0]->lesson_editions_bundle->duration.' months');
+                } else {
+                    //change also status if Last charge
+                    if ($lesson_edition->athlete->valid_purchased_lesson_editions_bundles[0]->count == 1 ) {
+                        $lesson_edition->athlete->valid_purchased_lesson_editions_bundles[0]->count = $lesson_edition->athlete->valid_purchased_lesson_editions_bundles[0]->count - 1;
+                        $lesson_edition->athlete->valid_purchased_lesson_editions_bundles[0]->status = 3;
+                    } else {
+                        $lesson_edition->athlete->valid_purchased_lesson_editions_bundles[0]->count = $lesson_edition->athlete->valid_purchased_lesson_editions_bundles[0]->count - 1;
+                    }               
+                }
+            }
+            if ($this->save($lesson_edition, ['associated' => 'Athletes.ValidPurchasedLessonEditionsBundles'])) {
+                return true;
+            }
+        }
+        return 'false';
     }
 }

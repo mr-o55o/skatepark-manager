@@ -37,5 +37,6 @@ class Activity extends Entity
         'event_id' => true,
         'user' => true,
         'notes' => true,
+        'user_activities' => true,
     ];
 }

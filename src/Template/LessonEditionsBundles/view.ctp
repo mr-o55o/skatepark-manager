@@ -8,7 +8,17 @@
      <h3>
       <?= __('Lessons Management') ?> - <?= __('View Lesson Editions Bundle') ?>
     </h3>
-    <small><?= __('...') ?></small>    
+    
+    <div class="text-right">
+        
+        <?php if ($lessonEditionsBundle->is_active) :?>
+            <?= $this->Html->Link( __('Deactivate'), ['action' => 'deactivate', $lessonEditionsBundle->id], ['class' => ['btn', 'btn-primary']]); ?>
+        <?php endif; ?>
+
+        <?php if (!$lessonEditionsBundle->is_active) :?>
+            <?= $this->Html->Link( __('Activate'), ['action' => 'activate', $lessonEditionsBundle->id], ['class' => ['btn', 'btn-primary']]); ?>
+        <?php endif; ?> 
+    </div>
     <hr>
     <table class="table table-striped">
         <tr>

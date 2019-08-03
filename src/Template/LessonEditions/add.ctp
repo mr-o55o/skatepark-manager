@@ -7,14 +7,13 @@ use Cake\I18n\Time;
 ?>
 
 <div class="lessonEditions content">
-    <h3>
-      <?= __('Lesson Editions Management') ?> - <?= __('Add a lesson edition') ?>
-    </h3>
+    <?= $this->Element('LessonEditions/page-header') ?>
     <?= $this->Form->create($lesson_edition) ?>
     <fieldset>
-        <?= $this->Form->control('lesson_id', ['options' => $lessons, 'label' => __('Select type of lesson')]); ?>
+        <label><?= __('Select type of lesson') ?> <i class="fas fa-star fa-xs text-danger"></i></label>
+        <?= $this->Form->control('lesson_id', ['options' => $lessons, 'label' => false]); ?>
         <hr>
-        <label><?= __('Select lesson edition start date and time') ?></label>
+        <label><?= __('Select lesson edition start date and time') ?> <i class="fas fa-star fa-xs text-danger"></i></label>
         <div class="row">
             <div class="col">
                 <span><?= __('Year') ?></span>: <?= $this->Form->year('event.start_date', [
@@ -47,6 +46,7 @@ use Cake\I18n\Time;
             </div>
         </div>
         <hr>
+        <p><i class="fas fa-star fa-xs text-danger"></i> <?= __('Required field') ?></p>
     </fieldset>
     <?= $this->Form->submit(__(_('Proceed to trainer and athlete selection'))); ?>
     <?= $this->Form->end() ?>

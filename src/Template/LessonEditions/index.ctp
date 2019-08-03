@@ -5,8 +5,13 @@
  */
 ?>
 <div class="lessonEditions index content">
-    <h4><?= __('All Lesson Editions') ?></h4>
+    <?= $this->Element('LessonEditions/page-header') ?>
+
+    
     <?= $this->Element('Athletes/filter-form'); ?>
+
+
+
     <?php if (count($lessonEditions) > 0) : ?>
         <table class="table table-striped">
             <thead class="thead">
@@ -25,7 +30,7 @@
                     <td><?= $this->Html->link($lessonEdition->id, ['action' => 'view', $lessonEdition->id]) ?></td>
                     <td><?= $this->Html->link($lessonEdition->lesson->name, ['controller' => 'Lessons', 'action' => 'view', $lessonEdition->lesson->id]) ?></td>
                     <td><?= $lessonEdition->has('event') ? h($lessonEdition->event->start_date->i18nFormat("dd/MM/Y H:mm")) : '' ?></td>
-                    <td><?= $lessonEdition->status ?></td>
+                    <td><?= $this->Element('LessonEditionStatuses/status-badge', ['statusId' => $lessonEdition->lesson_edition_status_id]); ?></td>
                     <td><?= $lessonEdition->has('user') ? $this->Html->link($lessonEdition->user->username, ['controller' => 'Users', 'action' => 'view', $lessonEdition->user->id]) : '' ?></td>
                     <td><?= $lessonEdition->has('athlete') ? $this->Html->link($lessonEdition->athlete->name . ' ' . $lessonEdition->athlete->surname, ['controller' => 'Athletes', 'action' => 'view', $lessonEdition->athlete->id]) : '' ?></td>
                 </tr>

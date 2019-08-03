@@ -18,26 +18,18 @@
                     <th scope="col"><?= $this->Paginator->sort('price') ?></th>
                     <th scope="col"><?= $this->Paginator->sort('trainer_fee') ?></th>
                     <th scope="col"><?= $this->Paginator->sort('is_active') ?></th>
-                    <th scope="col" class="actions"><?= __('Actions') ?></th>
                 </tr>
             </thead>
             <tbody>
                 <?php foreach ($lessons as $lesson): ?>
                 <tr>
-                    <td><?= $this->Number->format($lesson->id) ?></td>
+                    <td><?= $this->Html->link($this->Number->format($lesson->id), ['action' => 'view', $lesson->id]) ?></td>
                     <td><?= $lesson->name ?></td>
                     <td><?= h($lesson->description) ?></td>
                     <td><?= $this->Number->format($lesson->duration) ?></td>
                     <td><?= $this->Number->currency($lesson->price, 'EUR'); ?></td>
                     <td><?= $this->Number->currency($lesson->trainer_fee, 'EUR'); ?></td>
                     <td><?= $lesson->is_active ?></td>
-                    <td>
-                    	<?= $this->Html->link(__('View'), ['action' => 'view', $lesson->id], ['class' => 'btn btn-primary']) ?>
-                    	<?php if (count($lesson->lesson_editions) == 0) : ?>
-                    		<?= $this->Html->link(__('Edit'), ['action' => 'edit', $lesson->id], ['class' => 'btn btn-primary']) ?>
-                    		<?= $this->Form->postLink('Delete', [ 'action' => 'delete', $lesson->id], ['confirm' => __('Deleting Lesson with id {0} are you sure?', $lesson->id), 'class' => 'btn btn-danger']); ?>
-                    	<?php endif; ?>
-                    </td>
                 </tr>
                 <?php endforeach; ?>
             </tbody>

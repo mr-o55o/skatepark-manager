@@ -8,12 +8,6 @@
 ?>
 
 <?= $this->Form->create($lesson_edition); ?>
-<div class=" content">
-    <h3>
-      <?= __('Lesson Editions Management') ?> - <?= __('Review lesson edition') ?>
-    </h3>
-
-    
     <table class="table table-striped">
         <tr>
             <th scope="row"><?= __('Lesson') ?></th>
@@ -34,6 +28,18 @@
                 <?php if ($lesson_edition->athlete->asi_subscription_date->modify('+ 1 year') < $lesson_edition->event->start_date) : ?>
                     <div class="alert alert-warning"><?= __('ASI Subscription expires before the lesson edition') ?></div>
                 <?php endif; ?>
+
+                <?php if(isset($valid_bundle['0'])): ?>
+                    <div class="alert alert-info">
+                        <?= __('Athlete has a valid lesson edition bundle, this lesson will use 1 charge.') ?>
+                        <ul>
+                            <li><?= __('Status')?>: <?= $valid_bundle[0]['purchased_lesson_editions_bundles_status']['name'] ?></li>
+                            <li><?= __('Start date')?>: <?= $valid_bundle[0]['start_date'] ?></li>
+                            <li><?= __('End date')?>: <?= $valid_bundle[0]['end_date'] ?></li>
+                            <li><?= __('Charges') ?>: <?= $valid_bundle[0]['count'] ?></li>
+                        </ul>
+                    </div>
+                <?php endif ?>
                 <?php if (isset($busy_athlete_warning)) : ?>
                     <div class="alert alert-danger"><?= __('Athlete is busy in other activities, lesson edition cannot be saved') ?></div>
                 <?php endif; ?>

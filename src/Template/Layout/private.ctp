@@ -14,15 +14,16 @@
  */
 
 use Cake\Core\Configure;
+$topics = Configure::read('topics');
+$activeTopic = Configure::read('main_nav')[$this->request->controller][$this->request->action]['topic'];
 
 $this->start('navbar');
-    echo $this->element('Navbar/Navbar');
+    echo $this->element('Navbar/Navbar', ['active' => $activeTopic ]);
 $this->end();
 
 $this->start('sidebar');
-    $topic = Configure::read('main_nav')['controllers'][$this->request->controller]['topic'];
-    if ($this->elementExists('Sidebar/' . $topic )) {
-        echo $this->element('Sidebar/'. $topic );  
+    if ($this->elementExists('Sidebar/' . $activeTopic )) {
+        echo $this->element('Sidebar/'. $activeTopic );  
     }
 $this->end();
 
@@ -54,8 +55,13 @@ $this->end();
             </div>
             <!-- Main Area -->
             <div class="col-lg-10 m-0 p-0">
-                <!-- Controller Based Jumbotron -->
-                <?= $this->Element($this->request->controller . '/jumbotron'); ?> 
+                <nav aria-label="breadcrumb" class="">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><?= $this->Html->link(Configure::read('topics')[$activeTopic]['name'], Configure::read('topics')[$activeTopic]['home']) ?></li>
+                        <li class="breadcrumb-item active" aria-current="page"><?= h(Configure::read('main_nav')[$this->request->controller][$this->request->action]['name']) ?></li>
+                    </ol>
+                </nav>
+
                 <!-- Main Container -->
                 <div class="container clearfix">
                     <!-- Flash messages -->

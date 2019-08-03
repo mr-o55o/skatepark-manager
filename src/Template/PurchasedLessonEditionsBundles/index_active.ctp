@@ -8,24 +8,25 @@ use Cake\I18n\Time;
 use Cake\Core\Configure;
 ?>
 <div class="purchasedLessonEditionsBundles content">
-    <h4><?= __('Active Lesson Editions Bundles') ?></h4>
+    <?= $this->Element('PurchasedLessonEditionsBundles/page-header') ?>
     <?= $this->Element('Athletes/filter-form') ?> 
 
     <p>
         <?= __('List of currently purchased and activated bundles (active bundles).') ?>
-        <?= __('Bundles that reach their end date, must be expired or extended, in either cases they must be managed.')?>
+        <?= __('Bundles that reach their end date, must be expired or extended, in either cases they must be managed.') ?>
     </p>
+
+
     <table class="table table-striped">
         <thead>
             <tr>
                 <th scope="col"><?= $this->Paginator->sort('id') ?></th>
-                <th scope="col"><?= $this->Paginator->sort('athlete_id') ?></th>
-                <th scope="col"><?= $this->Paginator->sort('lesson_editions_bundle_id') ?></th>
-                <th scope="col"><?=__('status') ?></th>
-                <th scope="col"><?= $this->Paginator->sort('start_date') ?></th>
-                <th scope="col"><?= $this->Paginator->sort('end_date') ?></th>
-                <th scope="col"><?= __('Remaining Lesson Editions') ?></th>
-                <th scope="col"><?= __('Actions') ?></th>
+                <th scope="col"><?= __('Athlete Id') ?></th>
+                <th scope="col"><?= __('Bundle Id')?></th>
+                <th scope="col"><?=__('Bundle Status') ?></th>
+                <th scope="col"><?= __('Activation Date') ?></th>
+                <th scope="col"><?= __('End Date') ?></th>
+                <th scope="col"><?= __('Remaining Charges') ?></th>
             </tr>
         </thead>
         <tbody>
@@ -38,16 +39,11 @@ use Cake\Core\Configure;
                 <td><?= h($purchasedLessonEditionsBundle->start_date) ?></td>
                 <td><?= h($purchasedLessonEditionsBundle->end_date) ?></td>
                 <td><?= $this->Number->format($purchasedLessonEditionsBundle->count) ?></td>
-                <td class="actions">
-                    <?php if ($purchasedLessonEditionsBundle->end_date < Time::now() && $purchasedLessonEditionsBundle->status == Configure::read('purchased_lesson_editions_bundle_statuses')['activated']) : ?>
-                        <?= $this->Html->link(__('Extend'), ['action' => 'extend', $purchasedLessonEditionsBundle->id], ['class' => 'btn btn-primary']) ?>
-                        <?= $this->Form->postLink(__('Expire'), ['action' => 'expire', $purchasedLessonEditionsBundle->id], ['confirm' => __('Are you sure you want to mark bundle # {0} as expired?', $purchasedLessonEditionsBundle->id), 'class' => 'btn btn-danger']) ?>
-                    <?php endif; ?>
-                </td>
             </tr>
             <?php endforeach; ?>
         </tbody>
     </table>
+
     <div class="paginator">
         <ul class="pagination">
             <?= $this->Paginator->first('<< ' . __('first')) ?>

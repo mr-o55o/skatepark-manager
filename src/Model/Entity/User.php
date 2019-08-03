@@ -59,7 +59,9 @@ class User extends Entity
         'created' => true,
         'modified' => true,
         'active' => true,
-        'role' => true
+        'role' => true,
+        'fiscal_code' => true,
+        'birthdate' => true,
     ];
 
     /**

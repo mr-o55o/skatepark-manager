@@ -4,18 +4,14 @@
  * @var \App\Model\Entity\ResponsiblePerson[]|\Cake\Collection\CollectionInterface $responsiblePersons
  */
 ?>
-<div class="responsiblePersons index large-9 medium-8 columns content">
-    <h3><?= __('Athletes Management') ?> - <?= __('Responsible Persons') ?></h3>
-    <small><?= __('Responsible persons are  required for under 18 athletes') ?></small>
-    <div class="text-right">
-        <?= $this->Html->Link( __('Sign Up a new responsible person'), ['action' => 'add'], ['class' => ['btn', 'btn-primary']]); ?>
-        <?= $this->Html->Link( __('Search for a responsible person'), ['action' => 'search'], ['class' => ['btn', 'btn-primary']]); ?>
-    </div>
-    <hr>
+<div class="responsiblePersons index content">
+
+    <?= $this->Element('ResponsiblePersons/page-header') ?>
+
 <?php
     echo $this->Form->create(null, ['valueSources' => 'query']);
     // Match the search param in your table configuration
-    echo $this->Form->control('q', ['label' => __('Search text in username, name, surname and email fields')]);
+    echo $this->Form->control('q', ['label' => __('Cerca il testo digitato nei campi: username, nome, cognome ed email')]);
     echo $this->Form->button('Filter', ['type' => 'submit']);
     echo $this->Html->link('Reset', ['action' => 'index']);
     echo $this->Form->end();

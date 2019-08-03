@@ -8,6 +8,7 @@ use Cake\Validation\Validator;
 use Cake\ORM\TableRegistry;
 use Cake\I18n\Time;
 use Cake\Core\Configure;
+use Cake\Event\Event;
 
 /**
  * PurchasedLessonEditionsBundles Model
@@ -73,6 +74,10 @@ class PurchasedLessonEditionsBundlesTable extends Table
             ]);
     }
 
+    public function manageBundle($event) {
+        debug('manageBundle');
+    }
+
     /**
      * Default validation rules.
      *
@@ -135,8 +140,21 @@ class PurchasedLessonEditionsBundlesTable extends Table
     public function findValid(Query $query) {
         $now = Time::now();
         //to-do map status in configuration
-        $query->where(['status' => Configure::read('purchased_lesson_editions_bundle_statuses')['purchased']], ['end_date <' => $now, ]);
-        $query->orWhere(['status' => Configure::read('purchased_lesson_editions_bundle_statuses')['activated']]);
+        
+        $query->where(['status' => Configure::read('purchased_lesson_editions_bundle_statuses')['activated']]);
+        $query->orWhere(['status' => Configure::read('purchased_lesson_editions_bundle_statuses')['purchased']]);
+        $query->where(['end_date >' => $now]);
+
+        return $query;
+    }
+
+    public function findToExpire(Query $query) {
+        $now = Time::now();
+        //to-do map status in configuration
+        
+        $query->where(['status' => Configure::read('purchased_lesson_editions_bundle_statuses')['activated']]);
+        $query->orWhere(['status' => Configure::read('purchased_lesson_editions_bundle_statuses')['purchased']]);
+        $query->where(['end_date <=' => $now]);
 
         return $query;
     }

@@ -68,6 +68,7 @@ class EventsController extends AppController
         $this->set('current_day', $current_day);
     }
 
+
 /*
     public function addLessonEditionEvent() {
 

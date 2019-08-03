@@ -43,6 +43,9 @@ class LessonEdition extends Entity
         'event' => true,
         'user' => true,
         'event_id' => true,
+        'rent_skateboard' => true,
+        'rent_helmet' => true,
+        'rent_pads' => true,
     ];
 
 }

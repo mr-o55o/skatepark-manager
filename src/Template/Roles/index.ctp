@@ -5,19 +5,21 @@
  */
 ?>
 <div class="roles content">
-    <h3>
-      <?= __('Users Management') ?> - <?= __('Roles') ?>
-    </h3>
-    <small><?= __('Different roles have access to different functions, contact the system administrator to modify or add new roles') ?></small>  
+    <div class="container">
+        <div class="row">
+            <div class="col"><h4><?= __('Roles') ?></h4></div>
+            <div class="col"> </div>
+        </div>
+    </div> 
     <hr>
     <table class="table table-striped table-sm">
         <thead class="thead">
             <tr>
-                <th scope="col"><?= $this->Paginator->sort('id') ?></th>
-                <th scope="col"><?= $this->Paginator->sort('name') ?></th>
-                <th scope="col"><?= __('description') ?></th>
-                <th scope="col"><?= $this->Paginator->sort('created') ?></th>
-                <th scope="col"><?= $this->Paginator->sort('modified') ?></th>
+                <th scope="col"><?= __('Id')?></th>
+                <th scope="col"><?= __('Name') ?></th>
+                <th scope="col"><?= __('Description') ?></th>
+                <th scope="col"><?= __('Created') ?></th>
+                <th scope="col"><?= __('Modified') ?></th>
             </tr>
         </thead>
         <tbody>

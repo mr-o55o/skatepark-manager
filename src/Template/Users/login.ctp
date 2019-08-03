@@ -9,8 +9,8 @@
 		</div>
 		<div class="col-sm-12 col-md-6">
 			<?= $this->Form->create() ?>
-			<?= $this->Form->control('username') ?>
-			<?= $this->Form->control('password') ?>
+			<?= $this->Form->control('username', ['label' => false, 'autofocus' => 'autofocus', 'placeholder' => __('Username')]) ?>
+			<?= $this->Form->control('password', ['label' => false, 'placeholder' => __('Password')]) ?>
 			<?= $this->Form->button('Login') ?>
 			<?= $this->Form->end() ?>
 		</div>
