@@ -1,5 +1,89 @@
 <?php
 return [
+
+	'application_data' => [
+		'name' => 'Skatepark Manager',
+		'version' => '1.0',
+	],
+
+	'company_data' => [
+		'name' => 'ASD Enjoy More',
+		'registered_office' => [
+			'address' => 'Via Maria Bice Valori 5',
+			'postal_code' => '00167',
+			'city' => 'Roma',
+			'province' => 'RM',
+			'state' => 'Italia'
+		],
+		'email' => 'info@bunkerskatepark.org',
+		'phone' => '+39 06 59 494 498',
+	],
+
+	'skatepark_data' => [
+		'name' => 'Bunker Skatepark',
+		'location' => [
+			'address' => 'Via Maria Bice Valori 5',
+			'postal_code' => '00167',
+			'city' => 'Roma',
+			'province' => 'RM',
+			'state' => 'Italia'
+		],
+		'email' => 'info@bunkerskatepark.org',
+		'phone' => '345 69 45 454'
+	],
+
+	//standard roles defined,
+	'roles' => [
+		'admin' => 2,
+		'manager' => 16,
+		'staff' => 3, 
+		'trainer' => 15,
+		'member' => 8
+	],
+	//Lesson edition statuses
+	'lesson_edition_statuses' => [
+		'draft' => 1,
+		'trainer-assigned' => 2,
+		'booked' => 3,
+		'completed' => 4,
+		'cancelled-staff' => 5,
+		'cancelled-athlete'=> 6,
+	],
+	//Activity statuses
+	'activity_statuses' => [
+		'draft' => 1,
+		'scheduled' => 2,
+		'completed' => 3,
+		'cancelled' => 4,
+	],
+	//Purchased Lesson Edition Bundles Statuses
+	'purchased_lesson_editions_bundle_statuses' => [
+		'purchased' => 1,
+		'activated' => 2,
+		'exhausted' => 3,
+		'expired' => 4,
+		'revoked' => 5
+	],
+
+	//Course statuses
+	'course_statuses' => [
+		'draft' => 1,
+		'scheduled' => 2,
+		'completed' => 3,
+		'cancelled' => 4
+	],
+
+	//Course session statuses
+	'course_session_statuses' => [
+		'scheduled' => 1,
+		'completed' => 2,
+		'cancelled' => 3
+	],
+
+	'Athletes' => [
+		'birthdate_minYear' => 1968,
+	],
+
 	//layout used for private area
 	'private-layout' => 'private',
 
@@ -9,25 +93,40 @@ return [
 			'name' => 'Home',
 			'home' => ['controller' => 'Pages', 'action' => 'display'],
 		],
+
+		'Monitoring' => [
+			'name' => 'Monitoraggio',
+			'home' => ['controller' => 'Monitoring', 'action' => 'index'],
+		],
+
 		'Events' => [
 			'name' => 'Eventi',
 			'home' => ['controller' => 'Events', 'action' => 'calendar'],
 		],
-		'Administration' => [
-			'name' => 'Area di amministrazione',
-			'home' => ['controller' => 'Administration', 'action' => 'index'],
+
+		'StaffManagement' => [
+			'name' => 'Gestione Staff',
+			'home' => ['controller' => 'Users', 'action' => 'indexStaff'],
 		],
+
 		'AthletesManagement' => [
 			'name' => 'Gestione Atleti',
 			'home' => ['controller' => 'Athletes', 'action' => 'index'],
 		],
+
 		'LessonsManagement' => [
-			'name' => 'Gestione Lezioni',
+			'name' => 'Gestione Lezioni Individuali',
 			'home' => ['controller' => 'LessonEditions', 'action' => 'indexBooked'],
 		],
+
 		'ActivitiesManagement' => [
-			'name' => 'Gestione Attiità',
-			'home' => ['controller' => 'Activities', 'action' => 'index'],
+			'name' => 'Gestione Attività',
+			'home' => ['controller' => 'Activities', 'action' => 'indexScheduled'],
+		],
+
+		'CoursesManagement' => [
+			'name' => 'Gestione Corsi',
+			'home' => ['controller' => 'Courses', 'action' => 'index'],
 		],
 	],
 
@@ -35,38 +134,68 @@ return [
 		
 		'Pages' => [
 			'display' => [
-				'name' => 'Home',
+				'name' => 'Centro di Controllo',
 				'topic' => 'Home',
 			],
 		],
 
-		'Users' => [
+		'Monitoring' => [
 			'index' => [
-				'name' => 'Elenco utenti',
-				'topic' => 'Administration',
+				'name' => 'Dashboard di Lavoro',
+				'topic' => 'Monitoring'
+			],
+		],
+
+		'Users' => [
+			'indexStaff' => [
+				'name' => 'Elenco Staff',
+				'topic' => 'StaffManagement',
+			],
+			'indexStaffInactive' => [
+				'name' => 'Elenco Staff non attivo',
+				'topic' => 'StaffManagement',
 			],
 				'add' => [
-					'name' => 'Aggiungi utente',
-					'topic' => 'Admnistration',
+					'name' => 'Aggiungi Staff',
+					'topic' => 'StaffManagement',
 			],
 				'view' => [
 					'name' => 'Visualizza utente',
-					'topic' => 'Admnistration',
+					'topic' => 'StaffManagement',
 			],
 				'edit' => [
 					'name' => 'Modifica utente',
-					'topic' => 'Admnistration',
+					'topic' => 'StaffManagement',
+			],
+		],
+
+		'UsersAvailability' => [
+			'calendar' => [
+				'name' => 'Calendario disponibilità',
+				'topic' => 'StaffManagement'
+			],
+			'add' => [
+				'name' => 'Aggiungi disponibilità giornaliera',
+				'topic' => 'StaffManagement'
+			],
+			'addMultiple' => [
+				'name' => 'Aggiungi disponibilità nel periodo',
+				'topic' => 'StaffManagement'
+			],
+			'day' => [
+				'name' => 'Disponibilità nel giorno',
+				'topic' => 'StaffManagement'
 			],
 		],
 	
 		'Roles' => [
 			'index' => [
 				'name' => 'Elenco ruoli',
-				'topic' => 'Administration',
+				'topic' => 'StaffManagement',
 			],
 			'view' => [
 				'name' => 'Visualizza ruolo',
-				'topic' => 'Administration',
+				'topic' => 'StaffManagement',
 			],
 
 		],
@@ -74,6 +203,14 @@ return [
 		'Athletes' => [
 			'index' => [
 				'name' => 'Elenco atleti',
+				'topic' => 'AthletesManagement',
+			],
+			'indexActive' => [
+				'name' => 'Elenco atleti attivi',
+				'topic' => 'AthletesManagement',
+			],			
+			'indexExpired' => [
+				'name' => 'Elenco atleti con iscrizione ASI scaduta',
 				'topic' => 'AthletesManagement',
 			],
 			'add' => [
@@ -88,10 +225,17 @@ return [
 				'name' => 'Modifica atleta',
 				'topic' => 'AthletesManagement',
 			],
-			'renewAsiSubscription' => [
-				'name' => 'Rinnova sottoscrizione ASI',
+			'manageSubscriptions' => [
+				'name' => 'Gestione iscrizioni alle federazioni',
 				'topic' => 'AthletesManagement',
 			],			
+		],
+
+		'AthletesNotes' => [
+			'add' => [
+				'name' => 'Aggiungi appunto per atleta',
+				'topic' => 'AthletesManagement'
+			]
 		],
 
 		'ResponsiblePersons' => [
@@ -121,7 +265,51 @@ return [
 			'calendar' => [
 				'name' => 'Calendario eventi',
 				'topic' => 'Events',
+			],
+			'day' => [
+				'name' => 'Visualizza giornata',
+				'topic' => 'Events',
+			],
+			'currentWeek' => [
+				'name' => 'Visualizza settimana corrente',
+				'topic' => 'Events',
+			],
+		],		
+
+		'Activities' => [
+			'index' => [
+				'name' => 'Elenco attività',
+				'topic' => 'ActivitiesManagement',
 			],	
+			'indexScheduled' => [
+				'name' => 'Elenco attività in programma',
+				'topic' => 'ActivitiesManagement',
+			],
+			'add' => [
+				'name' => 'Aggiungi una nuova attività',
+				'topic' => 'ActivitiesManagement',
+			],
+			'populate' => [
+				'name' => 'Riempi attività',
+				'topic' => 'ActivitiesManagement',
+			],
+
+			'view' => [
+				'name' => 'Visualizza attività',
+				'topic' => 'ActivitiesManagement',
+			],
+			'edit' => [
+				'name' => 'Modifica attività',
+				'topic' => 'ActivitiesManagement',
+			],
+			'changeUser' => [
+				'name' => 'Cambia Responsabile',
+				'topic' => 'ActivitiesManagement'
+			],
+			'complete' => [
+				'name' => 'Completa attività',
+				'topic' => 'ActivitiesManagement',
+			]
 		],
 
 		'ActivityTypes' => [
@@ -141,36 +329,14 @@ return [
 				'name' => 'Modifica tipo di attività',
 				'topic' => 'Administration',
 			],
-
-		],		
-
-		'Activities' => [
-			'index' => [
-				'name' => 'Elenco attività',
-				'topic' => 'ActivitiesManagement',
-			],	
-			'indexUpcoming' => [
-				'name' => 'Elenco attività in programma',
-				'topic' => 'ActivitiesManagement',
-			],
-			'add' => [
-				'name' => 'Programma una nuova attività',
-				'topic' => 'ActivitiesManagement',
-			],
-			'populate' => [
-				'name' => 'Riempi attività',
-				'topic' => 'ActivitiesManagement',
-			],
-
-			'view' => [
-				'name' => 'Visualizza attività',
-				'topic' => 'ActivitiesManagement',
-			],
-			'edit' => [
-				'name' => 'Modifica attività',
-				'topic' => 'ActivitiesManagement',
-			],
 		],
+
+		'ActivityUsers' => [
+			'add' => [
+				'name' => 'Assegna Utente ad Attività',
+				'topic' => 'ActivitiesManagement'
+			] 
+		], 
 		
 		'Lessons' => [
 			'index' => [
@@ -196,12 +362,36 @@ return [
 				'name' => 'Elenco lezioni',
 				'topic' => 'LessonsManagement',
 			],
+			'indexForAthlete' => [
+				'name' => 'Elenco lezioni per atleta',
+				'topic' => 'LessonsManagement',
+			],			
 			'indexBooked' => [
-				'name' => 'Elenco Lezioni Prenotate',
+				'name' => 'Elenco Lezioni prenotate',
 				'topic' => 'LessonsManagement',
 			],
+			'indexTrainerAssigned' => [
+				'name' => 'Elenco Lezioni con istruttore assegnato',
+				'topic' => 'LessonsManagement',
+			],
+			'indexDraft' => [
+				'name' => 'Elenco Lezioni in bozza',
+				'topic' => 'LessonsManagement',
+			],
+			'indexCompleted' => [
+				'name' => 'Elenco Lezioni completate',
+				'topic' => 'LessonsManagement',
+			],
+			'indexCancelled' => [
+				'name' => 'Elenco Annullate',
+				'topic' => 'LessonsManagement',
+			],		
 			'add' => [
 				'name' => 'Aggiungi nuova lezione',
+				'topic' => 'LessonsManagement',
+			],
+			'addBooked' => [
+				'name' => 'Prenota una lezione individuale',
 				'topic' => 'LessonsManagement',
 			],
 			'view' => [
@@ -226,7 +416,27 @@ return [
 			],
 			'edit' => [
 				'name' => 'Modifica lezione',
-				'topic' => 'Administration',
+				'topic' => 'LessonsManagement',
+			],
+			'wizard' => [
+				'name' => 'Wizard',
+				'topic' => 'LessonsManagement',
+			],
+			'changeTrainer' => [
+				'name' => 'Aggiiungi/Cambia istruttore',
+				'topic' => 'LessonsManagement',
+			],
+			'bookForAthlete' => [
+				'name' => 'Prenota edizione per atleta',
+				'topic' => 'LessonsManagement',
+			],
+			'book' => [
+				'name' => 'Prenota edizione',
+				'topic' => 'LessonsManagement',
+			],
+			'manageEquipRental' => [
+				'name' => 'Noleggio attrezzatura',
+				'topic' => 'LessonsManagement',
 			],
 		],
 		
@@ -268,51 +478,72 @@ return [
 			],			
 		],
 
+		'Courses' => [
+			'index' => [
+				'name' => 'Corsi',
+				'topic' => 'CoursesManagement'
+			],
+			'indexDraft' => [
+				'name' => 'Corsi in bozza',
+				'topic' => 'CoursesManagement'
+			],
+			'indexScheduled' => [
+				'name' => 'Corsi pianificati',
+				'topic' => 'CoursesManagement'
+			],
+			'add' => [
+				'name' => 'Aggiungi nuovo Corso',
+				'topic' => 'CoursesManagement'
+			],
+			'view' => [
+				'name' => 'Visualizza Corso',
+				'topic' => 'CoursesManagement'
+			],
+			'edit' => [
+				'name' => 'Modifica Corso',
+				'topic' => 'CoursesManagement'
+			],
+			'schedule' => [
+				'name' => 'Pianifica Corso',
+				'topic' => 'CoursesManagement'
+			],			
+		],
+
+		'CourseSessions' => [
+			'view' => [
+				'name' => 'Visualizza Sessione Corso',
+				'topic' => 'CoursesManagement',
+			],
+			'addTrainer' => [
+				'name' => 'Aggiungi Istruttore alla Sessione',
+				'topic' => 'CoursesManagement',
+			],
+		],
+
+		'CourseSubscriptions' => [
+			'index' => [
+				'name' => 'Visualizza Iscrizioni Corso',
+				'topic' => 'CoursesManagement',
+			],
+			'subscribeCourse' => [
+				'name' => 'Iscrizione Atleta a Corso',
+				'topic' => 'CoursesManagement'
+			],
+		],
+
+		'CourseSessionTrainers' => [
+			'addTrainer' => [ 
+				'name' => 'Aggiungi istruttore a sessione corso',
+				'topic' => 'CoursesManagement'
+			]
+		],
+
 		'Administration' => [
 			'index' => [
 				'name' => 'Area di Amministrazione',
 				'topic' => 'Administration',
 			],
 		],
-	],
-
-	
-
-	//standard roles defined,
-	'roles' => [
-		'admin' => 2, 
-		'staff' => 3, 
-		'trainer' => 15,
-		'member' => 8
-	],
-	//Lesson edition statuses
-	'lesson_edition_statuses' => [
-		'draft' => 1,
-		'scheduled' => 2,
-		'booked' => 3,
-		'completed' => 4,
-		'cancelled-staff' => 5,
-		'cancelled-athlete'=> 6,
-		'accounted' => 7,
-	],
-	//Activity statuses
-	'activity_statuses' => [
-		'draft' => 1,
-		'scheduled' => 2,
-		'completed' => 3,
-		'cancelled' => 4,
-	],
-	//Purchased Lesson Edition Bundles Statuses
-	'purchased_lesson_editions_bundle_statuses' => [
-		'purchased' => 1,
-		'activated' => 2,
-		'exhausted' => 3,
-		'expired' => 4,
-		'revoked' => 5
-	],
-
-	'Athletes' => [
-		'birthdate_minYear' => 1968,
 	],
 ]
 ?>

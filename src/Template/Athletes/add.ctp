@@ -9,51 +9,146 @@ $this->Form->unlockField('responsible_person_id');
 ?>
 
 <div class="athletes content">
-    <h3>
-      <?= __('Athletes Management') ?> - <?= __('Register a  new Athlete') ?>
-    </h3> 
+    <!-- Contextual Help -->
+    <div class="text-right"><?= $this->Element('Athletes/modal-help-add') ?></div>
+
+    <?= ($athlete->getErrors() ? $this->Element('Errors/error_box', [ 'errors' => $athlete->getErrors() ]) : '' ) ?>
+
     <?= $this->Form->create($athlete) ?>
-        <fieldset>
-            <label><?= __('Name and surname') ?></label>
-            <?= $this->Form->control('name', ['id' => 'athlete_name']); ?>
-            <?= $this->Form->control('surname', ['id' => 'athlete_surnamename']); ?>
-            <hr>
-            <label><?= __('Birthdate') ?></label>
-            <div class="row">
-                <div class="col-sm-4 form-group required">
-                    <?= __('Day') ?><?= $this->Form->day('birthdate'); ?>
-                </div>
-                <div class="col-sm-4 form-group required">
-                    <?= __('Month') ?><?= $this->Form->month('birthdate'); ?>
-                </div>
-                <div class="col-sm-4 form-group required">
-                    <?= __('Year') ?><?= $this->Form->year('birthdate', [ 'minYear' => Configure::read('Athletes')['birthdate_minYear'], 'maxYear' => date('Y') ]); ?>
+        <!-- Name & Surname-->
+        <h3><?= __('Nome e Cognome') ?></h3>
+        <div class="row">
+            <div class="col">
+                <label><?= __('Nome') ?> <i class="fas fa-star fa-xs text-danger"></i></label>
+                <?= $this->Form->control('name', ['id' => 'athlete_name', 'label' => false]); ?>
+            </div>
+            <div class="col">
+                <label><?= __('Cognome') ?> <i class="fas fa-star fa-xs text-danger"></i></label>
+                <?= $this->Form->control('surname', ['id' => 'athlete_surnamename', 'label' => false]); ?>
+            </div>
+        </div>
+        <hr>
+        <!-- Place and Date of Birth-->
+        <h3><?= __('Data e luogo di nascita') ?></h3>
+        <div class="row">
+            <div class="col form-group required">
+                <label><?= __('Giorno') ?> <i class="fas fa-star fa-xs text-danger"></i></label>
+                <?= $this->Form->day('birthdate', ['label' => false]); ?>
+            </div>
+            <div class="col form-group required">
+                <label><?= __('Mese') ?> <i class="fas fa-star fa-xs text-danger"></i></label>
+                <?= $this->Form->month('birthdate', ['label' => false]); ?>
+            </div>
+            <div class="col- form-group required">
+                <label><?= __('Anno') ?> <i class="fas fa-star fa-xs text-danger"></i></label>
+                <?= $this->Form->year('birthdate', [ 'label' => false, 'minYear' => Configure::read('Athletes')['birthdate_minYear'], 'maxYear' => date('Y') ]); ?>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col">
+                <label><?= __('Città') ?> <i class="fas fa-star fa-xs text-danger"></i></label>
+                <?= $this->Form->input('birth_city', ['label' => false, 'required' => true])?>
+            </div>
+            <div class="col">
+                <label><?= __('Provincia o Stato Estero') ?> <i class="fas fa-star fa-xs text-danger"></i></label>
+                <?= $this->Form->control('birth_province_code', [ 'options' => $provinces, 'label' => false, 'required' => true, 'empty' => __('Selezionare una provincia o scegliere Stato Estero') ]);?>
+            </div>
+        </div>
+        <hr>
+        <h3><?= __('Codice Fiscale') ?></h3>
+        <div class="row">
+            <div class="col">
+                <p>Il codice fiscale è controllato solo formalmente.</p>
+            </div>
+            <div class="col">
+                <label><?= __('Codice Fiscale') ?> <i class="fas fa-star fa-xs text-danger"></i></label>
+                <?= $this->Form->control('fiscal_code', ['label' => false]) ?>
+            </div>
+        </div>
+        <hr>
+        <h3>Domicilio</h3>
+        <div class="row">
+            <div class="col">
+                <label><?= __('Indirizzo') ?> <i class="fas fa-star fa-xs text-danger"></i></label>
+                <?= $this->Form->input('address', ['label' => false, 'required' => true])?> 
+            </div>
+            <div class="col">
+                <label><?= __('Città') ?> <i class="fas fa-star fa-xs text-danger"></i></label>
+                <?= $this->Form->input('city', ['label' => false, 'required' => true])?>               
+            </div>
+            <div class="col">
+                <label><?= __('Provincia o stato estero') ?> <i class="fas fa-star fa-xs text-danger"></i></label>
+                <?= $this->Form->control('province_code', [ 'options' => $provinces, 'label' => false, 'required' => true, 'empty' => __('Provincia o Stato Estero') ]);?>          
+            </div>
+            <div class="col">
+                <label><?= __('CAP') ?> <i class="fas fa-star fa-xs text-danger"></i></label>
+                <?= $this->Form->input('postal_code', ['label' => false, 'required' => true])?> 
+            </div>
+        </div>
+        <hr>
+        <!-- ASI Subscription-->
+        <h3><?= __('Iscrizione ASI') ?></h3>
+        <div class="row">
+            <div class="col form-group required">
+                <label><?= __('Giorno') ?></label>
+                <?= $this->Form->day('asi_subscription_date'); ?>
+            </div>
+            <div class="col form-group required">
+                <label><?= __('Mese') ?></label>
+                <?= $this->Form->month('asi_subscription_date'); ?>
+            </div>
+            <div class="col form-group required">
+                <label><?= __('Anno') ?></label>
+                <?= $this->Form->year('asi_subscription_date'); ?>
+            </div>
+        </div>
+        <div>
+            <label><?= __('Numero') ?></label>
+            <?= $this->Form->control('asi_subscription_number', ['label' => false]); ?>
+        </div>
+        <hr>
+        <!-- Responsible Person-->
+        <h3><?= __('Persona Responsabile') ?></h3>
+        <span class=""><?= __('Richiesto per atleti under 18') ?></span>
+        <div class="row">
+            <div class="col">
+                 <label><?= __('Digitare parte del cognome del responsabile da assegnare a questo atleta e premere cerca, quindi selezionare uno dei nominativi restituiti.')?></label>
+                <?= $this->Form->input('responsible_person_surname', ['id' => 'responsible-person-surname', 'label' => false]) ?>
+                <a id="search-responsible-person-button" class="btn btn-primary text-white"><?= __('Cerca') ?></a>               
+            </div>
+            <div class="col" >
+                <strong><?= __('Risultati della ricerca') ?></strong>
+                <div id="target-responsible-person">
+
                 </div>
             </div>
-            <hr>
-            <label><?= __('ASI Subscription') ?></label>
-            <?= $this->Form->control('asi_subscription_number', ['label' => __('Number')]); ?>
-            <label><?= __('Date') ?></label>
-            <div class="row">
-                <div class="col-sm-4 form-group required">
-                    <?= __('Day') ?><?= $this->Form->day('asi_subscription_date'); ?>
+        </div>
+        <hr>
+        <!-- Contacts -->
+        <h3><?= __('Contatti') ?></h3>
+        <div class="row">
+                <div class="col">
+                    <label><?= __('Email') ?></label>
+                    <?= $this->Form->control('email', ['label' => false])?>
                 </div>
-                <div class="col-sm-4 form-group required">
-                    <?= __('Month') ?><?= $this->Form->month('asi_subscription_date'); ?>
+                <div class="col">
+                    <label><?= __('Phone') ?></label>
+                    <?= $this->Form->control('phone', ['label' => false])?>
                 </div>
-                <div class="col-sm-4 form-group required">
-                    <?= __('Year') ?><?= $this->Form->year('asi_subscription_date'); ?>
+        </div>
+        <div class="row">
+                <div class="col">
+                    <label><?= __('Account Twitter') ?></label>
+                    <?= $this->Form->control('twitter_account', ['label' => false])?>
                 </div>
-            </div>
-            <hr>
-            <label><?= __('Responsible Person (mandatory for Under 18 athletes)')?></label>
-            <?= $this->Form->input('responsible_person_surname', ['id' => 'responsible-person-surname']) ?>
-            <a id="search-responsible-person-button" class="btn btn-primary text-white">Search Responsible Person</a>
-            <div>
-            <div id="target-responsible-person"></div> 
-            <hr>         
-        </fieldset>
-        <?= $this->Form->button(__('Submit')) ?>
+                <div class="col">
+                    <label><?= __('Account Instagram') ?></label>
+                    <?= $this->Form->control('instagram_account', ['label' => false])?>
+                </div>
+        </div>
+        <hr>
+        <label><i class="fas fa-star fa-xs text-danger"></i> <?= __('Campi richiesti') ?></label>
+        <div class="text-center"><?= $this->Form->button(__('Registra Atleta')) ?></div>
     <?= $this->Form->end() ?>
 </div>
 

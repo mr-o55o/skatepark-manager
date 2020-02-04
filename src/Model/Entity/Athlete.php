@@ -33,19 +33,53 @@ class Athlete extends Entity
         'name' => true,
         'surname' => true,
         'birthdate' => true,
+        'sex' => true,
+        'fiscal_code' => true,
+        'birth_city' => true,
+        'birth_province_code' => true,
+        'city' => true,
+        'province_code' => true,
+        'phone' => true,
+        'email' => true,
+        'postal_code' => true,
+        'instagram_account' => true,
+        'twitter_account' => true,
         'responsible_person_id' => true,
+        'disabled_person' => true,
+        'competitive' => true,
         'asi_subscription_number' => true,
         'asi_subscription_date' => true,
+        'fisr_subscription_number' => true,
+        'fisr_subscription_date' => true,        
         'responsible_person' => true,
         'purchased_lesson_editions_bundles' => true,
-        'valid_purchased_lesson_editions_bundles' => true
+        'valid_purchased_lesson_editions_bundles' => true,
     ];
-
+    // To deprecate asap!
+    /*
     public function hasActiveSubscription() {
         if ($this->asi_subscription_date->modify('+1 Year') > Time::now()) {
             return true;
         }
         return $this->asi_subscription_date->modify('+1 Year');
+    }
+    */
+
+    public function hasValidSubscriptions($date = null) {
+        if ($this->asi_subscription_date == null && $this->fisr_subscription_date == null) {
+            return false;
+        }
+        if ($date != null ) {
+            if ($this->asi_subscription_date != null && $this->asi_subscription_date->modify('+1 Year') < $date or ($this->fisr_subscription_date != null && $this->fisr_subscription_date->modify('+1 Year') < $date)) {
+                return false;
+            }  
+        } else {
+            if ($this->asi_subscription_date != null && $this->asi_subscription_date->modify('+1 Year') < Time::now() or ($this->fisr_subscription_date != null && $this->fisr_subscription_date->modify('+1 Year') < Time::now())) {
+                return false;
+            }            
+        }
+
+        return true;
     }
 
     public function isBusy($start_date, $end_date, $exclude) {
@@ -57,7 +91,16 @@ class Athlete extends Entity
         return false;
     }
 
-    public function hasValidLessonEditionsBundle($lesson_id) {
-        return false;
+    public function getValidBundles() {
+        $purchasedBundles = TableRegistry::getTableLocator()->get('PurchasedLessonEditionsBundles')->find('valid')->contain(['LessonEditionsBundles'])->where(['athlete_id' => $this->id ]);
+        return $purchasedBundles;
+    }
+
+    protected function _getAsiSubscriptionAge()
+    {
+        if ($this->asi_subscription_date == null) {
+            return 999;
+        }
+        return $this->asi_subscription_date->diffInYears(Time::now());
     }
 }

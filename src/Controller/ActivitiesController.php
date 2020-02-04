@@ -4,6 +4,7 @@ namespace App\Controller;
 use App\Controller\AppController;
 use Cake\ORM\TableRegistry;
 use Cake\I18n\Time;
+use Cake\Core\Configure;
 /**
  * Activities Controller
  *
@@ -14,6 +15,26 @@ use Cake\I18n\Time;
 class ActivitiesController extends AppController
 {
 
+    public function initialize()
+    {
+        parent::initialize();
+
+        $this->loadComponent('Search.Prg', [
+            // This is default config. You can modify "actions" as needed to make
+            // the PRG component work only for specified methods.
+            'actions' => ['index', 'indexUpcoming']
+        ]);
+    }
+
+    public $paginate = [
+        'contain' => ['Events', 'ActivityTypes', 'ActivityStatuses', 'ActivityUsers.Users'],
+        'sortWhitelist' => [
+            'id', 'ActivityTypes.name', 'Users.username', 'created', 'modified', 'Events.start_date', 'Events.end_date'
+        ],
+        'maxLimit' => 10,
+        'order' => ['Events.start_date' => 'asc'] 
+    ];
+
     /**
      * Index method
      *
@@ -21,9 +42,6 @@ class ActivitiesController extends AppController
      */
     public function index()
     {
-        $this->paginate = [
-            'contain' => ['Users', 'ActivityTypes', 'ActivityStatuses', 'UserActivities']
-        ];
         $activities = $this->paginate($this->Activities);
 
         $this->set(compact('activities'));
@@ -36,13 +54,22 @@ class ActivitiesController extends AppController
      */
     public function indexUpcoming()
     {
-        $this->paginate = [
-            'contain' => ['Users', 'ActivityTypes', 'Events']
-        ];
         $activities = $this->paginate($this->Activities->find()->where(['Events.start_date >' => Time::now() ])->order('events.start_date ASC'));
 
         $this->set(compact('activities'));
     }
+
+    /**
+     * Index Scheduled method
+     *
+     * @return \Cake\Http\Response|void
+    */
+    public function indexScheduled()
+    {
+        $activities = $this->paginate($this->Activities->find('scheduled')->order('events.start_date ASC'));
+
+        $this->set(compact('activities'));
+    }   
 
     /**
      * View method
@@ -54,11 +81,12 @@ class ActivitiesController extends AppController
     public function view($id = null)
     {
         $activity = $this->Activities->get($id, [
-            'contain' => ['Users', 'ActivityTypes', 'Events', 'UserActivities']
+            'contain' => ['ActivityTypes', 'ActivityStatuses', 'Events', 'ActivityUsers.Users']
         ]);
 
         $this->set('activity', $activity);
     }
+
 
     /**
      * Add method
@@ -75,20 +103,19 @@ class ActivitiesController extends AppController
             $this->set('user', $user);
         }
         if ($this->request->is(['patch', 'post', 'put'])) {
+            
             //debug($this->request->getData());
             $activity = $this->Activities->patchEntity($activity, $this->request->getData(), ['associated' => ['ActivityTypes', 'Events']]);
-
-            //get activity type for received id
-            $activity_type = $this->Activities->ActivityTypes->get($activity->activity_type_id);
-            //attach lesson entity to lesson edition
-            $activity->activity_type = $activity_type;
-            //set event title
-            $activity->event->title = $activity_type->name;
+            
+            $activity->activity_status_id = 1;
             $activity->event->end_date = $activity->event->start_date->modify('+ '.$this->request->getData()['duration'].' hours');
-            //store lesson edition entity in session
-            //debug($activity);
-            $this->getRequest()->getSession()->write('Activity', $activity);
-            $this->redirect(['action' => 'populate']);
+
+            if ($this->Activities->save($activity)) {
+                $this->Flash->success(__('Attività salvata correttamente con Id ').$activity->id.'.');
+                $this->redirect(['controller' => 'ActivityUsers', 'action' => 'add', '?' => ['activity_id' => $activity->id]]);
+            } else {
+                $this->Flash->error(__('Attenzione, violate regole applicative'));
+            }
         }
         $activity_types = $this->Activities->ActivityTypes->find('list', ['limit' => 200]);
         $this->set('activity_types', $activity_types); 
@@ -100,6 +127,7 @@ class ActivitiesController extends AppController
      *
      * @return \Cake\Http\Response|null Redirects on successful add, renders view otherwise.
      */
+    /*
     public function populate()
     {
         //set referer for back button
@@ -139,7 +167,7 @@ class ActivitiesController extends AppController
 
 
     }
-    
+    */
 
     /**
      * Edit method
@@ -151,13 +179,12 @@ class ActivitiesController extends AppController
     public function edit($id = null)
     {
         $activity = $this->Activities->get($id, [
-            'contain' => []
+            'contain' => ['Users', 'ActivityTypes', 'ActivityStatuses', 'Events', 'ActivityUsers.Users']
         ]);
         if ($this->request->is(['patch', 'post', 'put'])) {
             $activity = $this->Activities->patchEntity($activity, $this->request->getData());
             if ($this->Activities->save($activity)) {
                 $this->Flash->success(__('The activity has been saved.'));
-
                 return $this->redirect(['action' => 'index']);
             }
             $this->Flash->error(__('The activity could not be saved. Please, try again.'));
@@ -166,6 +193,41 @@ class ActivitiesController extends AppController
         $activityTypes = $this->Activities->ActivityTypes->find('list', ['limit' => 200]);
         $this->set(compact('activity', 'users', 'activityTypes'));
     }
+
+
+
+    /**
+     * Change User method
+     *
+     * @param string|null $id Activity id.
+     * @return \Cake\Http\Response|null Redirects on successful change, renders view otherwise.
+     * @throws \Cake\Datasource\Exception\RecordNotFoundException When record not found.
+     */
+    /*
+    public function changeUser($id = null)
+    {
+        $activity = $this->Activities->get($id, [
+            'contain' => ['Users', 'ActivityTypes', 'ActivityStatuses', 'Events', 'ActivityUsers.Users']
+        ]);
+
+        //change user is allowed for draft and scheduled activities
+        if ($activity->activity_status_id > 2) {
+            $this->Flash->error(__('Non è possibile modificare il responsabile di un attività conclusa o annullata'));
+            $this->redirect(['action' => 'index']);
+        }
+
+        if ($this->request->is(['patch', 'post', 'put'])) {
+            $activity = $this->Activities->patchEntity($activity, $this->request->getData());
+            if ($this->Activities->save($activity)) {
+                $this->Flash->success(__('il responsabile attività è stato aggiornato.'));
+                return $this->redirect(['action' => 'view', $activity->id]);
+            }
+        }
+        $users = $this->Activities->Users->find('Free', [ 'start_date' => $activity->event->start_date, 'end_date' => $activity->event->end_date, 'exclude' => $activity->event->id ])->find('list');
+
+        $this->set(compact('activity', 'users'));            
+    }
+    */
 
     /**
      * Delete method
@@ -177,14 +239,23 @@ class ActivitiesController extends AppController
     public function delete($id = null)
     {
         $this->request->allowMethod(['post', 'delete']);
-        $activity = $this->Activities->get($id);
-        if ($this->Activities->delete($activity)) {
-            $this->Flash->success(__('The activity has been deleted.'));
-        } else {
-            $this->Flash->error(__('The activity could not be deleted. Please, try again.'));
+        $activity = $this->Activities->get($id, ['contain' => 'Events', 'ActivityUsers']);
+
+        if ($activity->activity_status_id <> Configure::read('activity_statuses')['draft']) {
+            $this->Flash->error(__('Non è possibile eliminare una attività che non è in bozza'));
+            $this->redirect(['action' => 'view', $activity->id]);
         }
 
-        return $this->redirect(['action' => 'index']);
+        //to correctly delete an activity and its associated data, we delete thereferenced event
+        $events = $this->loadModel('Events');
+
+        if ($events->delete($activity->event)) {
+            $this->Flash->success(__('Attività eliminata.'));
+        } else {
+            $this->Flash->error(__('Errore durante la cancellazione.'));
+        }
+
+        return $this->redirect(['action' => 'indexScheduled']);
     }
 
 
@@ -194,43 +265,57 @@ class ActivitiesController extends AppController
      *
      * @return \Cake\Http\Response|null Redirects on successful add, renders view otherwise.
      */
-    /*
-    public function add($id = null)
+    public function schedule($id = null)
     {
-        $activity = $this->Activities->newEntity();
-        if ($this->request->is(['patch', 'post', 'put'])) {
+        $activity = $this->Activities->get($id, [
+            'contain' => ['ActivityTypes', 'ActivityStatuses', 'Events', 'ActivityUsers.Users']
+        ]);
+        //refuse to schedule an activity not in draft status
+        if ($activity->activity_status_id != Configure::read('activity_statuses')['draft']) {
+            $this->Flash->error(__('Non è possibile pianificare un\'attività che non sia in bozza'));
+        } elseif ($activity->event->start_date < Time::now()) {
+            $this->Flash->error(__('Non è possibile pianificare un\'attività che inizia nel passato'));
+        } else {
+            //debug('scheduling activity...');
+            if ($this->request->is(['patch', 'post', 'put'])) {
+                //$activity = $this->Activities->patchEntity($activity, $this->request->getData());
+                //set status to scheduled;
+                $activity->activity_status_id = 2;
+                //debug($activity);
 
-            $duration = $this->request->getData('duration');
-
-            $activity = $this->Activities->patchEntity($activity, $this->request->getData(), [
-                'contain' => ['Events', 'Users']
-            ]);
-            
-            $activity_type = TableRegistry::getTableLocator()->get('ActivityTypes')->get($activity->activity_type_id);
-            $user = TableRegistry::getTableLocator()->get('Users')->get($activity->user_id);
-            //debug($lesson);
-            
-            // set event fk
-            $activity->event->activity_id = $activity->id;
-            // set event title
-            $activity->event->title = $activity_type->name; 
-
-            //set event end date
-            $activity->event->end_date = $activity->event->start_date->modify('+'.$duration.' hours');
-
-            debug($activity);
-            if ($this->Activities->save($activity)) {
-                $this->Flash->success(__('Activity has been scheduled.'));
-                return $this->redirect(['controller' => 'events', 'action' => 'calendar']);
-            }
-            //$this->Flash->error(__('Activity could not be scheduled. Please, try again.'));
-            
-            $this->set('errors', $activity->getErrors());
-
-        }
-        $activity_types = $this->Activities->ActivityTypes->find('list', ['limit' => 200]);
-        $this->set(compact('activity', 'activity_types')); 
+                if ($this->Activities->save($activity)) {
+                    $this->Flash->success(__('Attività pianificata correttamente.'));
+                    $this->redirect(['action' => 'view', $activity->id]);
+                } else {
+                    $this->Flash->error(__('Attenzione: violata regola regola di business nella pianificazione dell\'attività.'));
+                } 
+            }          
+        } 
+        $this->set('activity', $activity);  
     }
-    */
+
+    public function complete($id = null)
+    {
+        $activity = $this->Activities->get($id, [
+            'contain' => ['ActivityTypes', 'ActivityStatuses', 'Events', 'ActivityUsers.Users']
+        ]);
+
+        if ($activity->activity_status_id <> Configure::read('activity_statuses')['scheduled']) {
+            $this->Flash->error(__('Non è possibile completare una attività che non è pianificata'));
+            $this->redirect(['action' => 'view', $activity->id]);
+        }
+
+        
+        if ($this->request->is(['patch', 'post', 'put'])) {
+            $activity = $this->Activities->patchEntity($activity, $this->request->getData());
+            $activity->activity_status_id = Configure::read('activity_statuses')['completed'];
+            if ($this->Activities->save($activity)) {
+                $this->Flash->success(__('Attiità completata.'));
+                return $this->redirect(['action' => 'view', $activity->id]);
+            }
+            $this->Flash->error(__('Errore durante il salvataggio dell\'attività.'));           
+        }
+        $this->set('activity', $activity);
+    }
 
 }

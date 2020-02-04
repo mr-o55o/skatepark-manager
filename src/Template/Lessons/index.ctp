@@ -5,31 +5,32 @@
  */
 ?>
 <div class="lessons index content">
-    <h4><?= __('Defined Lessons') ?></h4>
 
     <?php if (count($lessons) > 0) : ?>
         <table class="table table-striped">
             <thead class="thead">
                 <tr>
                     <th scope="col"><?= $this->Paginator->sort('id') ?></th>
-                    <th scope="col"><?= $this->Paginator->sort('name') ?></th>
+                    <th scope="col"><?= __('Nome') ?></th>
                     <th scope="col"><?= __('Description')?></th>
-                    <th scope="col"><?= $this->Paginator->sort('duration') ?></th>
-                    <th scope="col"><?= $this->Paginator->sort('price') ?></th>
-                    <th scope="col"><?= $this->Paginator->sort('trainer_fee') ?></th>
-                    <th scope="col"><?= $this->Paginator->sort('is_active') ?></th>
+                    <th scope="col"><?= __('Durata (minuti)') ?></th>
+                    <th scope="col"><?= __('Iscrizione ASI richiesta') ?></th>
+                    <th scope="col"><?= __('Prezzo') ?></th>
+                    <th scope="col"><?= __('Quota istruttore') ?></th>
+                    <th scope="col"><?= __('Attiva') ?></th>
                 </tr>
             </thead>
             <tbody>
                 <?php foreach ($lessons as $lesson): ?>
                 <tr>
-                    <td><?= $this->Html->link($this->Number->format($lesson->id), ['action' => 'view', $lesson->id]) ?></td>
+                    <td><?= $this->Html->link($this->Number->format($lesson->id), ['action' => 'view', $lesson->id], ['class' => 'btn btn-primary btn-sm']) ?></td>
                     <td><?= $lesson->name ?></td>
                     <td><?= h($lesson->description) ?></td>
                     <td><?= $this->Number->format($lesson->duration) ?></td>
+                    <td><?= $lesson->is_asi_subscription_required ? __('Sì') : __('No') ?></td>
                     <td><?= $this->Number->currency($lesson->price, 'EUR'); ?></td>
                     <td><?= $this->Number->currency($lesson->trainer_fee, 'EUR'); ?></td>
-                    <td><?= $lesson->is_active ?></td>
+                    <td><?= $lesson->is_active ? __('Sì') : __('No') ?></td>
                 </tr>
                 <?php endforeach; ?>
             </tbody>

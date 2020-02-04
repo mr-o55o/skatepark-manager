@@ -75,7 +75,7 @@ class UsersTable extends Table
         ]);
 
         $this->hasMany('LessonEditions');
-        
+
         //booked lesson editions
         $this->hasMany('BookedLessonEditions', [
                 'className' => 'LessonEditions'
@@ -85,7 +85,12 @@ class UsersTable extends Table
                 )
         ->setProperty('booked_lesson_editions');
 
-        $this->hasMany('Activities');
+        //$this->hasMany('Activities');
+        $this->hasMany('ActivityUsers');
+
+        $this->hasMany('UsersAvailability');
+
+        $this->hasMany('CourseSessionTrainers');
     }
 
     /**
@@ -155,12 +160,13 @@ class UsersTable extends Table
         return $query;
     }
 
-    public function findStaffMembers(Query $query)
+    public function findStaff(Query $query)
     {
 
         $query->where(['role_id' => Configure::read('roles')['trainer'] ]);
         $query->orwhere(['role_id' => Configure::read('roles')['staff'] ]);
         $query->orwhere(['role_id' => Configure::read('roles')['admin'] ]);
+        $query->orwhere(['role_id' => Configure::read('roles')['manager'] ]);
         return $query;
     }      
 
@@ -205,221 +211,110 @@ class UsersTable extends Table
         return $query;
     }
 
-    /**
-    *   Free Trainers Finder
-    *   Finds Trainers that are not busy with something during a time frame that must be passed as in the options
-    * 
-    */
-
-    public function findFreeTrainers(Query $query, $options)
-    {
-        $periodStart = $options['start_date'];
-        $periodEnd = $options['end_date'];
-        $excludeEvent = null;
-        if ($options['exclude'] != null) {
-           $excludeEvent = $options['exclude']; 
-        }
-        $query->select(['id','username']);
-        $query->distinct();
-        $query->where(['role_id' => Configure::read('roles')['trainer'], ['active' => true ]]);
-        //load activities
-        $query->contain('Activities.Events', function (Query $q) use($periodStart, $periodEnd) {
-            $q->where(['OR' => [
-                    ['start_date >' => $periodStart, 'start_date <' => $periodEnd],
-                    ['end_date >' => $periodStart, 'end_date <' => $periodEnd],
-                    ['start_date <=' => $periodStart, 'end_date >=' => $periodEnd]
-                ]]);
-            return $q;          
-        });
-        //load lesson editions
-        $query->contain('LessonEditions.Events', function (Query $q) use($periodStart, $periodEnd, $excludeEvent) {
-            $q->where(['lesson_edition_status_id' => Configure::read('lesson_edition_statuses')['booked']]);
-            $q->orwhere(['lesson_edition_status_id' => Configure::read('lesson_edition_statuses')['scheduled']]);
-            $q->andWhere(['OR' => [
-                    ['start_date >' => $periodStart, 'start_date <' => $periodEnd],
-                    ['end_date >' => $periodStart, 'end_date <' => $periodEnd],
-                    ['start_date <=' => $periodStart, 'end_date >=' => $periodEnd]
-                ]]);
-
-            if ($excludeEvent) {
-                $q->andWhere(['Events.id <>' => $excludeEvent]);
-            }
-            return $q;          
-        });
-
-        $mapper = function ($user, $key, $mapReduce) {
-            if (count($user->lesson_editions) == 0 && count($user->activities) == 0 ) {
-                $mapReduce->emit($user);
-            }
-        };
-        $query->mapReduce($mapper);
-
-        return $query;
-    }
-
+    //FIinds users not busy in any lesson_edition or activity in the given time frame, you can pass the id of an event to exclude from the search, useful when used in an action related to an event. 
     public function findFree(Query $query, $options)
     {
+        //debug($options);
         $periodStart = $options['start_date'];
         $periodEnd = $options['end_date'];
         $excludeEvent = null;
+
         if ($options['exclude'] != null) {
            $excludeEvent = $options['exclude']; 
         }
+
         $query->select(['id','username']);
-        $query->distinct();
+        //Exclude the admin role, admins do not take part in activities!!!!
         $query->where(['role_id <>' => Configure::read('roles')['admin'], ['active' => true ]]);
-        //load activities
-        $query->contain('Activities.Events', function (Query $q) use($periodStart, $periodEnd) {
-            $q->where(['OR' => [
-                    ['start_date >' => $periodStart, 'start_date <' => $periodEnd],
-                    ['end_date >' => $periodStart, 'end_date <' => $periodEnd],
-                    ['start_date <=' => $periodStart, 'end_date >=' => $periodEnd]
-                ]]);
-            return $q;          
+
+        $query->matching('UsersAvailability', function ($q) use ($periodStart) {
+            return $q->where(['UsersAvailability.start_date' => $periodStart->startOfDay()]);
         });
-        //load lesson editions
-        $query->contain('LessonEditions.Events', function (Query $q) use($periodStart, $periodEnd, $excludeEvent) {
-            $q->where(['lesson_edition_status_id' => Configure::read('lesson_edition_statuses')['booked']]);
-            $q->orwhere(['lesson_edition_status_id' => Configure::read('lesson_edition_statuses')['scheduled']]);
-            $q->andWhere(['OR' => [
-                    ['start_date >' => $periodStart, 'start_date <' => $periodEnd],
-                    ['end_date >' => $periodStart, 'end_date <' => $periodEnd],
-                    ['start_date <=' => $periodStart, 'end_date >=' => $periodEnd]
+
+        //load activities
+        $query->contain('ActivityUsers.Activities.Events', function (Query $q) use($periodStart, $periodEnd, $excludeEvent) {
+            $q->where(['OR' => [
+                    //consider events that start before and ends after the period
+                    ['events.start_date <' => $periodStart, 'events.end_date >' => $periodEnd],
+                    //consider events that starts inside the period
+                    ['start_date >=' => $periodStart, 'start_date <' => $periodEnd],
+                    //consider events that ends inside the period
+                    ['end_date >' => $periodStart, 'end_date <=' => $periodEnd],
+                    //consider events that stats and ends during the period
+                    ['start_date >=' => $periodStart, 'end_date <=' => $periodEnd],                    
                 ]]);
+            $q->andWhere(['activity_status_id <' => Configure::read('activity_statuses')['completed']]);
+            //$q->andWhere(['activity_status_id <>' => Configure::read('activity_statuses')['draft']]);
 
             if ($excludeEvent) {
-                $q->andWhere(['Events.id <>' => $excludeEvent]);
+                $q->where(['Events.id <>' => $excludeEvent]);
+            }
+            return $q;          
+        });
+
+        //load lesson editions
+        $query->contain('LessonEditions.Events', function (Query $q) use($periodStart, $periodEnd, $excludeEvent) {
+            $q->where(['lesson_edition_status_id <' => Configure::read('lesson_edition_statuses')['completed']]);
+            $q->andWhere(['OR' => [
+                    //consider events that start before and ends after the period
+                    ['events.start_date <' => $periodStart, 'events.end_date >' => $periodEnd],
+                    //consider events that starts inside the period
+                    ['start_date >=' => $periodStart, 'start_date <' => $periodEnd],
+                    //consider events that ends inside the period
+                    ['end_date >' => $periodStart, 'end_date <=' => $periodEnd],
+                    //consider events that stats and ends during the period
+                    ['start_date >=' => $periodStart, 'end_date <=' => $periodEnd], 
+                ]]);
+           // $q->where(['lesson_edition_status_id <' => Configure::read('lesson_edition_statuses')['completed']]);
+
+            if ($excludeEvent) {
+                $q->where(['Events.id <>' => $excludeEvent]);
+            }
+            return $q;          
+        });
+
+        //load course_sessions
+        $query->contain('CourseSessionTrainers.CourseSessions.Events', function (Query $q) use($periodStart, $periodEnd, $excludeEvent) {
+            $q->where(['course_session_status_id <' => Configure::read('course_session_statuses')['completed']]);
+            $q->andWhere(['OR' => [
+                    //consider events that start before and ends after the period
+                    ['events.start_date <' => $periodStart, 'events.end_date >' => $periodEnd],
+                    //consider events that starts inside the period
+                    ['start_date >=' => $periodStart, 'start_date <' => $periodEnd],
+                    //consider events that ends inside the period
+                    ['end_date >' => $periodStart, 'end_date <=' => $periodEnd],
+                    //consider events that stats and ends during the period
+                    ['start_date >=' => $periodStart, 'end_date <=' => $periodEnd], 
+                ]]);
+            //$q->where(['lesson_edition_status_id <' => Configure::read('lesson_edition_statuses')['completed']]);
+
+            if ($excludeEvent) {
+                $q->where(['Events.id <>' => $excludeEvent]);
             }
             return $q;          
         });
 
         $mapper = function ($user, $key, $mapReduce) {
-            if (count($user->lesson_editions) == 0 && count($user->activities) == 0 ) {
+            // ***** START finder DEBUG
+            //debug($user->username.': lezioni -> '.count($user->lesson_editions).' | attività -> '.count($user->activity_users) );
+            // ***** END finder DEBUG
+            debug($user);
+            if (count($user->lesson_editions) == 0 && count($user->activity_users) == 0 && count($user->course_session_trainers) == 0 ) {
                 $mapReduce->emit($user);
             }
         };
+
         $query->mapReduce($mapper);
-
         return $query;
     }
 
-    public function findBusyTrainers(Query $query, $options)
-    {
-        $periodStart = $options['start_date'];
-        $periodEnd = $options['end_date'];
-        $excludeEvent = null;
-        if ($options['exclude'] != null) {
-           $excludeEvent = $options['exclude']; 
-        }
-        $query->select(['id','username']);
-        $query->distinct();
-        $query->where(['role_id' => Configure::read('roles')['trainer']]);
-        //load activities
-        $query->contain('Activities.Events', function (Query $q) use($periodStart, $periodEnd) {
-            $q->where(['OR' => [
-                    ['start_date >' => $periodStart, 'start_date <' => $periodEnd],
-                    ['end_date >' => $periodStart, 'end_date <' => $periodEnd],
-                    ['start_date <=' => $periodStart, 'end_date >=' => $periodEnd]
-                ]]);
-            return $q;          
-        });
-        //load lesson editions
-        $query->contain('LessonEditions.Events', function (Query $q) use($periodStart, $periodEnd, $excludeEvent) {
-            $q->where(['lesson_edition_status_id' => Configure::read('lesson_edition_statuses')['booked']]);
-            $q->orwhere(['lesson_edition_status_id' => Configure::read('lesson_edition_statuses')['scheduled']]);
-            $q->andWhere(['OR' => [
-                    ['start_date >' => $periodStart, 'start_date <' => $periodEnd],
-                    ['end_date >' => $periodStart, 'end_date <' => $periodEnd],
-                    ['start_date <=' => $periodStart, 'end_date >=' => $periodEnd]
-                ]]);
 
-            if ($excludeEvent) {
-                $q->andWhere(['Events.id <>' => $excludeEvent]);
-            }
-            return $q;          
-        });
-
-        $mapper = function ($user, $key, $mapReduce) {
-            if (count($user->lesson_editions) > 0 || count($user->activities) > 0 ) {
-                $mapReduce->emit($user);
-            }
-        };
-        $query->mapReduce($mapper);
-
+    public function findUnavailableUsers($query, $options) {
+        
+        $query->contain(['UsersAvailability']);
+        $query->where(['UsersAvailability.start_date <>' => $options['day']->startOfDay()]);
         return $query;
     }
-
-    public function findBusy(Query $query, $options)
-    {
-        $periodStart = $options['start_date'];
-        $periodEnd = $options['end_date'];
-        $excludeEvent = null;
-        if ($options['exclude'] != null) {
-           $excludeEvent = $options['exclude']; 
-        }
-        $query->select(['id','username']);
-        $query->distinct();
-        $query->where(['role_id <>' => Configure::read('roles')['admin']]);
-        //load activities
-        $query->contain('Activities.Events', function (Query $q) use($periodStart, $periodEnd) {
-            $q->where(['OR' => [
-                    ['start_date >' => $periodStart, 'start_date <' => $periodEnd],
-                    ['end_date >' => $periodStart, 'end_date <' => $periodEnd],
-                    ['start_date <=' => $periodStart, 'end_date >=' => $periodEnd]
-                ]]);
-            return $q;          
-        });
-        //load lesson editions
-        $query->contain('LessonEditions.Events', function (Query $q) use($periodStart, $periodEnd, $excludeEvent) {
-            $q->where(['lesson_edition_status_id' => Configure::read('lesson_edition_statuses')['booked']]);
-            $q->orwhere(['lesson_edition_status_id' => Configure::read('lesson_edition_statuses')['scheduled']]);
-            $q->andWhere(['OR' => [
-                    ['start_date >' => $periodStart, 'start_date <' => $periodEnd],
-                    ['end_date >' => $periodStart, 'end_date <' => $periodEnd],
-                    ['start_date <=' => $periodStart, 'end_date >=' => $periodEnd]
-                ]]);
-
-            if ($excludeEvent) {
-                $q->andWhere(['Events.id <>' => $excludeEvent]);
-            }
-            return $q;          
-        });
-
-        $mapper = function ($user, $key, $mapReduce) {
-            if (count($user->lesson_editions) > 0 || count($user->activities) > 0 ) {
-                $mapReduce->emit($user);
-            }
-        };
-        $query->mapReduce($mapper);
-
-        return $query;
-    }
-
-//liberi
-// 1: hanno attività che finiscono prima dell'inizio del periodo richiesto
-// 2: hanno attività che iniziano dopo la fine del periodo richiesto
-// 3: 
-/*
-    public function findFreeTrainers(Query $query, $options)
-    {
-        $periodStart = $options['start_date'];
-        $periodEnd = $options['end_date'];
-        $query->select(['id', 'username']);
-        $query->distinct();
-        $query->where(['role_id' => Configure::read('roles')['trainer']]);
-        $query->notMatching('LessonEditions.Events', function (Query $q) use($periodStart, $periodEnd) {
-            $q->where(['OR' => [
-                    ['start_date >' => $periodStart, 'start_date <' => $periodEnd],
-                    ['end_date >' => $periodStart, 'end_date <' => $periodEnd],
-                    ['start_date <=' => $periodStart, 'end_date >=' => $periodEnd]
-                ]]);
-            $q->where(['lesson_edition_status_id' => 3]);
-            return $q;
-                 
-        });
-        return $query;
-    }
-*/
 
     /**
      * Returns a rules checker object that will be used for validating

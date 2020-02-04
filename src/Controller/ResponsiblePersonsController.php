@@ -20,8 +20,9 @@ class ResponsiblePersonsController extends AppController
      */
 
     public $paginate = [
-        'limit' => 25,
-        'order' => [ 'ResponsiblePersons.surname' => 'asc']
+        'limit' => 10,
+        'order' => [ 'ResponsiblePersons.surname' => 'asc'],
+        'contain' => ['Athletes'],
     ];
 
     public function initialize()
@@ -51,7 +52,7 @@ class ResponsiblePersonsController extends AppController
     public function view($id = null)
     {
         $responsiblePerson = $this->ResponsiblePersons->get($id, [
-            'contain' => ['Athletes']
+            'contain' => ['Athletes', ]
         ]);
 
         $this->set('responsiblePerson', $responsiblePerson);
@@ -74,7 +75,8 @@ class ResponsiblePersonsController extends AppController
             }
             $this->Flash->error(__('The responsible person could not be saved. Please, try again.'));
         }
-        $this->set(compact('responsiblePerson'));
+        $provinces = $this->ResponsiblePersons->Provinces->find('list', ['limit' => 200]);
+        $this->set(compact('responsiblePerson', 'provinces'));
     }
 
     /**
@@ -100,7 +102,8 @@ class ResponsiblePersonsController extends AppController
             $this->set('errors', $responsiblePerson->errors());
             
         }
-        $this->set(compact('responsiblePerson'));
+        $provinces = $this->ResponsiblePersons->Provinces->find('list', ['limit' => 200]);
+        $this->set(compact('responsiblePerson', 'provinces'));
     }
 
     /**

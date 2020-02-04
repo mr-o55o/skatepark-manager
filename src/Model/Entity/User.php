@@ -3,6 +3,7 @@ namespace App\Model\Entity;
 use Cake\Auth\DefaultPasswordHasher;
 use Cake\ORM\Entity;
 use Cake\ORM\TableRegistry;
+use Cake\Core\Configure;
 
 /**
  * User Entity
@@ -83,11 +84,12 @@ class User extends Entity
     }
 
     public function isBusy($start_date, $end_date, $exclude) {
+        
         $users_table = TableRegistry::getTableLocator()->get('Users');
-        $busy_trainers = $users_table->find('busyTrainers', ['start_date' => $start_date, 'end_date' => $end_date, 'exclude' => $exclude])->find('list')->toArray();
-        if (array_key_exists($this->id, $busy_trainers)) {
-            return true;
+        $free_users = $users_table->find('free', ['start_date' => $start_date, 'end_date' => $end_date, 'exclude' => $exclude])->find('list')->toArray();
+        if (array_key_exists($this->id, $free_users)) {
+            return false;
         }
-        return false;
+        return true;
     }
 }

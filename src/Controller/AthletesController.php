@@ -17,7 +17,8 @@ class AthletesController extends AppController
 
     public $paginate = [
         'sortWhitelist' => ['id', 'name', 'surname', 'birthdate', 'asi_subscription_date'],
-        'contain' => ['ResponsiblePersons', 'PurchasedLessonEditionsBundles']
+        'contain' => ['ResponsiblePersons', 'PurchasedLessonEditionsBundles'],
+        'limit' => 10,
     ];
 
 
@@ -28,7 +29,7 @@ class AthletesController extends AppController
         $this->loadComponent('Search.Prg', [
             // This is default config. You can modify "actions" as needed to make
             // the PRG component work only for specified methods.
-            'actions' => ['index']
+            'actions' => ['index', 'indexActive', 'indexExpired']
         ]);
     }
 
@@ -39,9 +40,6 @@ class AthletesController extends AppController
      */
     public function index()
     {
-        $this->paginate = [
-            'contain' => ['ResponsiblePersons']
-        ];
         $query = $this->Athletes->find('search', ['search' => $this->request->getQueryParams()]);
         $this->set('athletes', $this->paginate($query));
     }
@@ -53,12 +51,8 @@ class AthletesController extends AppController
      */
     public function indexExpired()
     {
-        $this->paginate = [
-            'contain' => ['Users']
-        ];
-        $athletes = $this->paginate($this->Athletes->find('Expired'));
-
-        $this->set(compact('athletes'));
+        $query =  $this->Athletes->find('search', ['search' => $this->request->getQueryParams()])->find('Expired');
+        $this->set('athletes', $this->paginate($query));
     }
 
     /**
@@ -71,9 +65,8 @@ class AthletesController extends AppController
         $this->paginate = [
             'contain' => ['ResponsiblePersons']
         ];
-        $athletes = $this->paginate($this->Athletes->find('Active'));
-
-        $this->set(compact('athletes'));
+        $query =  $this->Athletes->find('search', ['search' => $this->request->getQueryParams()])->find('Active');
+        $this->set('athletes', $this->paginate($query));
     }
 
     /**
@@ -118,6 +111,22 @@ class AthletesController extends AppController
      *
      * @return \Cake\Http\Response|void
      */
+    public function ajaxSearchFree()
+    {
+
+        $athletes = $this->Athletes->find('searchBySurname', ['surname' => $this->request->getQuery('surname')]);
+
+        $this->set(compact('athletes')); // Pass $data to the view
+        $this->set('_jsonOptions', JSON_FORCE_OBJECT);
+        $this->set('_serialize', ['athletes']);
+        //$this->response->withStringBody(json_encode($jsonResponse));
+    }
+
+    /**
+     * AjaxSearch method
+     *
+     * @return \Cake\Http\Response|void
+     */
     public function ajaxSearchActive()
     {
 
@@ -139,9 +148,16 @@ class AthletesController extends AppController
     public function view($id = null)
     {
         $athlete = $this->Athletes->get($id, [
-            'contain' => ['ResponsiblePersons']
+            'contain' => [
+                'ResponsiblePersons', 
+                'AthletesNotes' => [
+                    'sort' => ['AthletesNotes.created DESC']
+                ],
+                'AthletesNotes.Users',
+            ]
         ]);
-
+        
+        $validBundles = $athlete->getValidBundles();
         $countBookedLessonEditions = $this->Athletes->LessonEditions->find('bookedByAthlete', ['athlete_id' => $id ])->count();
         $countCompletedLessonEditions = $this->Athletes->LessonEditions->find('completedByAthlete', ['athlete_id' => $id ])->count();
         $countCancelledLessonEditions = $this->Athletes->LessonEditions->find('cancelledByAthlete', ['athlete_id' => $id ])->count();
@@ -150,6 +166,7 @@ class AthletesController extends AppController
 
         $this->loadModel('LessonEditions');
         $this->set('athlete', $athlete);
+        $this->set('validBundles', $validBundles);
         $this->set('countBookedLessonEditions', $countBookedLessonEditions);
         $this->set('countCompletedLessonEditions', $countCompletedLessonEditions);
         $this->set('countCancelledLessonEditions', $countCancelledLessonEditions);
@@ -157,6 +174,25 @@ class AthletesController extends AppController
         $this->set('countPurchasedLessonEditionsBundles', $countPurchasedLessonEditionsBundles);
 
     }
+
+    /**
+     * ViewLiabilityDisclaimer method
+     *
+     * @param string|null $id Athlete id.
+     * @return \Cake\Http\Response|void
+     * @throws \Cake\Datasource\Exception\RecordNotFoundException When record not found.
+     */
+    public function viewLiabilityDisclaimer($id = null)
+    {
+        $this->layout = 'printer_friendly';
+        $athlete = $this->Athletes->get($id, [
+            'contain' => [
+                'ResponsiblePersons', 
+            ]
+        ]);
+        $this->set('athlete', $athlete);
+    }
+
 
     /**
      * Add method
@@ -170,16 +206,14 @@ class AthletesController extends AppController
         if ($this->request->is('post')) {
             $athlete = $this->Athletes->patchEntity($athlete, $this->request->getData(), ['contain' => 'ResponsiblePersons']);
             if ($this->Athletes->save($athlete)) {
-                $this->Flash->success(__('The athlete has been saved.'));
-
+                $this->Flash->success($athlete->name . ' ' . $athlete->surname . __('è stato registrato come atleta con Id ') . $athlete->id);
                 return $this->redirect(['action' => 'index']);
-            }
-            $this->set('errors', $athlete->getErrors()); 
-            $this->Flash->error(__('The athlete could not be saved. Please, try again.'));
-            
+            } else {
+                $this->Flash->error(__('The athlete could not be saved. Please, try again.'));
+            } 
         }
-
-        $this->set(compact('athlete', 'errors'));
+        $provinces = $this->Athletes->Provinces->find('list', ['limit' => 200]);
+        $this->set(compact('athlete', 'provinces', 'errors'));
     }
       
     /**
@@ -196,16 +230,17 @@ class AthletesController extends AppController
         ]);
         if ($this->request->is(['patch', 'post', 'put'])) {
             $athlete = $this->Athletes->patchEntity($athlete, $this->request->getData());
-            debug($athlete);
+            //debug($athlete);
             if ($this->Athletes->save($athlete)) {
-                $this->Flash->success(__('The athlete has been saved.'));
+                $this->Flash->success(__('Dati dell\'atleta modificati.'));
 
-                return $this->redirect(['action' => 'index']);
+                return $this->redirect(['action' => 'view', $athlete->id]);
             }
-            $this->Flash->error(__('The athlete could not be saved. Please, try again.'));
+            $this->Flash->error(__('Errore nella modifica dei dati dell\'atleta.'));
         }
         //$responsible_persons = $this->Athletes->ResponsiblePersons->find('list', ['limit' => 200]);
-        $this->set(compact('athlete'));
+        $provinces = $this->Athletes->Provinces->find('list', ['limit' => 200]);
+        $this->set(compact('athlete', 'provinces'));
     }
 
     public function removeResponsiblePerson($id = null)
@@ -222,7 +257,7 @@ class AthletesController extends AppController
         
     }
 
-    public function renewAsiSubscription($id = null)
+    public function manageSubscriptions($id = null)
     {
         $athlete = $this->Athletes->get($id, [
             'contain' => []

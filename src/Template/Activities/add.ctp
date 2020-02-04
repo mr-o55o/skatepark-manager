@@ -7,59 +7,91 @@ use Cake\I18n\Time;
 ?>
 
 <div class="activity content">
-    <h3>
-      <?= __('Programma attività') ?> - <?= __('Step 1') ?>
-    </h3>
-    <?= $this->Form->create($activity) ?>
-    <fieldset>
-        <label><?= __('Seleziona il tipo di attività') ?> <i class="fas fa-star fa-xs text-danger"></i></label>
-        <?= $this->Form->control('activity_type_id', ['options' => $activity_types, 'label' => false]); ?>
-        <hr>
-        <label><?= __('Seleziona data e ora di inizio') ?> <i class="fas fa-star fa-xs text-danger"></i></label>
+    <!-- Contextual Help -->
+    <div class="text-right"><?= $this->Element('Activities/modal-help') ?></div>
+
+    <!-- Business Errors Recap-->
+    <?= ($activity->getErrors() ? $this->Element('Errors/error_box', [ 'errors' => $activity->getErrors() ]) : '' ) ?>
+
+    <!-- Activity Form -->
+    <?= $this->Form->create($activity, ['id' => 'add-activity-form']) ?>
+        <h3><?= __('Tipo di attività') ?> </h3>
         <div class="row">
             <div class="col">
-                <span><?= __('Year') ?></span>: <?= $this->Form->year('event.start_date', [
+                <label><?= __('Selezionare una tipologia di attività') ?> <i class="fas fa-star fa-xs text-danger"></i></label>
+                <?= $this->Form->control('activity_type_id', ['options' => $activity_types, 'label' => false, 'empty' => true, 'required' => true]); ?>
+            </div>
+        </div>
+        
+        <hr>
+        <h3><?= __('Data,ora di inizio e durata') ?> <i class="fas fa-star fa-xs text-danger"></i></h3>
+        <div class="row">
+            <div class="col">
+                <label><?= __('Anno') ?></label> <?= $this->Form->year('event.start_date', [
                     'value' => Time::now(),
                     'minYear' => date('Y'),
                 ]) ;?>
             </div>
             <div class="col">
-                 <span><?= __('Month') ?></span>: <?= $this->Form->month('event.start_date', [
+                 <label><?= __('Mese') ?></label> <?= $this->Form->month('event.start_date', [
                     'default' => Time::now()
                 ]) ;?>               
             </div>
             <div class="col">
-                <span><?= __('Day') ?></span>: <?= $this->Form->day('event.start_date', [
+                <label><?= __('Giorno') ?></label> <?= $this->Form->day('event.start_date', [
                     'default' => Time::now()
                 ]) ;?>               
             </div>
         </div>
         <div class="row">
             <div class="col">
-                <span><?= __('Hours') ?></span>: <?= $this->Form->hour('event.start_date', []); ?>
+                <label><?= __('Ore') ?></label> <?= $this->Form->hour('event.start_date', []); ?>
             </div>
             <div class="col">
-                <span><?= __('Minutes') ?></span>: <?= $this->Form->minute('event.start_date', [
+                <label><?= __('Minuti') ?></label> <?= $this->Form->minute('event.start_date', [
                     'interval' => 15,
                 ]); ?>
             </div>
+             <div class="col">
+                <label><?= __('Durata in ore') ?></label> <?= $this->Form->number('duration', ['min' => 1, 'required' => true]); ?> 
+            </div>           
         </div>
         <hr>
-        <label><?= __('Durata') ?></label>
+        <h3><?= __('Evento associato') ?></h3>
         <div class="row">
             <div class="col">
-                <span><?= __('Inserisci la durata in ore') ?></span>: <?= $this->Form->number('duration', []); ?> 
+                <label><?= __('Titolo da assegnare all\'evento associato') ?></label>
+                <?= $this->Form->input('event.title', ['value' => 'Nessun titolo', 'label' => false]) ?>  
             </div>
         </div>
         <hr>
-        <label><?= __('Titolo evento') ?></label>
+        <h3><?= __('Altro') ?></h3>
         <div class="row">
             <div class="col">
-            <span><?= __('Inserisci un titolo se vuoi identificare in modo particolare questa attività, se non specificato viene usato il nome attività.') ?></span> <?= $this->Form->input('event.title') ?>
+                <label><?= __('Note') ?></label>
+                <?= $this->Form->input('notes', ['label' => false]) ?>
             </div>
         </div>
-        <p><i class="fas fa-star fa-xs text-danger"></i> <?= __('Required field') ?></p>
-    </fieldset>
-    <?= $this->Form->submit(__(_('Proceed to user selection'))); ?>
+        <hr>
+        <p><i class="fas fa-star fa-xs text-danger"></i> <?= __('Campo obbligatorio') ?></p>
+        <div class="text-center"><?= $this->Form->submit(__(_('Salva attività'))); ?></div>
     <?= $this->Form->end() ?>
 </div>
+<!--
+<script src="/js/jquery.validate.min.js"></script>
+
+<script>
+    $('add-activity-form').validate({
+        rules: {
+            'activity_type_id': {
+                required: true,
+            },
+        },
+        messages: {
+            'activity_type_id': {
+                required: "Selezionare un tipo di attività",
+            },
+        },
+    });
+</script>
+-->

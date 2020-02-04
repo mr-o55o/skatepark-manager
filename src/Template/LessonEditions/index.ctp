@@ -17,19 +17,19 @@
             <thead class="thead">
                 <tr>
                     <th scope="col"><?= $this->Paginator->sort('id') ?></th>
-                    <th scope="col"><?= __('Lesson type') ?></th>
-                    <th scope="col"><?= __('Start date') ?></th>
-                    <th scope="col"><?= __('Status') ?></th>
-                    <th scope="col"><?= __('Trainer') ?></th>
-                    <th scope="col"><?= __('Athlete') ?></th>
+                    <th scope="col"><?= __('Tipo di lezione') ?></th>
+                    <th scope="col"><?= __('Inizio') ?></th>
+                    <th scope="col"><?= __('Stato') ?></th>
+                    <th scope="col"><?= __('Istruttore') ?></th>
+                    <th scope="col"><?= __('Atleta') ?></th>
                 </tr>
             </thead>
             <tbody>
                 <?php foreach ($lessonEditions as $lessonEdition): ?>
                 <tr>
-                    <td><?= $this->Html->link($lessonEdition->id, ['action' => 'view', $lessonEdition->id]) ?></td>
+                    <td class="text-center"><?= $this->Html->link($lessonEdition->id, ['action' => 'view', $lessonEdition->id], ['class' => 'btn btn-primary btn-sm']) ?></td>
                     <td><?= $this->Html->link($lessonEdition->lesson->name, ['controller' => 'Lessons', 'action' => 'view', $lessonEdition->lesson->id]) ?></td>
-                    <td><?= $lessonEdition->has('event') ? h($lessonEdition->event->start_date->i18nFormat("dd/MM/Y H:mm")) : '' ?></td>
+                    <td><?= $lessonEdition->has('event') ? h($lessonEdition->event->start_date->i18nFormat("EEEE d MMMM YYYY @ H:mm")) : '' ?></td>
                     <td><?= $this->Element('LessonEditionStatuses/status-badge', ['statusId' => $lessonEdition->lesson_edition_status_id]); ?></td>
                     <td><?= $lessonEdition->has('user') ? $this->Html->link($lessonEdition->user->username, ['controller' => 'Users', 'action' => 'view', $lessonEdition->user->id]) : '' ?></td>
                     <td><?= $lessonEdition->has('athlete') ? $this->Html->link($lessonEdition->athlete->name . ' ' . $lessonEdition->athlete->surname, ['controller' => 'Athletes', 'action' => 'view', $lessonEdition->athlete->id]) : '' ?></td>

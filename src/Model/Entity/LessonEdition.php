@@ -2,6 +2,7 @@
 namespace App\Model\Entity;
 
 use Cake\ORM\Entity;
+use Cake\Core\Configure;
 /**
  * LessonEdition Entity
  *
@@ -47,5 +48,80 @@ class LessonEdition extends Entity
         'rent_helmet' => true,
         'rent_pads' => true,
     ];
+
+    public function isBookable()
+    {
+        $errors = '';
+        //only edition in trainer-assigned status are bookable
+        if ($this->lesson_edition_status_id != Configure::read('lesson_edition_statuses')['trainer-assigned']) {
+            $errors .= 'Lesson status not valid for booking. ';
+        }
+
+        if (!$this->event) {
+            $errors .= 'Event missing. ';
+        }
+
+        if (!$this->user_id or $this->user->isBusy($this->event->start_date, $this->event->end_date, $this->event->id)) {
+            $errors .= 'Trainer is missing or busy in another activity. ';
+        }
+
+        if (!$this->athlete or $this->athlete->isBusy($this->event->start_date, $this->event->end_date, $this->event->id)) {
+            $errors .= 'Athlete is missing or busy in another activity. ';
+        }                
+
+        if ($errors != null) {
+            //debug('isBookable check failed. Errors detected: '.$errors);
+            return $errors;
+        }
+        return true;
+    }
+
+    public function isBookableForAthlete() 
+    {
+        $errors = '';
+        //only edition in trainer-assigned status are bookable
+        if ($this->lesson_edition_status_id != Configure::read('lesson_edition_statuses')['trainer-assigned']) {
+            $errors .= 'Lesson status not valid for booking. ';
+        }
+
+        if (!$this->event) {
+            $errors .= 'Event missing. ';
+        }
+
+        if (!$this->user_id or $this->user->isBusy($this->event->start_date, $this->event->end_date, $this->event->id)) {
+            $errors .= 'Trainer is missing or busy in another activity. ';
+        }
+
+        if ($this->athlete) {
+            $errors .= 'Athlete already present. ';
+        }                
+
+        if ($errors != null) {
+            //debug('isBookable check failed. Errors detected: '.$errors);
+            return $errors;
+        }
+        return true;        
+    }
+
+    public function isCompletable()
+    {
+        $errors = '';
+        if ($this->lesson_edition_status_id != Configure::read('lesson_edition_statuses')['booked']) {
+            $errors .= 'Lesson status not valid for booking. ';
+        }
+
+        if (!$this->event) {
+            $errors .= 'Event missing. ';
+        }
+
+        if (!$this->user_id) {
+            $errors .= 'Trainer is missing or busy in another activity. ';
+        }
+
+        if (!$this->athlete) {
+            $errors .= 'Athlete is missing or busy in another activity. ';
+        }
+
+    }
 
 }

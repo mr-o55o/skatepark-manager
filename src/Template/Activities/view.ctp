@@ -3,23 +3,29 @@
  * @var \App\View\AppView $this
  * @var \App\Model\Entity\Activity $activity
  */
+
+use Cake\Core\Configure;
 ?>
 
-<div class="lesson_edition content">
-    <hr>
-    <div class="text-right">
-        <?= $this->Html->link('Modifica', ['action' => 'edit', $activity->id], ['class' => 'btn btn-primary']) ?>
-        <?= $this->Html->link('Annulla', ['action' => 'cancel', $activity->id], ['class' => 'btn btn-primary']) ?>
-    </div>
-    <hr>
-    <table class="vertical-table">
+<div class="activity content">
+    <table class="table table-striped">
+        <tr>
+            <th scope="row"><?= __('Id Attività') ?></th>
+            <td><?=$activity->id ?></td>
+        </tr>
         <tr>
             <th scope="row"><?= __('Tipo Attività') ?></th>
-            <td><?= $activity->has('activity_type') ? $this->Html->link($activity->activity_type->name, ['controller' => 'ActivityTypes', 'action' => 'view', $activity->activity_type->id]) : '' ?></td>
+            <td><?= $activity->has('activity_type') ? h($activity->activity_type->name) : '' ?></td>
         </tr>
         <tr>
             <th scope="row"><?= __('Titolo Evento') ?></th>
-            <td><?= $activity->has('activity_type') ? $this->Html->link($activity->activity_type->name, ['controller' => 'ActivityTypes', 'action' => 'view', $activity->activity_type->id]) : '' ?></td>
+            <td>
+                <?= $activity->event->title ?>
+            </td>
+        </tr>
+        <tr>
+            <th scope="row"><?= __('Status') ?></th>
+            <td><?= $activity->has('activity_status') ?  h($activity->activity_status->name): '' ?></td>
         </tr>
         <tr>
             <th scope="row"><?= __('Inizio') ?></th>
@@ -30,16 +36,44 @@
             <td><?= h($activity->event->end_date) ?></td>
         </tr>
         <tr>
-            <th scope="row"><?= __('Responsabile') ?></th>
-            <td><?= $activity->has('user') ? $this->Html->link($activity->user->name, ['controller' => 'Users', 'action' => 'view', $activity->user->id]) : '' ?></td>
-        </tr>
+            <th scope="row"><?= __('Staff Assegnato') ?></th>
+            <td>
+
+        <?php if  (count($activity->activity_users) > 0 && $activity->activity_status_id < Configure::read('activity_statuses')['completed']) : ?>
+                <table>
+                <?php foreach ($activity->activity_users as $activity_user) : ?>
+                    <tr>
+                        <td><?= h($activity_user->user->username) ?></td>
+                        <td><?= h($activity_user->task) ?></td>
+                        <td><?= $activity->activity_status_id < Configure::read('activity_statuses')['completed'] ? $this->Form->postLink('Rimuovi', ['controller' => 'ActivityUsers', 'action' => 'delete', $activity_user->id], ['class' => 'btn btn-danger btn-sm']) : '' ?></td>
+                    </tr>
+                <?php endforeach ?> 
+                </table>
+        <?php else :  ?>
+                <table>
+                <?php foreach ($activity->activity_users as $activity_user) : ?>
+                    <tr>
+                        <td><?= h($activity_user->user->username) ?></td>
+                        <td><?= h($activity_user->task) ?></td>
+                    </tr>
+                <?php endforeach ?> 
+                </table>
+        <?php endif; ?>
+                <?=  $activity->activity_status_id < Configure::read('activity_statuses')['completed'] ? '<hr>'.$this->Html->link('Aggiungi Staff', ['controller' => 'ActivityUsers', 'action' => 'add' , '?' => ['activity_id' => $activity->id] ], ['class' => 'btn btn-primary btn-sm']) : '' ?>
+            </td>
+        </tr> 
         <tr>
-            <th scope="row"><?= __('Creato') ?></th>
+            <th scope="row"><?= __('Info utili al completamento dell\'attività') ?></th>
+            <td><?= h($activity->notes) ?> <?= $this->Html->link('Modifica Note', ['action' => 'editNotes', $activity->id]) ?></td>
+        </tr>            
+        <tr>
+            <th scope="row"><?= __('Creato il') ?></th>
             <td><?= h($activity->created) ?></td>
         </tr>
         <tr>
-            <th scope="row"><?= __('Modificato') ?></th>
+            <th scope="row"><?= __('Aggiornato il') ?></th>
             <td><?= h($activity->modified) ?></td>
         </tr>
     </table>
+    <?= $this->Element('Activities/detail-menu', ['status' => $activity->activity_status_id]); ?>
 </div>

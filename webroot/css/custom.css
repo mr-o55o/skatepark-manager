@@ -1,3 +1,19 @@
+
+
+.nav-link {
+	font-weight: bold;
+	/*font-size: 1.2em;*/
+}
+
+.nav .active {
+	color: black;
+}
+
+label {
+	font-weight: bold;
+	font-size: 0.8em;
+}
+
 .actions {
 	width: 30%;
 }
@@ -28,6 +44,10 @@
 	background-color: #c2f0c2;
 }
 
+.event-course-session {
+	background-color: violet;
+}
+
 .event-day-link, .event-day-link:hover {
 	font-size: 1.4rem;
 	color: #fff;
@@ -44,15 +64,33 @@
 	padding: 2px;
 }
 
+.activity-draft {
+	background-color: orange;
+	color: #fff;	
+}
 
+.activity-scheduled {
+	background-color: green;
+	color: #fff;	
+}
+
+.activity-completed {
+	background-color: blue;
+	color: #fff;	
+}
+
+.lesson-edition-draft {
+	background-color: orange;
+	color: #fff;
+}
 
 .lesson-edition-booked {
 	background-color: green;
 	color: #fff;
 }
 
-.lesson-edition-scheduled {
-	background-color: orange;
+.lesson-edition-trainer-assigned {
+	background-color: brown;
 	color: #fff;
 }
 
@@ -68,6 +106,11 @@
 
 .lesson-edition-cancelled-staff {
 	background-color: red;
+	color: #fff;
+}
+
+.lesson-edition-cancelled-revoked {
+	background-color: orange;
 	color: #fff;
 }
 
@@ -91,12 +134,13 @@
 	color: #fff;
 }
 
-.lesson-edition-cancelled-revoked {
-	background-color: orange;
+.course-session-scheduled {
+	background-color: brown;
 	color: #fff;
 }
 
+
 .navbar-nav .active {
-	background-color: black;
+	background-color: #007bff;
 }
 

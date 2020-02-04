@@ -24,7 +24,7 @@ use Cake\I18n\Time;
         <tbody>
             <?php foreach ($purchasedLessonEditionsBundles as $purchasedLessonEditionsBundle): ?>
             <tr>
-                <td><?= $this->Html->link($purchasedLessonEditionsBundle->id, ['action' => 'view', $purchasedLessonEditionsBundle->id]) ?></td>
+                <td><?= $this->Html->link($purchasedLessonEditionsBundle->id, ['action' => 'view', $purchasedLessonEditionsBundle->id], ['class' => 'btn btn-primary btn-sm']) ?></td>
                 <td><?= $purchasedLessonEditionsBundle->has('athlete') ? $this->Html->link($purchasedLessonEditionsBundle->athlete->name . ' ' . $purchasedLessonEditionsBundle->athlete->surname, ['controller' => 'Athletes', 'action' => 'view', $purchasedLessonEditionsBundle->athlete->id]) : '' ?></td>
                 <td><?= $purchasedLessonEditionsBundle->has('lesson_editions_bundle') ? $this->Html->link($purchasedLessonEditionsBundle->lesson_editions_bundle->name, ['controller' => 'LessonEditionsBundles', 'action' => 'view', $purchasedLessonEditionsBundle->lesson_editions_bundle->id]) : '' ?></td>
                 <td><?= $this->element('PurchasedLessonEditionsBundleStatuses/status-badge', ['statusId' => $purchasedLessonEditionsBundle->status]); ?></td>

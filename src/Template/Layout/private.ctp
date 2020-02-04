@@ -14,6 +14,7 @@
  */
 
 use Cake\Core\Configure;
+use Cake\I18n\Time;
 $topics = Configure::read('topics');
 $activeTopic = Configure::read('main_nav')[$this->request->controller][$this->request->action]['topic'];
 
@@ -25,6 +26,7 @@ $this->start('sidebar');
     if ($this->elementExists('Sidebar/' . $activeTopic )) {
         echo $this->element('Sidebar/'. $activeTopic );  
     }
+    echo $this->element('Sidebar/Links');
 $this->end();
 
 ?>
@@ -76,8 +78,8 @@ $this->end();
             </div>
         </div>
     </div>
-    <div class="bg-dark text-white">
-        <p class="text-center">&copy; EnjoyMore 2018</p>
+    <div class="bg-dark text-white font-weight-bold">
+        <p class="text-center"> <?= Configure::read(['application_data'])['name'] ?> <?= Configure::read(['application_data'])['version'] ?> - &copy; o55o <?= Time::now()->year ?></p>
     </div>
     <?= $this->Html->bootstrapScript(); ?>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>

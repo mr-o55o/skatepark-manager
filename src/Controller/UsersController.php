@@ -37,7 +37,7 @@ class UsersController extends AppController
         $this->loadComponent('Search.Prg', [
             // This is default config. You can modify "actions" as needed to make
             // the PRG component work only for specified methods.
-            'actions' => ['index']
+            'actions' => ['index', 'indexStaff']
         ]);
     }
 
@@ -56,35 +56,27 @@ class UsersController extends AppController
     }
 
     /**
-     * IndexMembers method
-     *
-     * @return \Cake\Http\Response|void
-     */
-    public function indexMembers()
-    {
-        $this->paginate = [
-            'finder' => 'Members',
-            //'contain' => ['Roles']
-        ];
-        $users = $this->paginate($this->Users);
-
-        $this->set(compact('users'));
-    }
-
-    /**
      * IndexStaff method
      *
      * @return \Cake\Http\Response|void
      */
     public function indexStaff()
     {
-        $this->paginate = [
-            'finder' => 'Staff',
-            //'contain' => ['Roles']
-        ];
-        $users = $this->paginate($this->Users);
+        $query = $this->Users->find('search', ['search' => $this->request->getQueryParams()])->find('Staff')->contain('Roles')->where(['active' => true]);
 
-        $this->set(compact('users'));
+        $this->set('users', $this->paginate($query));
+    }
+
+    /**
+     * IndexInactive method
+     *
+     * @return \Cake\Http\Response|void
+     */
+    public function indexStaffInactive()
+    {
+        $query = $this->Users->find('search', ['search' => $this->request->getQueryParams()])->find('Staff')->contain('Roles')->where(['active' => false]);
+
+        $this->set('users', $this->paginate($query));
     }
 
     /**

@@ -45,17 +45,125 @@ class EventsController extends AppController
      */
     public function calendar($year = null, $month = null) {
         $this->Calendar->init($year, $month);
+        /*
         $passedBookedLessonEditions = $this->Events->lessonEditions->find('booked')->contain(['Events'])->where(['Events.end_date <' => Time::now()]);
         if ($passedBookedLessonEditions->count() > 0) {
             $this->Flash->warning('There are booked lesson editions in the past, you should check them.');
         }
+        */
         $options = [
             'year' => $this->Calendar->year(),
             'month' => $this->Calendar->month(),
+            'contain' => [
+                'Activities.ActivityTypes', 
+                'Activities.ActivityUsers.Users', 
+                'LessonEditions.Lessons', 
+                'LessonEditions.Athletes', 
+                'LessonEditions.Users',
+                'CourseSessions.CourseSessionTrainers.Users',
+                //'CourseSessions.Courses.CourseSubscriptions',
+                //'Courses',
+            ],
+            
+            'joins' => [
+                //Activities
+                [
+                    'table' => 'activities',
+                    'alias' => 'Activities',
+                    'type' => 'LEFT',
+                    'conditions' => [
+                        'activities.event_id = events.id'
+                    ]
+                ],
+                //ActivityTypes
+                [
+                    'table' => 'activity_types',
+                    'alias' => 'ActivityTypes',
+                    'type' => 'LEFT',
+                    'conditions' => [
+                        'activities.activity_type_id = activity_types.id'
+                    ]
+                ],
+                //LessonEditions
+                [
+                    'table' => 'lesson_editions',
+                    'alias' => 'LessonEditions',
+                    'type' => 'LEFT',
+                    'conditions' => [
+                        'lesson_editions.event_id = events.id'
+                    ]
+                ],
+                //Lessons
+                 [
+                    'table' => 'lessons',
+                    'alias' => 'Lessons',
+                    'type' => 'LEFT',
+                    'conditions' => [
+                        'lesson_editions.lesson_id = lessons.id'
+                    ]
+                ],
+                //CourseSessions
+                [
+                    'table' => 'course_sessions',
+                    'alias' => 'CourseSessions',
+                    'type' => 'LEFT',
+                    'conditions' => [
+                        'course_sessions.event_id = events.id'
+                    ]
+                ],
+                //CourseSessionTrainers
+                [
+                    'table' => 'course_sessions_trainers',
+                    'alias' => 'CourseSessionsTrainers',
+                    'type' => 'LEFT',
+                    'conditions' => [
+                        'course_sessions_trainers.course_session_id = course_sessions.id'
+                    ]
+                ], 
+
+
+                //Courses
+                /*
+                [
+                    'table' => 'course_sessions.courses',
+                    'alias' => 'Courses',
+                    'type' => 'LEFT',
+                    'conditions' => [
+                        'course_sessions.course_id = course.id'
+                    ]
+                    
+                ],
+
+                //CourseSubscriptions
+                [
+                    'table' => 'course_sessions.course.course_subscriptions',
+                    'alias' => 'CourseSubscriptions',
+                    'type' => 'LEFT',
+                    'conditions' => [
+                        'course_subscriptions.course_id = course.id'
+                    ]
+                ]
+                */                                             
+            ],
+            
         ];
-        $events = $this->Events->find('calendar', $options)->contain(['LessonEditions.Users', 'LessonEditions.Athletes', 'Activities.Users'])->order(['start_date']);
+        $events = $this->Events->find('calendar', $options)->order(['start_date']);
+        //debug($events->toArray());
+
         $this->viewBuilder()->setLayout('private');
         $this->set(compact('events'));
+    }
+
+    public function weeklyCalendar($string_date = null) {
+        $current_day = new FrozenDate($string_date);
+
+        $monday = $current_day->startOfWeek();
+        $sunday = $current_day->endOfWeek();
+        //debug($monday);
+        //debug($sunday);
+        $events = $this->Events->find('between', ['from' => $monday, 'to' => $sunday]);
+        $this->set('events', $events);
+
     }
 
     public function day($string_date = null) {

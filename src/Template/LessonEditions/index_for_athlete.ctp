@@ -3,11 +3,11 @@
 ?>
 <div class="lessonEditions index content">
     <h3>
-        <?= __('Lesson Management') ?> - <?= __('All lesson editions involving') ?> <?= h($athlete->name) ?> <?= h($athlete->surname) ?> 
+        <?= __('Tutte le lezioni in cui ha preso parte') ?> <?= h($athlete->name) ?> <?= h($athlete->surname) ?> 
     </h3>
     <small><?= __('...') ?></small>
     <div class="text-right">
-    	<?= $this->Html->link(__('View Athlete'), ['controller' => 'Athletes', 'action' => 'view', $athlete->id], ['class' => 'btn btn-primary']) ?>
+    	<?= $this->Html->link(__('Visualizza dati atleta'), ['controller' => 'Athletes', 'action' => 'view', $athlete->id], ['class' => 'btn btn-primary']) ?>
     </div>
     <hr>
     <?php if (count($lessonEditions) > 0) : ?>

@@ -8,6 +8,7 @@ use Cake\Validation\Validator;
 use Cake\I18n\Time;
 use Cake\Core\Configure;
 use Cake\Chronos\Chronos;
+use CodiceFiscale\Validator as CfValidator;
 
 /**
  * Athletes Model
@@ -41,6 +42,7 @@ class AthletesTable extends Table
         $this->setPrimaryKey('id');
 
         $this->addBehavior('Search.Search');
+        $this->addBehavior('Timestamp');
 
         $this->searchManager()
             ->add('q', 'Search.Like', [
@@ -62,6 +64,19 @@ class AthletesTable extends Table
             'foreignKey' => 'responsible_person_id',
             'joinType' => 'LEFT'
         ]);
+
+        $this->belongsTo('Provinces', [
+            'birth_province' => array(
+                'className' => 'Provinces',
+                'foreignKey' => 'birt_province_code'
+            ),
+            'living_province' => array(
+                 'className' => 'Provinces',
+                 'foreignKey' => 'province_id'
+            )
+        ]);
+
+        $this->hasMany('AthletesNotes');
 
         $this->hasMany('LessonEditions');
 
@@ -133,12 +148,18 @@ class AthletesTable extends Table
         $query->distinct();
         //load lesson editions
         $query->contain('LessonEditions.Events', function (Query $q) use($periodStart, $periodEnd, $excludeEvent) {
-            $q->where(['lesson_edition_status_id'] == Configure::read('lesson_edition_statuses')['booked']);
+            $q->where(['lesson_edition_status_id <' => Configure::read('lesson_edition_statuses')['completed']]);
             $q->andWhere(['OR' => [
-                    ['start_date >' => $periodStart, 'start_date <' => $periodEnd],
-                    ['end_date >' => $periodStart, 'end_date <' => $periodEnd],
-                    ['start_date <=' => $periodStart, 'end_date >=' => $periodEnd]
+                    //consider events that start before and ends after the period
+                    ['events.start_date <' => $periodStart, 'events.end_date >' => $periodEnd],
+                    //consider events that starts inside the period
+                    ['start_date >=' => $periodStart, 'start_date <' => $periodEnd],
+                    //consider events that ends inside the period
+                    ['end_date >' => $periodStart, 'end_date <=' => $periodEnd],
+                    //consider events that stats and ends during the period
+                    ['start_date >=' => $periodStart, 'end_date <=' => $periodEnd], 
                 ]]);
+            $q->where(['lesson_edition_status_id <' => Configure::read('lesson_edition_statuses')['completed']]);
 
             if ($excludeEvent) {
                 $q->andWhere(['Events.id <>' => $excludeEvent]);
@@ -255,8 +276,46 @@ class AthletesTable extends Table
             ->allowEmpty('asi_subscription_date');
 
         $validator
-            ->integer('responsible_person_id')
-            ->notEmpty('asi_subscription_date');
+            ->allowEmpty('asi_subscription_number');
+
+        $validator
+            ->integer('responsible_person_id');
+
+        $validator
+            ->scalar('fiscal_code')
+            ->maxLength('fiscal_code', 16)
+            ->requirePresence('fiscal_code', 'create')
+            ->notEmpty('fiscal_code')
+            ->add('fiscal_code', 'unique', ['rule' => 'validateUnique', 'provider' => 'table']);
+
+        $validator
+            ->notEmpty('birth_place');
+
+        $validator
+            ->notEmpty('birth_province_code');
+
+        $validator
+            ->notEmpty('city');
+
+        $validator
+            ->notEmpty('province_code');
+
+        $validator
+            ->email('email')
+            ->allowEmpty('email')
+            ->add('email', 'unique', ['rule' => 'validateUnique', 'provider' => 'table']);
+
+        $validator
+            ->notEmpty('postal_code');
+
+        $validator
+            ->notEmpty('sex');
+
+        $validator
+            ->notEmpty('disabled_person');
+
+        $validator
+            ->notEmpty('competitive');
 
 
         return $validator;
@@ -276,11 +335,19 @@ class AthletesTable extends Table
         //Standard FK rule
         $rules->add($rules->existsIn(['responsible_person_id'], 'ResponsiblePersons'));
 
+        $rules->add($rules->existsIn(['birth_province_code'], 'Provinces'));
+        $rules->add($rules->existsIn(['province_code'], 'Provinces'));
+
         //ASi Subscription Number must be unique
         $rules->add($rules->isUnique(['asi_subscription_number']), [
             'errorField' => 'asi_subscription_number',
             'message' => 'Application Rule Violated: Asi subscription number must be unique'
         ]);
+
+        $rules->add(function($entity) {
+            $cfValidator = new CfValidator($entity->fiscal_code);
+            return $cfValidator->isFormallyValid();
+        }, 'fiscalCodeFormalCheck', ['errorField' => 'fiscal_code', 'message' => 'Formal validation of fiscal code failed']);
 
         //Birthdate must be less than.. now?
         $rules->addCreate(function ($entity, $options) {

@@ -12,9 +12,9 @@
 	?>
 
 	<!-- Documentation Link -->
-	<?= $this->Html->link(__('Documentation'), 
-			['controller' => 'Pages', 'action' => 'display', 'docs'], 
+	<?= $this->Html->link(__('Skateboard Manager Wiki'), 'https://github.com/mr-o55o/skatepark-manager/wiki', 
 			['class' => 'list-group-item list-group-item-action bg-secondary text-white']
 		); 
 	?>
+
 </div>

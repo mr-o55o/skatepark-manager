@@ -3,6 +3,7 @@
  * @var \App\View\AppView $this
  * @var \App\Model\Entity\Activity[]|\Cake\Collection\CollectionInterface $activities
  */
+use Cake\I18N\Time;
 ?>
 <div class="activities index content">
 
@@ -14,23 +15,35 @@
     <table class="table table-striped">
         <thead>
             <tr>
-                <th scope="col"><?= $this->Paginator->sort('id') ?></th>
-                <th scope="col"><?= $this->Paginator->sort('user_id') ?></th>
-                <th scope="col"><?= $this->Paginator->sort('activity_type_id') ?></th>
-                <th scope="col"><?= $this->Paginator->sort('activity_status_id') ?></th>
-                <th scope="col"><?= $this->Paginator->sort('created') ?></th>
-                <th scope="col"><?= $this->Paginator->sort('modified') ?></th>
+                <th scope="col"><?= $this->Paginator->sort('id', ['label' => 'Id Attività']) ?></th>
+                <th scope="col"><?= __('Data') ?></th>
+                <th scope="col"><?= __('Durata') ?></th>
+                <th scope="col"><?= __('Membri dello staff impegnati') ?></th>
+                <th scope="col"><?= $this->Paginator->sort('ActivityTypes.name', ['label' => 'Tipo Attività']) ?></th>
+                <th scope="col"><?= __('Titolo Evento') ?></th>
+                <th scope="col"><?= $this->Paginator->sort('ActivityStatuses.name', ['label' => 'Stato Attività']) ?></th>
             </tr>
         </thead>
         <tbody>
             <?php foreach ($activities as $activity): ?>
             <tr>
                 <td><?= $this->Html->link($this->Number->format($activity->id), ['action' => 'view', $activity->id]) ?></td>
-                <td><?= $activity->has('user') ? $this->Html->link($activity->user->name, ['controller' => 'Users', 'action' => 'view', $activity->user->id]) : '' ?></td>
-                <td><?= $activity->has('activity_type') ? $this->Html->link($activity->activity_type->name, ['controller' => 'ActivityTypes', 'action' => 'view', $activity->activity_type->id]) : '' ?></td>
-                <td><?= h($activity->activity_status->name) ?></td>
-                <td><?= h($activity->created) ?></td>
-                <td><?= h($activity->modified) ?></td>
+                <td><?= h($activity->event->start_date->i18nFormat('dd/MM/yyyy')) ?></td>
+                <td><?= __('dalle') ?> <?= h($activity->event->start_date->i18nFormat('HH:mm')) ?> <?= __('alle') ?> <?= h($activity->event->end_date->i18nFormat('HH:mm')) ?></td>
+                <td>
+                    <?php if (count($activity->activity_users) > 0 ) : ?>
+                        <ul>
+                        <?php foreach($activity->activity_users as $activity_user) : ?>
+                            <li><?= h($activity_user->user->username) ?> <?= $activity_user->has('task') ? '('.h($activity_user->task).')' : '' ?></li>
+                        <?php endforeach; ?>
+                        </ul>
+                    <?php else : ?>
+                        <?= __('Nessun utente inserito.') ?>
+                    <?php endif; ?>
+                </td>
+                <td><?= $activity->has('activity_type') ? h($activity->activity_type->name) : ' - ' ?></td>
+                <td><?= h($activity->event->title) ?></td>
+                <td><?= $this->element('ActivityStatuses/status-badge', ['statusId' => $activity->activity_status_id]); ?></td>
             </tr>
             <?php endforeach; ?>
         </tbody>

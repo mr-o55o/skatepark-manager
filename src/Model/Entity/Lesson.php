@@ -32,6 +32,7 @@ class Lesson extends Entity
         'price' => true,
         'trainer_fee' => true,
         'is_active' => true,
+        'is_asi_subscription_required' => true,
         'created' => true,
         'modified' => true,
         'lesson_editions' => true

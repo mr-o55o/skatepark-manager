@@ -60,6 +60,6 @@
     <?= $this->Form->submit(__(_('Modifica'))); ?>
     <?= $this->Form->end() ?>
     <hr>
-    <?= $this->Element('LessonEditions/lesson-edition-detail-menu', ['status' => $lesson_edition->lesson_edition_status_id]); ?>
+    <?= $this->Element('LessonEditions/detail-menu', ['status' => $lesson_edition->lesson_edition_status_id]); ?>
 
 </div>

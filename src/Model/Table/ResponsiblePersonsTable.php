@@ -7,6 +7,8 @@ use Cake\ORM\Table;
 use Cake\Validation\Validator;
 use CodiceFiscale\Validator as CfValidator;
 
+use Cake\i18n\Time;
+
 /**
  * ResponsiblePersons Model
  *
@@ -21,6 +23,7 @@ use CodiceFiscale\Validator as CfValidator;
  * @method \App\Model\Entity\ResponsiblePerson[] patchEntities($entities, array $data, array $options = [])
  * @method \App\Model\Entity\ResponsiblePerson findOrCreate($search, callable $callback = null, $options = [])
  */
+
 class ResponsiblePersonsTable extends Table
 {
 
@@ -58,6 +61,17 @@ class ResponsiblePersonsTable extends Table
 
         $this->hasMany('Athletes', [
             'foreignKey' => 'responsible_person_id'
+        ]);
+
+        $this->belongsTo('Provinces', [
+            'birth_province' => array(
+                'className' => 'Provinces',
+                'foreignKey' => 'birth_province_code'
+            ),
+            'living_province' => array(
+                 'className' => 'Provinces',
+                 'foreignKey' => 'province_code'
+            )
         ]);
     }
 
@@ -104,6 +118,30 @@ class ResponsiblePersonsTable extends Table
             ->notEmpty('fiscal_code')
             ->add('fiscal_code', 'unique', ['rule' => 'validateUnique', 'provider' => 'table']);
 
+        $validator
+            ->date('birth_date')
+            ->requirePresence('birth_date', 'create')
+            ->notEmpty('birth_date');
+
+        $validator
+            ->requirePresence('birth_city', 'create')
+            ->notEmpty('birth_city');
+
+        $validator
+            ->notEmpty('birth_city');
+
+        $validator
+            ->notEmpty('birth_province_code');
+
+        $validator
+            ->notEmpty('city');
+
+        $validator
+            ->notEmpty('province_code');
+
+        $validator
+            ->notEmpty('postal_code');
+
         return $validator;
     }
 
@@ -119,6 +157,9 @@ class ResponsiblePersonsTable extends Table
         $rules->add($rules->isUnique(['email']));
         $rules->add($rules->isUnique(['fiscal_code']));
 
+        $rules->add($rules->existsIn(['birth_province_code'], 'Provinces'));
+        $rules->add($rules->existsIn(['province_code'], 'Provinces'));
+
         $rules->addCreate(function($entity) {
             $cfValidator = new CfValidator($entity->fiscal_code);
             return $cfValidator->isFormallyValid();
@@ -128,6 +169,16 @@ class ResponsiblePersonsTable extends Table
             $cfValidator = new CfValidator($entity->fiscal_code);
             return $cfValidator->isFormallyValid();
         }, 'fiscalCodeFormalCheck', ['errorField' => 'fiscal_code', 'message' => 'Formal validation of fiscal code failed']);
+
+        //A responsible person must be more than 18
+        $rules->add(function($entity) {
+            if ($entity->birth_date->diffInYears(Time::now()) < 18) {
+                return false;
+            }
+            return true;        
+        }, 'responsiblePersonAgeCheck', ['errorField' => 'birth_date', 'message' => 'A responsible person cannot be less than 18.']
+
+        );
 
         return $rules;
     }

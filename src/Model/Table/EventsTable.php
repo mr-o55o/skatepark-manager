@@ -46,20 +46,49 @@ class EventsTable extends Table
             'endField' => 'end_date',
             //'scope' => ['invisible' => false],
         ]);
+        /* Experimental
+        $this->addBehavior('WeeklyCalendar', [
+            'field' => 'start_date',
+            'endField' => 'end_date',
+            //'scope' => ['invisible' => false],
+        ]);
+        */
+        $this->hasOne('LessonEditions', [
+                //'dependent' => true,
+                //'cascadeCallbacks' => true,
+        ]);
 
-        $this->hasOne('LessonEditions');
-        $this->hasOne('Activities');
+        $this->hasOne('Activities', [
+                //'dependent' => true,
+                //'cascadeCallbacks' => true,
+        ]);
+
+        $this->hasOne('CourseSessions', [
+                //'dependent' => true,
+                //'cascadeCallbacks' => true,
+        ]);
     }
 
 
     public function findInDay(Query $query, $options) {
-        $options['day'];
-
-        $query->contain(['LessonEditions.LessonEditionStatuses', 'LessonEditions.Lessons', 'LessonEditions.Athletes', 'LessonEditions.Users', 'Activities']);
-        $query->where(['start_date >=' => $options['day']]);
-        $query->andWhere( ['end_date <=' => $options['day']->modify('+ 1 day')]);
+        //$options['day'];
+        $start = $options['day']->startOfDay();
+        $end = $options['day']->endOfDay();
+        $query->contain(['LessonEditions', 'Activities', 'CourseSessions']);
+        $query->where(['start_date >=' => $start]);
+        $query->andWhere( ['end_date <=' => $end]);
         $query->order(['start_date']);
         return $query;
+
+
+
+    }
+
+    public function findBetween(Query $query, $options) {
+        $query->contain(['LessonEditions.LessonEditionStatuses', 'LessonEditions.Lessons', 'LessonEditions.Athletes', 'LessonEditions.Users', 'Activities.ActivityStatuses', 'Activities.ActivityUsers.Users', 'Activities.ActivityTypes']);
+        $query->where(['start_date >=' => $options['from']]);
+        $query->where(['start_date <=' => $options['to']]);
+
     }
 
     /**
@@ -94,11 +123,18 @@ class EventsTable extends Table
             ->integer('id')
             ->allowEmpty('id', 'create');
 
+         $validator->add('end_date', 'custom', [
+            'rule' => function ()  {
+                if ($this->data['start_date'] == $this->data['start_date']) {
+                    return false;
+                }
+                return true;
+            },
+            'message' => 'The title is not valid'
+        ]);       
+
         return $validator;
     }
-
-
-
 
 
     /**
@@ -112,6 +148,9 @@ class EventsTable extends Table
     {
         //$rules->add($rules->existsIn(['lesson_edition_id'], 'LessonEditions'));
         //$rules->add($rules->existsIn(['activity_id'], 'Activities'));
+
+
+
         return $rules;
     }
 }

@@ -33,6 +33,13 @@ class ResponsiblePerson extends Entity
         'email' => true,
         'phone' => true,
         'fiscal_code' => true,
-        'athletes' => true
+        'athletes' => true,
+        'birth_date' => true,
+        'birth_city' => true,
+        'birth_province_code' => true,
+        'address' => true,
+        'city' => true,
+        'province_code' => true,
+        'postal_code' => true,
     ];
 }

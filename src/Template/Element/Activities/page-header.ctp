@@ -2,29 +2,29 @@
 
 ?>
     <!-- action-bar -->
-	<div class="btn-group mb-3" role="group" aria-label="Basic example">
+	<nav class="nav justify-content-center">
 		<?= $this->Html->link(__('Attività in programma'), 
 		[
 			'controller' => 'Activities', 
-			'action' => 'indexUpcoming'
+			'action' => 'indexScheduled'
 		], [
-			'class' => 'btn btn-primary '.($this->request->action == 'indexUpcoming' ? 'active' : '')
+			'class' => 'nav-link '.($this->request->action == 'indexScheduled' ? 'active' : '')
 		]) ?>
+		<?= $this->Html->link(__('Attività completate'), 
+		[
+			'controller' => 'Activities', 
+			'action' => 'indexCompleted'
+		], [
+			'class' => 'nav-link '.($this->request->action == 'indexCompleted' ? 'active' : '')
+		]) ?>		
 		<?= $this->Html->link(__('Tutte le attività'), 
 		[
 			'controller' => 'Activities', 
 			'action' => 'index'
 		], [
-			'class' => 'btn btn-primary '.($this->request->action == 'index' ? 'active' : '')
+			'class' => 'nav-link '.($this->request->action == 'index' ? 'active' : '')
 		]) ?>
-		<?= $this->Html->link(__('Programma nuova attività'), 
-		[
-			'controller' => 'Activities', 
-			'action' => 'add'
-		], [
-			'class' => 'btn btn-primary '.($this->request->action == 'add' ? 'active' : '')
-		]) ?>
-	</div>
+	</nav>
 
 
 

@@ -2,29 +2,29 @@
 
 ?>
     <!-- action-bar -->
-	<div class="btn-group mb-3" role="group" aria-label="Basic example">
-		<?= $this->Html->link(__('Active  Lessons Editions Bundles'), 
+	<nav class="nav rounded mb-4 justify-content-center">
+		<?= $this->Html->link(__('Pacchetti attivi'), 
 		[
 			'controller' => 'PurchasedLessonEditionsBundles', 
 			'action' => 'indexActive'
 		], [
-			'class' => 'btn btn-primary '.($this->request->action == 'indexActive' ? 'active' : '')
+			'class' => 'nav-link '.($this->request->action == 'indexActive' ? 'active' : '')
 		]) ?>
-		<?= $this->Html->link(__('Lessons Editions Bundles to be marked as expired'), 
+		<?= $this->Html->link(__('Pacchetti in scadenza'), 
 		[
 			'controller' => 'PurchasedLessonEditionsBundles', 
 			'action' => 'indexToExpire'
 		], [
-			'class' => 'btn btn-primary '.($this->request->action == 'indexToExpire' ? 'active' : '')
+			'class' => 'nav-link '.($this->request->action == 'indexToExpire' ? 'active' : '')
 		]) ?>
-		<?= $this->Html->link(__('All Lessons Editions Bundles'), 
+		<?= $this->Html->link(__('Tutti i pacchetti di lezioni'), 
 		[
 			'controller' => 'PurchasedLessonEditionsBundles', 
 			'action' => 'index'
 		], [
-			'class' => 'btn btn-primary '.($this->request->action == 'index' ? 'active' : '')
+			'class' => 'nav-link '.($this->request->action == 'index' ? 'active' : '')
 		]) ?>
-	</div>
+	</nav>
 
 
 
