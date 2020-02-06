@@ -20,5 +20,25 @@ $now = Time::now();
 		); 
 
 	?>	
-	<!-- http://localhost:8765/events/day/2019-9-2 -->
+
+	<?= $this->Html->link(__('Calendario delle Attività'), 
+			['controller' => 'Events', 'action' => 'activitiesCalendar'], 
+			['class' => 'list-group-item list-group-item-action bg-secondary text-white '. ($this->request->action == 'activitiesCalendar' ? 'active' : '')]
+		); 
+
+	?>	
+
+	<?= $this->Html->link(__('Calendario delle Lezioni Individuali'), 
+			['controller' => 'Events', 'action' => 'lessonEditionsCalendar'], 
+			['class' => 'list-group-item list-group-item-action bg-secondary text-white '. ($this->request->action == 'lessonEditionsCalendar' ? 'active' : '')]
+		); 
+
+	?>	
+
+	<?= $this->Html->link(__('Calendario dei Corsi'), 
+			['controller' => 'Events', 'action' => 'courseSessionsCalendar'], 
+			['class' => 'list-group-item list-group-item-action bg-secondary text-white '. ($this->request->action == 'courseSessionsCalendar' ? 'active' : '')]
+		); 
+
+	?>
 </div>

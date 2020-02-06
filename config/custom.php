@@ -266,6 +266,18 @@ return [
 				'name' => 'Calendario eventi',
 				'topic' => 'Events',
 			],
+			'lessonEditionsCalendar' => [
+				'name' => 'Calendario delle Lezioni Individuali',
+				'topic' => 'Events',
+			],
+			'activitiesCalendar' => [
+				'name' => 'Calendario delle Attività',
+				'topic' => 'Events',
+			],
+			'courseSessionsCalendar' => [
+				'name' => 'Calendario dei Corsi',
+				'topic' => 'Events',
+			],
 			'day' => [
 				'name' => 'Visualizza giornata',
 				'topic' => 'Events',
@@ -534,6 +546,13 @@ return [
 		'CourseSessionTrainers' => [
 			'addTrainer' => [ 
 				'name' => 'Aggiungi istruttore a sessione corso',
+				'topic' => 'CoursesManagement'
+			]
+		],
+
+		'CourseSessionPartecipants' => [
+			'add' => [ 
+				'name' => 'Aggiungi Partecipanti alla Sessione del Corso',
 				'topic' => 'CoursesManagement'
 			]
 		],

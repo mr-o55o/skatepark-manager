@@ -33,9 +33,10 @@ class CourseSessionPartecipant extends Entity
         'created' => true,
         'modified' => true,
         'course_session' => true,
-        'athlete' => true
+        'athlete' => true,
         'rent_skateboard' => true,
         'rent_helmet' => true,
-        'rent_pads' => true
+        'rent_pads' => true,
+        'is_present' => true,
     ];
 }

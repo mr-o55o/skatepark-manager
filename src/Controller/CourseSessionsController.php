@@ -24,7 +24,7 @@ class CourseSessionsController extends AppController
      */
     public function view($id = null)
     {
-        $course_session = $this->CourseSessions->get($id, [ 'contain' => ['Courses.CourseLevels', 'Events', 'CourseSessionTrainers.Users', 'CourseSessionStatuses'] ]);
+        $course_session = $this->CourseSessions->get($id, [ 'contain' => ['Courses.CourseLevels', 'Events', 'CourseSessionTrainers.Users', 'CourseSessionPartecipants.Athletes','CourseSessionStatuses'] ]);
         $this->set('course_session', $course_session);
     }
 

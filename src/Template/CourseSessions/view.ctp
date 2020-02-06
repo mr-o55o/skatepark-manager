@@ -37,8 +37,21 @@ use Cake\Core\Configure;
         		<?php else : ?>
         			<?= __('Nessun istruttore assegnato') ?>
         		<?php endif ?>
+                <hr>
         		<?= $this->Html->link(__('Assegna Istruttore'), ['controller' => 'CourseSessionTrainers', 'action' => 'addTrainer', $course_session->id], ['class' => 'btn btn-primary'])?>
         	</td>
-        </tr> 	
+        </tr> 
+        <tr>
+            <th scope="row"><?= __('Atleti Presenti alla Sessione') ?></th>
+            <td>
+                <?php if (!empty($course_session->course_session_partecipants)) : ?>
+                <?php else : ?>
+                    <?= __('Nessun atleta presente') ?>
+                    <?= $this->Html->link(__('Crea nuovo Registro Presenze'), ['controller' => 'CourseSessionPartecipants', 'action' => 'add', $course_session->id], ['class' => 'btn btn-primary'])?>
+                <?php endif; ?>
+                <hr>
+                
+            </td>
+        </tr>	
     </table>
 </div>

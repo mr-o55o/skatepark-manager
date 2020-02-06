@@ -43,6 +43,112 @@ class EventsController extends AppController
      * @param string|null $month
      * @return void
      */
+    public function courseSessionsCalendar($year = null, $month = null) {
+        $this->Calendar->init($year, $month);
+        /*
+        $passedBookedLessonEditions = $this->Events->lessonEditions->find('booked')->contain(['Events'])->where(['Events.end_date <' => Time::now()]);
+        if ($passedBookedLessonEditions->count() > 0) {
+            $this->Flash->warning('There are booked lesson editions in the past, you should check them.');
+        }
+        */
+        $options = [
+            'year' => $this->Calendar->year(),
+            'month' => $this->Calendar->month(),
+            'contain' => [
+                'CourseSessions.CourseSessionTrainers.Users', 
+            ], 
+        ];
+        $events = $this->Events->find('calendar', $options);
+        $events->join([
+        'table' => 'course_sessions',
+        'alias' => 'cs',
+        'type' => 'RIGHT',
+        'conditions' => 'cs.event_id = events.id',
+    ]);
+        $events->order(['start_date']);
+        //debug($events->toArray());
+
+        //$this->viewBuilder()->setLayout('private');
+        $this->set(compact('events')); 
+    }
+
+    /**
+     * @param string|null $year
+     * @param string|null $month
+     * @return void
+     */
+    public function lessonEditionsCalendar($year = null, $month = null) {
+        $this->Calendar->init($year, $month);
+        /*
+        $passedBookedLessonEditions = $this->Events->lessonEditions->find('booked')->contain(['Events'])->where(['Events.end_date <' => Time::now()]);
+        if ($passedBookedLessonEditions->count() > 0) {
+            $this->Flash->warning('There are booked lesson editions in the past, you should check them.');
+        }
+        */
+        $options = [
+            'year' => $this->Calendar->year(),
+            'month' => $this->Calendar->month(),
+            'contain' => [
+                'LessonEditions.Lessons', 
+                'LessonEditions.Athletes', 
+                'LessonEditions.Users',
+            ], 
+        ];
+        $events = $this->Events->find('calendar', $options);
+        $events->join([
+        'table' => 'lesson_editions',
+        'alias' => 'le',
+        'type' => 'RIGHT',
+        'conditions' => 'le.event_id = events.id',
+    ]);
+        $events->order(['start_date']);
+        //debug($events->toArray());
+
+        //$this->viewBuilder()->setLayout('private');
+        $this->set(compact('events')); 
+    }
+
+    /**
+     * @param string|null $year
+     * @param string|null $month
+     * @return void
+     */
+    public function activitiesCalendar($year = null, $month = null) {
+        $this->Calendar->init($year, $month);
+        /*
+        $passedBookedLessonEditions = $this->Events->lessonEditions->find('booked')->contain(['Events'])->where(['Events.end_date <' => Time::now()]);
+        if ($passedBookedLessonEditions->count() > 0) {
+            $this->Flash->warning('There are booked lesson editions in the past, you should check them.');
+        }
+        */
+        $options = [
+            'year' => $this->Calendar->year(),
+            'month' => $this->Calendar->month(),
+            'contain' => [
+                'Activities.ActivityTypes', 
+                'Activities.ActivityUsers.Users', 
+            ], 
+        ];
+        $events = $this->Events->find('calendar', $options);
+        $events->join([
+        'table' => 'activities',
+        'alias' => 'a',
+        'type' => 'RIGHT',
+        'conditions' => 'a.event_id = events.id',
+    ]);
+        $events->order(['start_date']);
+        //debug($events->toArray());
+
+        //$this->viewBuilder()->setLayout('private');
+        $this->set(compact('events')); 
+    }
+
+
+    /**
+     * @param string|null $year
+     * @param string|null $month
+     * @return void
+     */
     public function calendar($year = null, $month = null) {
         $this->Calendar->init($year, $month);
         /*
