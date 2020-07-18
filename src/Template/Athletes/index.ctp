@@ -17,7 +17,8 @@ use Cake\I18n\Time;
                 <th scope="col"><?= __('Nome e Cognome') ?></th>
                 <th scope="col"><?= $this->Paginator->sort('birthdate', ['label' => __('Data di nascita (età)')]) ?></th>
                 <th scope="col"><?= __('Codice Fiscale') ?></th>
-                <th scope="col"><?= __('Iscrizione ASI') ?></th>
+                <th scope="col"><?= __('Iscrizioni ASI / FISR') ?></th>
+                <th scope="col"><?= __('Livello') ?></th>
             </tr>
         </thead>
         <tbody>
@@ -28,6 +29,7 @@ use Cake\I18n\Time;
                     <td><?= $athlete->birthdate->i18nFormat('dd/MM/YYYY'); ?> (<?=$athlete->birthdate->diffInYears(Time::now())?>)</td>
                     <td><?= h($athlete->fiscal_code) ?></td>
                     <td class="">#<?= h($athlete->asi_subscription_number) ?> <?= h($athlete->asi_subscription_date) ?></td>
+                    <td><?= h($athlete->athlete_rank->name) ?></td>
                 </tr>
             <?php endforeach; ?>
         </tbody>

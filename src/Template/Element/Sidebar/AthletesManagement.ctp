@@ -31,4 +31,17 @@
 
 	?>
 
+	<?= $this->Html->link(__('Importazione Atleti da CSV'), 
+			['controller' => 'Athletes', 'action' => 'csvImport'], 
+			['class' => 'list-group-item list-group-item-action bg-secondary text-white '.( $this->request->controller == 'Athletes' && $this->request->action == 'csvImport' ? 'active' : '')]
+		); 
+
+	?>
+	<?= $this->Html->link(__('Esportazione Atleti su CSV'), 
+			['controller' => 'Athletes', 'action' => 'csvExport'], 
+			['class' => 'list-group-item list-group-item-action bg-secondary text-white '.( $this->request->controller == 'Athletes' && $this->request->action == 'csvExport' ? 'active' : '')]
+		); 
+
+	?>
+
 </div>

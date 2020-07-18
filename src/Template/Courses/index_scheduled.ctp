@@ -14,10 +14,13 @@ $weekdaysHelper = $this->loadHelper('Weekdays');
                     <th scope="col"><?= $this->Paginator->sort('id') ?></th>
                     <th scope="col"><?= __('Nome') ?></th>
                     <th scope='col'><?= __('Livello') ?></th>
+                    <th scope='col'><?= __('Prezzo') ?></th>
                     <th scope="col"><?= __('Periodo') ?></th>
                     <th scope="col"><?= __('Cadenza Settimanale') ?></th>
                     <th scope="col"><?= __('Ora di inizio') ?></th>
                     <th scope="col"><?= __('Durata') ?></th>
+                    <th scope="col"><?= __('Numero di Atleti Iscritti') ?></th>
+                    <th scope="col"><?= __('Numero di Sessioni Definite') ?></th>
                 </tr>
             </thead>
             <tbody>
@@ -26,6 +29,7 @@ $weekdaysHelper = $this->loadHelper('Weekdays');
                     <td class="text-center"><?= $this->Html->link($course->id, ['action' => 'view', $course->id], ['class' => 'btn btn-primary btn-sm']) ?></td>
                     <td><?= h($course['name']) ?></td>
                     <td><?= h($course->course_level['name']) ?></td>
+                    <td><?= $this->Number->currency($course->price, 'EUR') ?></td>
                     <td><?= $course['start_date'] ?> - <?= $course['end_date'] ?></td>
                     <td>
                     	<?php foreach ($course['week_days'] as $dayNumber) : ?>
@@ -34,6 +38,8 @@ $weekdaysHelper = $this->loadHelper('Weekdays');
                     </td>
                     <td><?= $course['start_time']->i18nFormat('HH:mm') ?></td>
                     <td><?= $course['duration'] ?> <?= __('minuti') ?></td>
+                    <td><?= count($course->course_subscriptions) ?></td>
+                    <td>?= count($course->course_sessions) ?></td>
                 </tr>
                 <?php endforeach; ?>
             </tbody>

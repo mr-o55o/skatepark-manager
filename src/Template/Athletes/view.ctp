@@ -27,6 +27,7 @@ use Cake\I18n\Time;
         <div class="col"><?= __('Età') ?>: <?= h($athlete->birthdate->diffInYears(Time::now())) ?></div>
         <div class="col"><?= __('Disabile') ?>: <?= ($athlete->disabled_person ? 'Si' : 'No') ?></div>
         <div class="col"><?= __('Agonista') ?>: <?= ($athlete->competitive ? 'Si' : 'No') ?></div>
+        <div class="col"><?= __('Livello') ?>: <?= h($athlete->athlete_rank->name) ?></div>
     </div>
     <hr>
     <h3><?= __('Iscrizioni') ?></h3>

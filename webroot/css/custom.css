@@ -139,6 +139,41 @@ label {
 	color: #fff;
 }
 
+.course-session-completed {
+	background-color: blue;
+	color: #fff;
+}
+
+.course-session-cancelled {
+	background-color: black;
+	color: #fff;
+}
+
+.course-draft {
+	background-color: orange;
+	color: #fff;
+}
+
+.course-scheduled {
+	background-color: brown;
+	color: #fff;
+}
+
+.course-active {
+	background-color: teal;
+	color: #fff;
+}
+
+.course-completed {
+	background-color: blue;
+	color: #fff;
+}
+
+.course-cancelled {
+	background-color: black;
+	color: #fff;	
+}
+
 
 .navbar-nav .active {
 	background-color: #007bff;

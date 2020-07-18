@@ -276,7 +276,7 @@ class EventsController extends AppController
 
         $current_day = new FrozenDate($string_date);
 
-        $events = $this->Events->find('inDay', ['day' => $current_day]);
+        $events = $this->Events->find('inDay', ['day' => $current_day])->contain(['LessonEditions.Users', 'LessonEditions.Lessons']);
         $this->set('events', $events);
         $this->set('back_url', $this->referer());
         $this->set('current_day', $current_day);

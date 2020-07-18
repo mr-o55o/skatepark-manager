@@ -1,8 +1,8 @@
 <?php
 namespace App\Model\Entity;
-
+use Cake\ORM\TableRegistry;
 use Cake\ORM\Entity;
-
+use Cake\Core\Configure;
 /**
  * Course Entity
  *
@@ -37,16 +37,62 @@ class Course extends Entity
         'created' => true,
         'modified' => true,
         'name' => true,
-        'course_level_id' => true,
         'week_days' => true,
         'start_time' => true,
         'duration' => true,
         'price' => true,
         'course_status_id' => true,
-        'course_level' => true,
         'course_status' => true,
-        'course_sessions' => true,
         'start_date' => true,
         'end_date' => true
     ];
+
+    /*
+    un corso è completabile se:
+    - ha lo stato active
+    - ha almeno una sessione completata
+    - non ha sessioni scheduled
+    - non ha iscrizioni non pagate
+    */
+    public function isCompletable() {
+        return true;
+    }
+
+    /*
+    un corso è attivabile se
+    - ha lo stato scheduled
+    - ha delle sessioni e sono tutte in stato scheduled
+    */
+    public function isActivable() {
+        return true;
+
+    }
+    /*
+    un corso è pianificabile se:
+    - ha lo status draft
+    */
+    public function isSchedulable() {
+        if ($this->course_status_>id <> Configure::read('course_statuses')['draft']) {
+            return false;
+        }
+        return true;
+    }
+
+    /*
+    un corso è annullabile se:
+    - ha lo status scheduled o active
+    - non ha sessioni  in stato scheduled
+    */
+    public function isCancellable()
+    {   
+        return true;
+    }
+
+    public function isEditable()
+    {
+        if ($this->course_status_id == Configure::read('course_statuses')['completed'] || $this->course_status_id == Configure::read('course_statuses')['cancelled']) {
+            return false;
+        }
+        return true;
+    }
 }

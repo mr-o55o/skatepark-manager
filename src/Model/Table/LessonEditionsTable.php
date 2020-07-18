@@ -290,84 +290,59 @@ class LessonEditionsTable extends Table
             return true;
         },
             'lessonEdition', ['errorField' => 'event.end_date', 'message' => 'Lesson Editions must end in the same day in which it started.']); 
-        /*
-        // associated users cannot be busy in other activities
-        $rules->addUpdate(function($entity, $options) use($rules) {
-            if ($entity->lesson_edition_status_id == Configure::read('booked')) {
-                if($entity->has('user')) {
-                    if ($entity->user->isBusy($entity->event->start_date, $entity->event->end_date, $entity->event->id)) {
-                        return 'User '.$entity->user->username.' is busy in this activity timeframe.';
-                    }               
-                }
-            }
-            return true;
-        },
-            'lessonEditionUpdate', ['errorField' => 'user_id']); 
-        */
-        /*
-        // associated athlete cannot be busy in other activities
-        $rules->addUpdate(function($entity, $options) use($rules) {
-            if ($entity->lesson_edition_status_id == Configure::read('booked')) {
-                if($entity->has('athlete')) {
-                    if ($entity->athlete->isBusy($entity->event->start_date, $entity->event->end_date, $entity->event->id)) {
-                        return 'Athlete '.$entity->athlete->name.' '.$entity->athlete->surname.' is busy in this activity timeframe.';
-                    }               
-                }
-            }
-            return true;
-        },
-            'lessonEditionUpdate', ['errorField' => 'user_id']);
-        */
 
         $rules->add(function($entity, $options) use($rules) {
 
-            switch($entity->lesson_edition_status_id) {
-                case Configure::read('lesson_edition_statuses')['draft']:
-                    return true;
-                break;
 
-                case Configure::read('lesson_edition_statuses')['trainer-assigned']:
-                    return true;
-                break;
+            if ($entity->getOriginal('lesson_edition_status_id') != $entity->lesson_edition_status_id) {
+                switch($entity->lesson_edition_status_id) {
+                    case Configure::read('lesson_edition_statuses')['draft']:
+                        return true;
+                    break;
 
-                case Configure::read('lesson_edition_statuses')['booked']:
-                    //a booked lesson edition must have an athlete and a user (trainer)
-                    if (!$entity->athlete_id) {
-                        // athlete must have an active subscription
-                        return 'Missing athlete for a booked lesson';
-                    }
+                    case Configure::read('lesson_edition_statuses')['trainer-assigned']:
+                        return true;
+                    break;
 
-                    if (!$entity->user_id) {
-                        // user must be active and have the trainer role
-                        return 'Missing trainer for a booked lesson';
-                    }
-                    if($entity->athlete->isBusy($entity->event->start_date, $entity->event->end_date, $entity->event->id)) {
-                        return 'Athlete is busy';
-                    }
+                    case Configure::read('lesson_edition_statuses')['booked']:
+                        //a booked lesson edition must have an athlete and a user (trainer)
+                        if (!$entity->athlete_id) {
+                            // athlete must have an active subscription
+                            return 'Missing athlete for a booked lesson';
+                        }
 
-                    if($entity->user->isBusy($entity->event->start_date, $entity->event->end_date, $entity->event->id)) {
-                        return 'Trainer is busy';
-                    }
-                    return true;
-                break;
+                        if (!$entity->user_id) {
+                            // user must be active and have the trainer role
+                            return 'Missing trainer for a booked lesson';
+                        }
+                        if($entity->athlete->isBusy($entity->event->start_date, $entity->event->end_date, $entity->event->id)) {
+                            return 'Athlete is busy';
+                        }
 
-                case Configure::read('lesson_edition_statuses')['completed']:
-                    return true;
-                break;
+                        if($entity->user->isBusy($entity->event->start_date, $entity->event->end_date, $entity->event->id)) {
+                            return 'Trainer is busy';
+                        }
+                        return true;
+                    break;
 
-                case Configure::read('lesson_edition_statuses')['cancelled-staff']:
-                    return true;
-                break;
+                    case Configure::read('lesson_edition_statuses')['completed']:
+                        return true;
+                    break;
 
-                case Configure::read('lesson_edition_statuses')['cancelled-athlete']:
-                    return true;
-                break;
+                    case Configure::read('lesson_edition_statuses')['cancelled-staff']:
+                        return true;
+                    break;
 
-                default;
-                    debug('DEFAULT SWITCH CONDITION MET');
-                    return 'Invalid lesson edition status';
-                break;
+                    case Configure::read('lesson_edition_statuses')['cancelled-athlete']:
+                        return true;
+                    break;
 
+                    default;
+                        debug('DEFAULT SWITCH CONDITION MET');
+                        return 'Invalid lesson edition status';
+                    break;
+
+                }
             }
             return true;
         },

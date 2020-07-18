@@ -54,6 +54,10 @@ class Athlete extends Entity
         'responsible_person' => true,
         'purchased_lesson_editions_bundles' => true,
         'valid_purchased_lesson_editions_bundles' => true,
+        'athlete_rank_id' => true,
+        'athlete_rank' => true,
+        'address' => true,
+        'sex' => true,
     ];
     // To deprecate asap!
     /*

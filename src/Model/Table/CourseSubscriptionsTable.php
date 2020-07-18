@@ -9,7 +9,9 @@ use Cake\Validation\Validator;
 /**
  * CourseSubscriptions Model
  *
- * @property \App\Model\Table\AthletesTable|\Cake\ORM\Association\BelongsTo $Athletes
+ * @property \App\Model\Table\SubscriptionsTable|\Cake\ORM\Association\BelongsTo $Subscriptions
+ * @property \App\Model\Table\CoursesTable|\Cake\ORM\Association\BelongsTo $Courses
+ * @property \App\Model\Table\CourseClassMembersTable|\Cake\ORM\Association\HasMany $CourseClassMembers
  *
  * @method \App\Model\Entity\CourseSubscription get($primaryKey, $options = [])
  * @method \App\Model\Entity\CourseSubscription newEntity($data = null, array $options = [])
@@ -41,13 +43,16 @@ class CourseSubscriptionsTable extends Table
 
         $this->addBehavior('Timestamp');
 
-        $this->belongsTo('Athletes', [
-            'foreignKey' => 'athlete_id',
+        $this->belongsTo('Subscriptions', [
+            'foreignKey' => 'subscription_id',
             'joinType' => 'INNER'
         ]);
         $this->belongsTo('Courses', [
             'foreignKey' => 'course_id',
             'joinType' => 'INNER'
+        ]);
+        $this->hasMany('CourseClassMembers', [
+            'foreignKey' => 'course_subscription_id'
         ]);
     }
 
@@ -75,18 +80,9 @@ class CourseSubscriptionsTable extends Table
      */
     public function buildRules(RulesChecker $rules)
     {
-        $rules->add($rules->existsIn(['athlete_id'], 'Athletes'));
+        $rules->add($rules->existsIn(['subscription_id'], 'Subscriptions'));
         $rules->add($rules->existsIn(['course_id'], 'Courses'));
-        $rules->add($rules->isUnique(
-            ['athlete_id', 'course_id'],
-            'Athlete is already subscribed to this course.'
-        ));
+
         return $rules;
     }
-
-    public function findByCourse($query, $options)
-    {
-        $query->where(['course_id' => $options['course_id']]);
-        return $query;
-    }    
 }

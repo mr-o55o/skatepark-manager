@@ -76,6 +76,8 @@ class AthletesTable extends Table
             )
         ]);
 
+        $this->belongsTo('AthleteRanks');
+
         $this->hasMany('AthletesNotes');
 
         $this->hasMany('LessonEditions');
@@ -292,6 +294,9 @@ class AthletesTable extends Table
             ->notEmpty('birth_place');
 
         $validator
+            ->notEmpty('athlete_rank_id');
+
+        $validator
             ->notEmpty('birth_province_code');
 
         $validator
@@ -310,6 +315,9 @@ class AthletesTable extends Table
 
         $validator
             ->notEmpty('sex');
+
+        $validator
+            ->notEmpty('email');
 
         $validator
             ->notEmpty('disabled_person');
@@ -337,6 +345,7 @@ class AthletesTable extends Table
 
         $rules->add($rules->existsIn(['birth_province_code'], 'Provinces'));
         $rules->add($rules->existsIn(['province_code'], 'Provinces'));
+        $rules->add($rules->existsIn(['athlete_rank_id'], 'AthleteRanks'));
 
         //ASi Subscription Number must be unique
         $rules->add($rules->isUnique(['asi_subscription_number']), [

@@ -33,6 +33,7 @@ $this->Form->unlockField('responsible_person_id');
     <div class="row">
         <div class="col"><?= $this->Form->control('disabled_person', ['label' => __('Disabile') ]) ?></div>
         <div class="col"><?= $this->Form->control('competitive', ['label' => __('Svolge attività agonistica')]) ?></div>
+        <div class="col"><?= $this->Form->control('athlete_rank_id', ['options' => $athleteRanks, 'label' => __('Livello') ]) ?></div>
     </div>
     <hr>
     <h3><?= __('Domicilio') ?></h3>

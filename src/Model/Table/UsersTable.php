@@ -298,7 +298,7 @@ class UsersTable extends Table
             // ***** START finder DEBUG
             //debug($user->username.': lezioni -> '.count($user->lesson_editions).' | attività -> '.count($user->activity_users) );
             // ***** END finder DEBUG
-            debug($user);
+            //debug($user);
             if (count($user->lesson_editions) == 0 && count($user->activity_users) == 0 && count($user->course_session_trainers) == 0 ) {
                 $mapReduce->emit($user);
             }

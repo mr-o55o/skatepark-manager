@@ -4,6 +4,7 @@ $counter = 0;
 
 <h3><?= __('Corso') ?>  <?= h($course_session->course->name) ?> <?= h($course_session->course->course_level->name) ?> - <?= __('Registro presenze per la sessione del ') ?> <?= $course_session->event->start_date->i18nFormat('dd/MM/yyyy hh:mm') ?> [<?= $course_session->id ?>]</h3>
 
+<?= $this->Html->link('Visualizza Corso', ['controller' => 'Courses', 'action' => 'view', $course_session->course->id], ['class' => 'btn btn-primary btn-sm']) ?> 
 <?= $this->Html->link('Visualizza Sessione', ['controller' => 'CourseSessions', 'action' => 'view', $course_session->id], ['class' => 'btn btn-primary btn-sm']) ?>
 <hr>
 <?= $this->Form->create($course_session_partecipants) ?>

@@ -17,7 +17,7 @@ class AthletesController extends AppController
 
     public $paginate = [
         'sortWhitelist' => ['id', 'name', 'surname', 'birthdate', 'asi_subscription_date'],
-        'contain' => ['ResponsiblePersons', 'PurchasedLessonEditionsBundles'],
+        'contain' => ['ResponsiblePersons', 'PurchasedLessonEditionsBundles', 'AthleteRanks'],
         'limit' => 10,
     ];
 
@@ -154,6 +154,7 @@ class AthletesController extends AppController
                     'sort' => ['AthletesNotes.created DESC']
                 ],
                 'AthletesNotes.Users',
+                'AthleteRanks'
             ]
         ]);
         
@@ -226,8 +227,11 @@ class AthletesController extends AppController
     public function edit($id = null)
     {
         $athlete = $this->Athletes->get($id, [
-            'contain' => ['ResponsiblePersons']
+            'contain' => ['ResponsiblePersons', 'AthleteRanks']
         ]);
+
+        $athleteRanks = $this->Athletes->AthleteRanks->find('list');
+
         if ($this->request->is(['patch', 'post', 'put'])) {
             $athlete = $this->Athletes->patchEntity($athlete, $this->request->getData());
             //debug($athlete);
@@ -240,7 +244,7 @@ class AthletesController extends AppController
         }
         //$responsible_persons = $this->Athletes->ResponsiblePersons->find('list', ['limit' => 200]);
         $provinces = $this->Athletes->Provinces->find('list', ['limit' => 200]);
-        $this->set(compact('athlete', 'provinces'));
+        $this->set(compact('athlete', 'provinces', 'athleteRanks'));
     }
 
     public function removeResponsiblePerson($id = null)

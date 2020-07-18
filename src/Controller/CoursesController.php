@@ -3,6 +3,7 @@ namespace App\Controller;
 
 use App\Controller\AppController;
 use Cake\Chronos\Chronos;
+use Cake\Core\Configure;
 
 /**
  * Courses Controller
@@ -14,6 +15,7 @@ use Cake\Chronos\Chronos;
 class CoursesController extends AppController
 {
 
+    
 
     /**
      * Index method
@@ -23,9 +25,9 @@ class CoursesController extends AppController
     public function index()
     {
         $this->paginate = [
-            'contain' => ['CourseSessions', 'CourseLevels', 'CourseStatuses']
+            'contain' => ['CourseStatuses']
         ];
-        $query = $this->Courses->find('all');
+        $query = $this->Courses->find('all')->order(['start_date' => 'DESC']);
 
         $this->set('courses', $this->paginate($query));
     }
@@ -33,9 +35,9 @@ class CoursesController extends AppController
     public function indexDraft()
     {
         $this->paginate = [
-            'contain' => ['CourseSessions', 'CourseLevels', 'CourseStatuses']
+            'contain' => ['CourseStatuses']
         ];
-        $query = $this->Courses->find('draft');
+        $query = $this->Courses->find('draft')->order(['start_date' => 'DESC']);
 
         $this->set('courses', $this->paginate($query));
     }
@@ -43,9 +45,39 @@ class CoursesController extends AppController
     public function indexScheduled()
     {
         $this->paginate = [
-            'contain' => ['CourseLevels', 'CourseStatuses', 'CourseSessions.CourseSessionTrainers']
+            'contain' => ['CourseLevels']
         ];
-        $query = $this->Courses->find('scheduled');
+        $query = $this->Courses->find('scheduled')->order(['start_date' => 'DESC']);
+
+        $this->set('courses', $this->paginate($query));
+    }
+
+    public function indexActive()
+    {
+        $this->paginate = [
+            'contain' => ['CourseLevels']
+        ];
+        $query = $this->Courses->find('active')->order(['start_date' => 'DESC']);
+
+        $this->set('courses', $this->paginate($query));
+    }
+
+    public function indexCompleted()
+    {
+        $this->paginate = [
+            'contain' => ['CourseLevels']
+        ];
+        $query = $this->Courses->find('completed')->order(['start_date' => 'DESC']);
+
+        $this->set('courses', $this->paginate($query));
+    }
+
+    public function indexCancelled()
+    {
+        $this->paginate = [
+            'contain' => ['CourseLevels']
+        ];
+        $query = $this->Courses->find('cancelled')->order(['start_date' => 'DESC']);
 
         $this->set('courses', $this->paginate($query));
     }
@@ -72,8 +104,32 @@ class CoursesController extends AppController
             $this->Flash->error(__('The new course could not be saved. Please, try again.'));
             
         }
-        $courseLevels = $this->Courses->CourseLevels->find('list', ['limit' => 200]);
-        $this->set(compact('course', 'courseLevels'));
+        $this->set(compact('course'));
+    }
+
+    /**
+     * Delete method
+     *
+     * @return \Cake\Http\Response|null Redirects on successful add, renders view otherwise.
+     */
+    public function delete($id = null)
+    {
+        $this->request->allowMethod(['post', 'delete']);
+        $course = $this->Courses->get($id);
+
+        if ($course->course_status_id <> Configure::read('course_statuses')['draft']) {
+            $this->Flash->error(__('Non è possibile eliminare un corso che non è in bozza'));
+            $this->redirect(['action' => 'view', $course->id]);
+        }
+
+
+        if ($this->Courses->delete($course, ['associated' => ['CourseSessions.Events', 'CoursesSubscriptions', 'CourseSessions.CourseSessionPartecupants' ]])) {
+            $this->Flash->success(__('Corso eliminato.'));
+        } else {
+            $this->Flash->error(__('Errore durante la cancellazione.'));
+        }
+
+        return $this->redirect(['action' => 'indexScheduled']);
     }
 
     /**
@@ -85,9 +141,15 @@ class CoursesController extends AppController
      */
     public function view($id = null)
     {
-        $course = $this->Courses->get($id, [ 'contain' => ['CourseLevels', 'CourseStatuses', 'CourseSubscriptions.Athletes', 'CourseSessions.Events' => ['sort' => ['CourseSessions.id' => 'ASC']], 'CourseSessions.CourseSessionTrainers.Users', 'CourseSessions.CourseSessionStatuses'] ]);
+        $course = $this->Courses->get($id, [
+            'contain' => [
+                'CourseStatuses', 
+                'CourseSubscriptions.Subscriptions.Athletes',
+                'CourseSubscriptions.Subscriptions.SubscriptionTypes', 
+                'CourseSubscriptions.Subscriptions.SelectedCourseEditions.CourseEditions',
 
-
+                ]
+            ]);
         $this->set('course', $course);
     }
 
@@ -193,4 +255,59 @@ class CoursesController extends AppController
         $this->set('course', $course);
     }
 
+    /**
+     * Activate method
+     *
+     * @return \Cake\Http\Response|null Redirects on successful add, renders view otherwise.
+     */
+    public function activate($id = null)
+    {
+        $this->request->allowMethod(['post']);
+        $course = $this->Courses->get($id);
+
+        if ($course->course_status_id <> Configure::read('course_statuses')['scheduled']) {
+            $this->Flash->error(__('Invalid status for course activation'));
+            return $this->redirect(['action' => 'view', $id]);
+        }
+
+        $course->course_status_id = Configure::read('course_statuses')['active'];
+
+        if ($this->Courses->save($course)) {
+            $this->Flash->success(__('Course has been activated.'));
+        } else {
+            $this->Flash->error(__('Error activating course.<br>'.print_r($course->errors())));
+        }
+        
+        return $this->redirect(['action' => 'view', $id]);
+
+    }
+
+    public function complete($id = null)
+    {
+        //$this->request->allowMethod(['post']);
+        $course = $this->Courses->get($id);
+
+        if (!$course->isCompletable()) {
+            $this->Flash->error(__('Invalid status for course completion'));
+            return $this->redirect(['action' => 'view', $id]);
+        }
+
+        $course->course_status_id = Configure::read('course_statuses')['completed'];
+
+        if ($this->Courses->save($course)) {
+            $this->Flash->success(__('Course has been marked as completed.'));
+            return $this->redirect(['action' => 'view', $id]);
+        } else {
+            $this->Flash->error(__('Error completing course.'));
+            $this->set('errors', $course->errors());
+        }
+        
+        
+
+    }
+
+    public function changePaidStatus($id = null)
+    {
+
+    }
 }

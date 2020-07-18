@@ -7,11 +7,14 @@ use Cake\ORM\Entity;
  * CourseSubscription Entity
  *
  * @property int $id
- * @property int $athlete_id
+ * @property int $subscription_id
+ * @property int $course_id
  * @property \Cake\I18n\FrozenTime $created
  * @property \Cake\I18n\FrozenTime $modified
  *
- * @property \App\Model\Entity\Athlete $athlete
+ * @property \App\Model\Entity\Subscription $subscription
+ * @property \App\Model\Entity\Course $course
+ * @property \App\Model\Entity\CourseClassMember[] $course_class_members
  */
 class CourseSubscription extends Entity
 {
@@ -26,11 +29,12 @@ class CourseSubscription extends Entity
      * @var array
      */
     protected $_accessible = [
-        'athlete_id' => true,
+        'subscription_id' => true,
         'course_id' => true,
         'created' => true,
         'modified' => true,
-        'athlete' => true
-
+        'subscription' => true,
+        'course' => true,
+        'course_class_members' => true
     ];
 }

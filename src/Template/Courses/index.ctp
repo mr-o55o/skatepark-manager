@@ -13,11 +13,8 @@ $weekdaysHelper = $this->loadHelper('Weekdays');
                 <tr>
                     <th scope="col"><?= $this->Paginator->sort('id') ?></th>
                     <th scope="col"><?= __('Nome') ?></th>
-                    <th scope='col'><?= __('Livello') ?></th>
-                    <th scope="col"><?= __('Periodo') ?></th>
-                    <th scope="col"><?= __('Cadenza Settimanale') ?></th>
-                    <th scope="col"><?= __('Ora di inizio') ?></th>
-                    <th scope="col"><?= __('Durata') ?></th>
+                    <th scope='col'><?= __('Stato') ?></th>
+                    <th scope='col'><?= __('Inizio / Fine') ?></th>
                 </tr>
             </thead>
             <tbody>
@@ -25,16 +22,8 @@ $weekdaysHelper = $this->loadHelper('Weekdays');
                 <tr>
                     <td class="text-center"><?= $this->Html->link($course->id, ['action' => 'view', $course->id], ['class' => 'btn btn-primary btn-sm']) ?></td>
                     <td><?= h($course['name']) ?></td>
-                    <td><?= h($course->course_level['name']) ?></td>
-                    <td><?= $course['start_date'] ?> - <?= $course['end_date'] ?></td>
-                    <td>
-                    	<?php foreach ($course['week_days'] as $dayNumber) : ?>
-                    		<?= $weekdaysHelper->int2str($dayNumber) ?>
-                    	<?php endforeach; ?>
-                    </td>
-                    <td><?= $course['start_time']->i18nFormat('HH:mm') ?></td>
-                    <td><?= $course['duration'] ?> <?= __('minuti') ?></td>
-                </tr>
+                    <td><?= ($this->elementExists('CourseStatuses/status-badge') ? $this->element('CourseStatuses/status-badge', ['statusId' => $course->course_status_id]) : '') ?></td>
+                    <td><?= $course->start_date->i18nFormat('dd/MM/YYYY') ?> / <?= $course->end_date->i18nFormat('dd/MM/YYYY') ?></td>
                 <?php endforeach; ?>
             </tbody>
         </table>

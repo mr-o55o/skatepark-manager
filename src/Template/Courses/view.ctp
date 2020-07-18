@@ -1,107 +1,94 @@
 <?php
 use Cake\Core\Configure;
 $weekdaysHelper = $this->loadHelper('Weekdays');
+//debug($course->isActivable());
 ?>
 
-<div class="course content">
-    <?= $this->elementExists('Courses/modal-help-view') ? $this->Element('Courses/modal-help-view') : '' ?> 
-    <h3><?= __('Caratteristiche del corso') ?></h3>
+<div class="course content container">
+    <div class="text-right"><?= $this->elementExists('Courses/modal-help-view') ? $this->Element('Courses/modal-help-view') : '' ?></div> 
+    <h3><?= __('Corso') ?> <?=h($course->name) ?> [<?= __('Id corso') ?>: <?= h($course->id) ?>]</h3>
+
+
     <table class="table vertical-table table-striped">
-        <tr>
-            <th scope="row"><?= __('Id') ?></th>
-            <td><?= h($course->id) ?></td>
-        </tr>
-        <tr>
-            <th scope="row"><?= __('Nome') ?></th>
-            <td><?=h($course->name) ?></td>
-        </tr>
-        <tr>
-            <th scope="row"><?= __('Livello') ?></th>
-            <td><?= h($course->course_level->name) ?></td>
-        </tr>
         <tr>
             <th scope="row"><?= __('Status') ?></th>
             <td><?= h($course->course_status->name) ?></td>
         </tr>
-         <tr>
-            <th scope="row"><?= __('Periodo') ?></th>
-            <td><?= h($course->start_date) ?> - <?= h($course->end_date) ?></td>
-        </tr>       
         <tr>
-            <th scope="row"><?= __('Cadenza settimanale') ?></th>
-            <td>
-                <?php foreach ($course['week_days'] as $dayNumber) : ?>
-                    <?= $weekdaysHelper->int2str($dayNumber) ?>
-                <?php endforeach; ?></td>
-        </tr>
-        <tr>
-            <th scope="row"><?= __('Ora di inizio') ?></th>
-            <td><?= h($course->start_time->i18nFormat('HH:mm')) ?></td>
-        </tr>
-        <tr>
-            <th scope="row"><?= __('Durata') ?></th>
-            <td><?= h($course->duration) ?> <?= __('minuti') ?></td>
+            <th scope="row"><?= __('Inizio / Fine') ?></th>
+            <td><?= $course->start_date->i18nFormat('dd/MM/YYYY') ?> / <?= $course->end_date->i18nFormat('dd/MM/YYYY') ?></td>
         </tr>
     </table>
     <hr>
-    <h3><?= __('Atleti iscritti al Corso') ?></h3>
-<?php if (!empty($course->course_subscriptions)) : ?>
-    <table class="table table-condensed table-striped">
-        <thead>
-            <tr>
-                <th scope="col"><?= __('Id') ?></th>
-                <th scope="col"><?= __('Atleta') ?></th>
-            </tr>
-        </thead>
-        <tbody>
-        <?php foreach($course->course_subscriptions as $subscription) : ?>
-            <tr>
-                <td><?= $subscription->id ?></td>
-                <td><?= $subscription->athlete->name ?> <?= $subscription->athlete->surname ?> <?= ($course->course_status_id < 3 ? $this->Form->postLink(__('Elimina'), ['controller' => 'CourseSubscriptions', 'action' => 'delete', $subscription->id], ['class' => 'btn btn-danger', 'confirm' => __('Eliminare questa iscrizione?')]) : '') ?></td>
-            </tr>
-        <?php endforeach; ?>
-        </tbody>
-    </table>
-<?php endif ;?>
-<?php if ($course->course_status_id <= 2 ) : ?>
-    <?= $this->Html->link(__('Nuova iscrizione per questo Corso'), ['controller' => 'CourseSubscriptions', 'action' => 'subscribeCourse', $course->id], ['class' => 'btn btn-primary']) ?>
-<?php endif; ?>
-<hr>
-<?php if (!empty($course->course_sessions)) : ?>
-    <h3><?= __('Sessioni del corso') ?></h3>
-    <table class="table table-condensed table-striped">
-        <thead>
-            <tr>
-                <th scope="col"><?= __('Id') ?></th>
-                <th scope="col"><?= __('Status') ?></th>
-                <th scope="col"><?= __('Data e orario') ?></th>
-                <th scope="col"><?= __('Istruttori assegnati') ?></th>
-            </tr>
-        </thead>
 
-        <tbody>
-        <?php foreach($course->course_sessions as $session) : ?>
-            <tr>
-                <td><?= $this->Html->link($session->id, ['controller' => 'CourseSessions', 'action' => 'view', $session->id]) ?></td>
-                <td><?= __($session->course_session_status->name) ?></td>
-                <td><?= $session->event->start_date->i18nFormat('dd/MM/YYYY')?> <?= __('dalle')?> <?=$session->event->start_date->i18nFormat('HH:mm')?> <?= __('alle')?> <?=$session->event->end_date->i18nFormat('HH:mm')?></td>
-                <td>
-                    <?php if (!empty($session->course_session_trainers)) : ?>
-                        <ul>
-                         <?php foreach($session->course_session_trainers as $trainer) : ?>
-                            <li><?= h($trainer->user->username)?></li>
-                        <?php endforeach; ?>                       
-                        </ul>
-                    <?php else : ?>
-                        <?= __('Nessun Istruttore assegnato') ?>
-                    <?php endif ; ?>
-                </td>
-            </tr>
-        <?php endforeach; ?>
-        </tbody>
-    </table>
-    <hr>
-<?php endif; ?>
+    <div class="row">
+        <div class="col pb-5">
+            <h3><?= __('Abbonamenti associati al Corso') ?></h3>
+            <?php if (!empty($course->course_subscriptions)) : ?>
+                <table class="table table-condensed table-striped">
+                    <thead>
+                        <tr>
+                            <th scope="col"><?= __('Id Abbonamento') ?></th>
+                            <th scope="col"><?= __('Tipo Abbonamento') ?></th>
+                            <th scope="col"><?= __('Atleta') ?></th>
+                            <th scope="col"><?= __('Pagato') ?></th>
+                            <th scope="col"><?= __('Edizioni Corso Previste') ?></th>
+                            <th scope="col"><?= __('Data sottoscrizione Abbonamento') ?></th>
+                            <th scope="col"><?= __('Data associazione Abbonamento a Corso') ?></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    <?php foreach($course->course_subscriptions as $course_subscription) : ?>
+                        <tr>
+                            <td><?= $this->Html->link($course_subscription->subscription->id, ['controller' => 'CourseSubscriptions', 'action' => 'edit', $course_subscription->subscription->id], ['class' => 'btn btn-primary btn-sm']) ?></td>
+                            <td><?= h($course_subscription->subscription->subscription_type->name) ?></td>
+                            <td>
+                                <?= $this->Html->link( h($course_subscription->subscription->athlete->name.' '.$course_subscription->subscription->athlete->surname), ['controller' => 'Athletes', 'action' => 'view', $course_subscription->subscription->athlete->id]) ?> <?= ($course_subscription->subscription->athlete->hasValidSubscriptions ? '' : '<span class="bg-warning text-dark">'.__('Iscrzioni ASI / FISR non valide.').'</span>' ) ?>
 
-    <?= $this->elementExists('Courses/detail-menu') ? $this->Element('Courses/detail-menu', ['status' => $course->course_status_id]) : '' ?>
+                            </td>
+                            <td><?= ($course_subscription->subscription->is_paid ? __('Sì') : __('No') ) ?></td>
+                            <td>
+                                <ul>
+                                <?php foreach($course_subscription->subscription->selected_course_editions as $selectedCourseEdition) : ?>
+                                    <li><?= h($selectedCourseEdition->course_edition->name) ?></li>
+                                <?php endforeach; ?>
+                                </ul>
+                            </td>
+                            <td><?= $course_subscription->subscription->created->i18nFormat('dd/MM/yyyy HH:mm') ?></td>
+                            <td><?= $course_subscription->created->i18nFormat('dd/MM/yyyy HH:mm') ?></td>
+                        </tr>
+                    <?php endforeach; ?>
+                    </tbody>
+                </table>
+            <?php else : ?>
+                <div class="alert alert-warning"><?= __('Questo Corso non ha Abbonamenti.') ?></div>
+            <?php endif ;?>
+            <?= $this->Html->link(__('Associa Abbonamenti a questo Corso'), ['controller' => 'CourseSubscriptions', 'action' => 'add'], ['class' => 'btn btn-primary btn-sm'] ) ?>
+        </div>
+        <div class="col">
+            <h3><?= __('Classi del corso') ?></h3>
+            <?php if (!empty($course->course_classes)) : ?>
+                <table class="table table-condensed table-striped">
+                    <thead>
+                        <tr>
+                            <th scope="col"><?= __('Id Classe') ?></th>
+                            <th scope="col"><?= __('Status') ?></th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                    <?php foreach($course->course_classes as $class) : ?>
+                        <tr>
+                            <td><?= $this->Html->link($class->id, ['controller' => 'CourseClasses', 'action' => 'view', $class->id], ['class' => 'btn btn-primary btn-sm']) ?></td>
+                            <td><?= $this->element('CourseClassStatuses/status-badge', ['statusId' => $class->course_session_status_id])?></td>
+                        </tr>
+                    <?php endforeach; ?>
+                    </tbody>
+                </table>
+            <?php else: ?>
+                <div class="alert alert-warning"><?=__('Questo Corso non ha Classi.') ?></div>
+            <?php endif; ?>
+
+        </div>
+    </div>
 </div>

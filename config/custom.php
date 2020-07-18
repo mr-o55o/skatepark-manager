@@ -69,8 +69,9 @@ return [
 	'course_statuses' => [
 		'draft' => 1,
 		'scheduled' => 2,
-		'completed' => 3,
-		'cancelled' => 4
+		'active' => 3,
+		'completed' => 4,
+		'cancelled' => 5
 	],
 
 	//Course session statuses
@@ -78,6 +79,12 @@ return [
 		'scheduled' => 1,
 		'completed' => 2,
 		'cancelled' => 3
+	],
+
+	'course_class_statuses' => [
+		'scheduled' => 1,
+		'completed' => 2,
+		'cancelled' => 3,
 	],
 
 	'Athletes' => [
@@ -503,6 +510,18 @@ return [
 				'name' => 'Corsi pianificati',
 				'topic' => 'CoursesManagement'
 			],
+			'indexActive' => [
+				'name' => 'Corsi attivi',
+				'topic' => 'CoursesManagement'
+			],
+			'indexCompleted' => [
+				'name' => 'Corsi completati',
+				'topic' => 'CoursesManagement'
+			],
+			'indexCancelled' => [
+				'name' => 'Corsi cancellati',
+				'topic' => 'CoursesManagement'
+			],
 			'add' => [
 				'name' => 'Aggiungi nuovo Corso',
 				'topic' => 'CoursesManagement'
@@ -518,7 +537,37 @@ return [
 			'schedule' => [
 				'name' => 'Pianifica Corso',
 				'topic' => 'CoursesManagement'
+			],
+			'complete' => [
+				'name' => 'Completa Corso',
+				'topic' => 'CoursesManagement'
 			],			
+		],
+
+		'CoursePeriods' => [
+			'index' => [
+				'name' => 'Periodi dei Corsi',
+				'topic' => 'CoursesManagement'
+			],	
+			'add' => [
+				'name' => 'Aggiungi Nuovo Periodo dei Corsi',
+				'topic' => 'CoursesManagement'
+			],			
+		],
+
+		'CourseClasses' => [
+			'index' => [
+				'name' => 'Elenco Classi',
+				'topic' => 'CoursesManagement',
+			],		
+			'add' => [
+				'name' => 'Aggiungi Classe',
+				'topic' => 'CoursesManagement',
+			],
+			'addClasses' => [
+				'name' => 'Creazione Classi per Periodo Attivo',
+				'topic' => 'CoursesManagement',
+			],
 		],
 
 		'CourseSessions' => [
@@ -530,6 +579,14 @@ return [
 				'name' => 'Aggiungi Istruttore alla Sessione',
 				'topic' => 'CoursesManagement',
 			],
+			'delete' => [
+				'name' => 'Elimina Sessione Corso',
+				'topic' => 'CoursesManagement',
+			],
+			'add' => [
+				'name' => 'Aggiungi Sessione Corso',
+				'topic' => 'CoursesManagement',
+			],
 		],
 
 		'CourseSubscriptions' => [
@@ -537,8 +594,27 @@ return [
 				'name' => 'Visualizza Iscrizioni Corso',
 				'topic' => 'CoursesManagement',
 			],
+			'indexValidForActiveCoursePeriod' => [
+				'name' => 'Visualizza Iscrizioni Corso valide per il Periodo Corsi Attivo',
+				'topic' => 'CoursesManagement',
+			],
 			'subscribeCourse' => [
 				'name' => 'Iscrizione Atleta a Corso',
+				'topic' => 'CoursesManagement'
+			],
+			'view' => [
+				'name' => 'Visualizza Abbonamento',
+				'topic' => 'CoursesManagement'
+			],
+		],
+
+		'CourseSubscriptionTypes' => [
+			'index' => [
+				'name' => 'Tipi di Abbonamento Corsi',
+				'topic' => 'CoursesManagement',
+			],
+			'view' => [
+				'name' => 'Visualizza Tipo Abbonamento Corsi',
 				'topic' => 'CoursesManagement'
 			],
 		],
@@ -554,7 +630,15 @@ return [
 			'add' => [ 
 				'name' => 'Aggiungi Partecipanti alla Sessione del Corso',
 				'topic' => 'CoursesManagement'
-			]
+			],
+			'view' => [
+				'name' => 'Visualizza Registro',
+				'topic' => 'CoursesManagement'
+			],
+			'edit' => [
+				'name' => 'Gestione Registro',
+				'topic' => 'CoursesManagement'
+			],
 		],
 
 		'Administration' => [

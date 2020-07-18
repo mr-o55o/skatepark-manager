@@ -16,7 +16,8 @@ $this->Form->unlockField('responsible_person_id');
 
     <?= $this->Form->create($athlete) ?>
         <!-- Name & Surname-->
-        <h3><?= __('Nome e Cognome') ?></h3>
+        <h3><?= __('Dati Anagrafici') ?></h3>
+        <h4><?= __('Nome e Cognome') ?></h4>
         <div class="row">
             <div class="col">
                 <label><?= __('Nome') ?> <i class="fas fa-star fa-xs text-danger"></i></label>
@@ -27,10 +28,12 @@ $this->Form->unlockField('responsible_person_id');
                 <?= $this->Form->control('surname', ['id' => 'athlete_surnamename', 'label' => false]); ?>
             </div>
         </div>
-        <hr>
-        <!-- Place and Date of Birth-->
-        <h3><?= __('Data e luogo di nascita') ?></h3>
+        <h4><?= __('Sesso, Data e luogo di nascita') ?></h4>
         <div class="row">
+            <div class="col form-group required">
+                <label><?= __('Sesso') ?> <i class="fas fa-star fa-xs text-danger"></i></label>
+                <?= $this->Form->control('sex', ['options' => ['M', 'F'],'label' => false]); ?>
+            </div>
             <div class="col form-group required">
                 <label><?= __('Giorno') ?> <i class="fas fa-star fa-xs text-danger"></i></label>
                 <?= $this->Form->day('birthdate', ['label' => false]); ?>
@@ -44,6 +47,7 @@ $this->Form->unlockField('responsible_person_id');
                 <?= $this->Form->year('birthdate', [ 'label' => false, 'minYear' => Configure::read('Athletes')['birthdate_minYear'], 'maxYear' => date('Y') ]); ?>
             </div>
         </div>
+        <hr>
         <div class="row">
             <div class="col">
                 <label><?= __('Città') ?> <i class="fas fa-star fa-xs text-danger"></i></label>
@@ -127,21 +131,21 @@ $this->Form->unlockField('responsible_person_id');
         <!-- Contacts -->
         <h3><?= __('Contatti') ?></h3>
         <div class="row">
-                <div class="col">
-                    <label><?= __('Email') ?></label>
+                <div class="col form-group required">
+                    <label><?= __('Email') ?> <i class="fas fa-star fa-xs text-danger"></i></label>
                     <?= $this->Form->control('email', ['label' => false])?>
                 </div>
-                <div class="col">
+                <div class="col form-group">
                     <label><?= __('Phone') ?></label>
                     <?= $this->Form->control('phone', ['label' => false])?>
                 </div>
         </div>
         <div class="row">
-                <div class="col">
+                <div class="col form-group">
                     <label><?= __('Account Twitter') ?></label>
                     <?= $this->Form->control('twitter_account', ['label' => false])?>
                 </div>
-                <div class="col">
+                <div class="col form-group required">
                     <label><?= __('Account Instagram') ?></label>
                     <?= $this->Form->control('instagram_account', ['label' => false])?>
                 </div>

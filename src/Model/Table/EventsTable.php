@@ -5,7 +5,7 @@ use Cake\ORM\Query;
 use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
 use Cake\Validation\Validator;
-
+use Cake\I18n\Time;
 /**
  * Events Model
  *
@@ -71,9 +71,12 @@ class EventsTable extends Table
 
 
     public function findInDay(Query $query, $options) {
-        //$options['day'];
-        $start = $options['day']->startOfDay();
-        $end = $options['day']->endOfDay();
+
+        $start = new Time($options['day']);
+        $end = new Time($options['day']);
+        $start = $start->startOfDay();
+        $end = $end->endOfDay();
+
         $query->contain(['LessonEditions', 'Activities', 'CourseSessions']);
         $query->where(['start_date >=' => $start]);
         $query->andWhere( ['end_date <=' => $end]);

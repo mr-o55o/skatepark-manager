@@ -24,12 +24,26 @@
 		], [
 			'class' => 'nav-link '.($this->request->action == 'indexScheduled' ? 'active' : '')
 		]) ?>
+		<?= $this->Html->link(__('Corsi attivi'), 
+		[
+			'controller' => 'Courses', 
+			'action' => 'indexActive'
+		], [
+			'class' => 'nav-link '.($this->request->action == 'indexActive' ? 'active' : '')
+		]) ?>
 		<?= $this->Html->link(__('Corsi completati'), 
 		[
 			'controller' => 'Courses', 
 			'action' => 'indexCompleted'
 		], [
 			'class' => 'nav-link '.($this->request->action == 'indexCompleted' ? 'active' : '')
+		]) ?>
+		<?= $this->Html->link(__('Corsi Annullati'), 
+		[
+			'controller' => 'Courses', 
+			'action' => 'indexCancelled'
+		], [
+			'class' => 'nav-link '.($this->request->action == 'indexCancelled' ? 'active' : '')
 		]) ?>
 	</nav>
 

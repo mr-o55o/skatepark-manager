@@ -25,7 +25,9 @@ class CourseSubscriptionsTableTest extends TestCase
      */
     public $fixtures = [
         'app.course_subscriptions',
-        'app.athletes'
+        'app.subscriptions',
+        'app.courses',
+        'app.course_class_members'
     ];
 
     /**
